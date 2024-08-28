@@ -1,0 +1,193 @@
+	------
+	Event Processing Service - Statistics
+	------
+
+Statistics
+
+        EPS provides a number of statistics to monitor the application.
+
+        Statistics are enabled by default, but you can turn it off by setting
+		the configuration parameter	{{{./configuration-options.html#com.ericsson.oss.services.eps.core.statistics.off}com.ericsson.oss.services.eps.core.statistics.off}}
+        to true.
+
+Statistics Type:
+
+        * Meter
+
+        A Meter measures the rate at which a set of events occur in a few
+		different ways:
+
+            * mean rate (average rate of events over applications lifetime)
+
+            * 1 minute moving average
+
+            * 5 minute moving average
+
+            * 15 minute moving average
+
+        * Counter
+
+        A counter is a simple incrementing and decrementing 64-bit integer
+		starting at 0.
+
+        * Guage
+
+        A Gauge is an instantaneous reading of a particular value e.g it could
+		be used to report the size of a queue.
+
+		[]
+
+Statistics Details
+
+	The following general statistics are exposed by EPS.
+
+*----------------------+-------------------+----------------------------------------------------------------+
+|| Statistic Name      || Statistics Type  || Description                                                   |
+*----------------------+-------------------+----------------------------------------------------------------+
+| eventsReceived       | Meter             | The number of events received by a handler.\                   |
+|                      |                   | \                                                              |
+|                      |                   | It is reported for each handler instance                       |
+|                      |                   | (the name defined in the flow descriptor).\                    |
+|                      |                   | Incremented when the event handler receives an event.          |
+|                      |                   | \                                                              |
+|                      |                   | The eventsReceived name prefix includes the flow name,         |
+|                      |                   | version and flow component name                                |
+|                      |                   | \ e.g.                                                         |
+|                      |                   | com.a.b_flowName_1.1.0.jmsInput1.eventsReceived                |
+|                      |                   | \                                                              |
+*----------------------+-------------------+----------------------------------------------------------------+
+| flowsDeployed        | Counter           | Counts the number of flows currently deployed by EPS.\         |
+|                      |                   | \                                                              |
+|                      |                   | There is one instance of this statistic per EPS instance.\     |
+|                      |                   | Incremented when a flow is deployed, decremented when a flow   |
+|                      |                   | is undeployed.                                                 |
+|                      |                   | \                                                              |
+|                      |                   | The flowsDeployed name prefix includes the EPS instance Id,    |
+|                      |                   | a default value is created if the EPS instance Id is not set.  |
+|                      |                   | \ e.g. eps_instance_920_1434545392295.flowsDeployed            |
+|                      |                   | \                                                              |
+*----------------------+-------------------+----------------------------------------------------------------+
+
+    The EPS provided Event Handlers and IO Adapters may report additional statistics.
+
+
+Statistics reporting
+
+  EPS provides a choice of configurable
+  {{{./configuration-options.html#com.ericsson.oss.services.eps.core.statistics.reporting.method} reporting methods}}
+  for statistics:
+
+   * {{Statistics via JMX}}
+
+   * {{Statistics via CSV file}}
+
+   * {{Statistics via SLF4J}}
+
+   []
+
+
+* {Statistics via JMX}
+
+    Statistics are reported as {{{http://www.oracle.com/technetwork/java/javase/tech/javamanagement-140525.html}Java Management Extensions (JMX)}}, MBeans.
+
+    To explore this you can use
+    {{{http://docs.oracle.com/javase/7/docs/technotes/guides/visualvm/}VisualVM}}
+    (which ships with most JDKs as jvisualvm), with the VisualVM-MBeans plugins
+    installed or
+	{{{http://docs.oracle.com/javase/7/docs/technotes/guides/management/jconsole.html}JConsole}}
+	(which ships with most JDKs as jconsole), or any another jmx tool you prefer.
+
+    To view MBeans in VisualVM:
+
+    * open VisualVM
+
+    * connect to appropriate host and port
+
+    * navigate to the MBeans tab
+
+    []
+
+    Details of the statistics are listed in the MBeans and Attributes views.
+
+[./images/statistic-received-events.png] Example eventsReceived statistic
+
+    The figure above shows the number of events received by the
+	<<CallClosureFilter>> handler (Call Closure correlation).
+    The statistics are also gathered in different kinds of rate including
+	oneMinuteRate, fifteenMinuteRate, meanRate, etc.
+
+
+* {Statistics via CSV file}
+
+   A .csv file is created for every statistic, it is periodically updated by
+   adding a new row.
+
+   The {{{./configuration-options.html#com.ericsson.oss.services.eps.core.statistics.reporting.frequency} reporting frequency}}
+   and {{{./configuration-options.html#com.ericsson.oss.services.eps.core.statistics.reporting.csv.location} file output location}}
+   are configurable.
+
+
+* {Statistics via SLF4J}
+
+   Statistics are periodically output via {{{http://www.slf4j.org/}SLF4J}}.
+
+   The {{{./configuration-options.html#com.ericsson.oss.services.eps.core.statistics.reporting.frequency} reporting frequency}}
+   is configurable.
+
+
+
+Adding Custom Statistics
+
+  An EPS extension may provide additional custom statistics.
+
+* Initialise Statistics
+
+    The EPS Event Handler (or IO Adapter) should initialise statistics from its doInit() method.
+
++-------------------------------+
+   private EpsStatisticsRegister;
+
+  /**
+   * Initialise statistics.
+   */
+   private void initialiseStatistics() {
+       statisticsRegister = (EpsStatisticsRegister) getEventHandlerContext().getContextualData(
+           EpsEngineConstants.STATISTICS_REGISTER_CONTEXTUAL_DATA_NAME);
+           if (statisticsRegister == null) {
+               log.error("statisticsRegister should not be null");
+           }
+   }
++-------------------------------+
+
+* Create custom statistics
+
+    Create and register statistics measurements using the StatisticsRegister api.
+    EPS will prefix the measurement name with the flow name and component Id (determined from
+    from the EventHandlerContext).
+
+
++-------------------------------+
+    private Meter eventMeter;
+
+    private void createMetrics() {
+        if (statisticsRegister.isStatisticsOn()) {
+            eventMeter = statisticsRegister.createMeter("eventsOfInterest", this);
+        }
+    }
++-------------------------------+
+
+
+* Update custom statistics
+
+    Update the measurements as events are processed
+
++-------------------------------+
+
+    private void onEvent(final Object inputEvent) {
+        // process event
+        if (isStatisticsOn()) {
+            // if inputEvent meets the criteria for meterC, then increment it
+            eventMeter.mark();
+        }
+    }
++-------------------------------+

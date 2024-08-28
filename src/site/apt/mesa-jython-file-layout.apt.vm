@@ -1,0 +1,108 @@
+	------
+	MESA Rules
+	------
+
+Overview:
+
+	MESA rules are written in Jython, all object creation and management is done internally in the MESA component leaving the Jython script to focus on the business logic to be handled.
+	To form a working rule three things must be present in the file:
+	
+	* the object matched must be present
+	
+	* A conditional should be present (if then else logic)
+	
+	* the matched object must have a value at the end of the business logic
+	
+	As mentioned previously to facilitate the creation of alerts and alarms the object creation is managed internally, to further aid in this process the alerts and alarms are compliant with the x733 and Ericsson MIB
+	standards. This enables the writer of the rule to populate details of the alert/alarm from within the Jython script. All input events are also managed internally, to access an input event two options are available:
+
+	* Simple naming where events are labeled with a letter and an increasing index
+ 
+	* Defined naming where events are given a short name defined by the user and an increasing index
+	
+Rule Types
+
+	MESA currently supports two internal rule types:
+	
+	* Stateful
+	
+	* Stateless
+	
+	The Stateless is the simplest rule type, it allows the user to send a fire and forget alert. This rule gives the user control over the alert and nothing more.
+	
+	The Stateful rule provides state management maintaining a state between calls of the rule. It provides the user with control over the state, the alarmStart and the alarmEnd.
+	
+	Every output from a rule which MESA produces is internally assigned the resource ID of the triggering events.  
+	
+	
+	
+Object bindings:
+
+	In order to access the objects provided by MESA in the Jython script the following bindings are available, all of these bindings are internally assigned by MESA except in the case the user supplies 
+	a valid Jython short name binding file.
+	
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+|| Object Type                                                         || Description                                       || Default binding                  |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| alert                                                                | Output event produced by a rule                    | a, alert       					|
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| alarmStart                                                           | Output event produced by a rule                    | alarmStart  						|
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| alarmEnd                                                             | Output event produced by a rule                    | ae, alarmEnd 						|
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| state                                                           	   | Output event produced by a rule                    | alarm        						|
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| event                                                                | Input events received by the rule for processing   | e_0, ..., e_n, f_0, ..., f_n or isu60_0, ..., isu60_n     |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+	
+
+	Sample rule:
+	
+	The simple rule below uses defined naming to access input events (lce1min_x) supplied by a sequence view. As the view contains four events MESA will internally assign them the index's 0-3 where o is the latest event and 3 is the oldest in the view.
+	The rule is designed to check the number of errors seen in each event and check if they exceed a user defined limit (the limit is assigned in the core.xml file). If all of the events have exceed the user defined limit then a sustained error is present
+	so an alert will be raised. In order to make the alert more useful an additional property of the latest event is checked to see how many subscribers are getting impacted again against a user defined limit. Depending on the number of impacted subscribers the 
+	message and severity will be adjusted accordingly. the final step is for the user to let MESA know that their conditions have been met and to output the alert this is done by setting matched to true.   
+	
++-------------------------------+
+
+# accepts events of type LTE_CELL_EVENT_CNT_1MIN;
+# input variables are var_error_percentage_limit,  var_sub_limit
+
+matched = False
+
+
+errorRateBadForEvent0 = False
+if (lce1min_0.numberOfErrors*100)/lce1min_0.numberOfSuccesses > var_error_percentage_limit:
+    errorRateBadForEvent0 = True
+    
+errorRateBadForEvent1 = False
+if (lce1min_1.numberOfErrors*100)/lce1min_1.numberOfSuccesses > var_error_percentage_limit:
+    errorRateBadForEvent1 = True
+    
+errorRateBadForEvent2 = False
+if (lce1min_2.numberOfErrors*100)/lce1min_2.numberOfSuccesses > var_error_percentage_limit:
+    errorRateBadForEvent2 = True
+    
+errorRateBadForEvent3 = False
+if (lce1min_3.numberOfErrors*100)/lce1min_3.numberOfSuccesses > var_error_percentage_limit:
+    errorRateBadForEvent3 = True
+
+sustainedHighErrorRate = False 
+if errorRateBadForEvent0 and errorRateBadForEvent1 and errorRateBadForEvent2 and errorRateBadForEvent3:
+    sustainedHighErrorRate = True
+    
+if sustainedHighErrorRate and lce1min_0.impactedSubscribers > var_sub_limit:
+    alert.perceivedSeverity = 5
+    alert.additionalText = "High error rate within a cell containing large number of subscribers"
+    matched = True
+    
+if sustainedHighErrorRate and lce1min_0.impactedSubscribers < var_sub_limit:
+    alert.perceivedSeverity = 5
+    alert.additionalText = "High error rate within a cell containing negligible number of subscribers"
+    matched = True
+    
++-------------------------------+
+
+	
+
+
+	

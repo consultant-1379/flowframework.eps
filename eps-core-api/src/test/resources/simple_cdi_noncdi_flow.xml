@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+	xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	oc:ns="com.ericsson.test" oc:name="test_cdi_event_handler" oc:version="1.1.0">
+
+	<oc:modelCreationInfo author="author"
+		creationDate="today">
+		<oc:designedModel componentId="someComponentId" />
+	</oc:modelCreationInfo>
+
+	<oc:desc>example flows</oc:desc>
+
+	<input name="hcInput">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-topic1" />
+	</input>
+
+	<output name="hcOutput">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-topic2" />
+	</output>
+
+
+	<step name="nonCdiEventHandler">
+		<handler>
+			<className>com.ericsson.component.aia.examples.Foo</className>
+		</handler>
+	</step>
+	
+	<step name="cdiEventHandler">
+		<handler>
+			<named>cdiEventHandlerComponent</named>
+		</handler>
+	</step>	
+
+	<path>
+		<from uri="hcInput" />
+		<to uri="nonCdiEventHandler" />
+		<to uri="cdiEventHandler" />
+		<to uri="hcOutput" />
+	</path>
+
+</FlowDefinition>

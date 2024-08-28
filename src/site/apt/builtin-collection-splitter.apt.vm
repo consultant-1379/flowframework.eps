@@ -1,0 +1,29 @@
+	------
+	Collection splitter Event Handler
+	------
+	
+Collection Splitter Event Handler
+
+	This Event Handler detects events of type {{{http://docs.oracle.com/javase/7/docs/api/java/util/Collection.html}Collection}}
+	and {{{http://docs.oracle.com/javase/7/docs/api/java/lang/Object.html}<Object[]>}}, splits them
+	into individual events and sends those individual events downstream, one by one.
+	
+	If the received event is not of appropriate type it will be simply sent downstream without any processing.
+	
+	This Event Handler can not be configured.
+	
+	Event Handler declaration:
+
+	This is a {{{./java-event-handlers.html}Java Event Handler}}, should be declared using the <className> element, as in the example below. 
+	
+	Event Handler class name <<com.ericsson.oss.services.eps.builtin.components.CollectionSplitterComponent>>
+	
++-------------------------------+
+<step name="splitter">
+	<handler>
+		<className>
+	     com.ericsson.oss.services.eps.builtin.components.CollectionSplitterComponent
+		</className>
+	</handler>
+</step>
++-------------------------------+

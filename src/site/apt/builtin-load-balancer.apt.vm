@@ -1,0 +1,35 @@
+	------
+	Load-balancing Event Handler
+	------
+
+Load-balancing Event Handler
+
+	This Event Handler provides load-balancing functionality within single flow. Based on configuration it will load-balance incoming events
+	between all available subscribers.
+	
+	It is required that more than 1 subscriber is attached directly to this handler, otherwise using load-balancing does not make sense.
+	
+	This handler is best used when combined with {{{./builtin-thread-mgmt.html} Thread management Event Handler}}.
+
+	Event Handler configuration:
+	
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+|| Configuration parameter name                                        || Description                                       || Default value (acceptable values)|
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| strategy                                                             | Strategy to use for load-balancing                 | roundRobin (random, roundRobin)   |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+
+	Event Handler declaration:
+
+	This is a {{{./java-event-handlers.html}Java Event Handler}}, should be declared using the <className> element, as in the example below. 
+
+	Event Handler class name <<com.ericsson.oss.services.eps.builtin.components.LoadBalancer>>
+
++-------------------------------+
+<step name="loadBalancer">
+	<handler>
+		<className>com.ericsson.oss.services.eps.builtin.components.LoadBalancer</className>
+		<attribute name="strategy" value="random" />
+	</handler>
+</step>
++-----

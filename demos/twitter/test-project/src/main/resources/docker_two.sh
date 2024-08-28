@@ -1,0 +1,1 @@
+sudo docker run -d ericsson/eps-twitter-trend

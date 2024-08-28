@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<messaging-deployment xmlns="urn:jboss:messaging-deployment:1.0">
+        <hornetq-server>
+                <jms-destinations>
+                        <jms-queue name="epsModEvAdapterDataInputChannel">
+                                <!-- when using modeled eventbus following represents channel URI -->
+                                <entry name="/queue/EPS_Input_Data" />
+                                <entry name="java:jboss/exported/jms/queue/EPS_Input_Data" />
+                        </jms-queue>
+                        <jms-queue name="epsModEvAdapterDataOutputChannel">
+                                <!-- when using modeled eventbus following represents channel URI -->
+                                <entry name="/queue/EPS_Output_Data" />
+                                <entry name="java:jboss/exported/jms/queue/EPS_Output_Data" />
+                        </jms-queue>
+                </jms-destinations>
+        </hornetq-server>
+</messaging-deployment>

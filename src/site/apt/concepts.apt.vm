@@ -1,0 +1,104 @@
+	------
+	Event Processing Service   -  Concepts
+	------
+	
+Event Formats
+  
+  The Event Processing Service is completely agnostic in respect of the encoding
+  of individual event instances.
+  EPS sees events as Objects, the Event Handlers in the flow must understand the
+  format of the event to process.
+
+
+Event Handler
+
+  An Event Handler receives and process's events. It may modify, forward or 
+  discard the event, it may also create new events.
+
+  Event Handlers must comply with the 
+  {{{${documentation_FlowFramework}/eventflow-api/flow-event-handlers.html} 
+  Flow Framework specification}}
+
+  Event handlers can be configured with attributes  
+  {{{${documentation_FlowFramework}/eventflow-api/flow-descriptor-handler-definition.html}
+  defined as part of a flow.}}
+ 
+  An Event handler can execute Java, or the event-processing logic can be 
+  expressed in other languages (eg. CEP, jvm script etc) using <<Rules>>.
+
+
+Rule
+
+  A Rule allows the event-processing logic to be expressed in other languages 
+  (eg. CEP, scripting, business rules languages, etc). 
+  A handler applies the configured rules.
+
+
+Flow
+
+  Flow refers to a configuration for a flow of events through specified
+  <<Event Handler>> steps.
+
+  These steps describe:
+
+  * How to connect to different data sources
+
+  * How to process (filter, correlate, enrich) the data)
+
+  * How to route the processing results to one or more destinations
+
+
+Flow Engine
+
+  A Flow Engine provides a runtime environment in which to deploy and run flows.
+  EPS is the flow engine implementation in the service layer.
+
+
+IO Adapters
+
+  IO Adapters are <<Event Handlers>> at the end points of a flow, a flow can
+  have multiple inputs and multiple outputs.
+
+  Flow Framework provides the
+  {{{${documentation_FlowFramework}eventflow-api/flow-io-adapters.html} IO Adapter}}
+  specification.
+
+* Input Adapter
+
+  Input Adapters are the first step in a flow and receive data into the flow.
+
+  Input Adapters must implement the Flow Framework
+  {{{${documentation_FlowFramework}eventflow-api/apidocs/com/ericsson/oss/itpf/common/io/InputAdapter.html} Input Adapter}}
+  interface.
+
+
+* Output Adapter
+
+  Output Adapters are the final step in the flow and send data outside the flow. 
+  An Output Adapter is not needed if the flow does not produce any output.
+
+  Output Adapters must implement the Flow Framework
+  {{{${documentation_FlowFramework}/eventflow-api/apidocs/com/ericsson/oss/itpf/common/io/OutputAdapter.html} Output Adapter}}
+  interface.
+
+
+Control Events
+
+  Control Events are used to control behavior of Controllable components.
+  For example a Control Event can be used to notify flow components about
+  configuration changes and status notifications.
+
+  Flow Framework provides the
+  {{{${documentation_FlowFramework}eventflow-api/flow-control-events.html} Control Event specification}}
+   and the
+  {{{${documentation_FlowFramework}eventflow-api/apidocs/com/ericsson/oss/itpf/common/event/ControlEvent.html} Control Event type}}.
+
+
+Controllable Handler
+
+  A Controllable Handler is an <<Event Handler>> that will react on a 
+  ControlEvent of interest. It will ignore Control Events which are not of 
+  interest.
+  It must implement the 
+  {{{${documentation_FlowFramework}/eventflow-api/apidocs/com/ericsson/oss/itpf/common/Controllable.html} Controllable interface}}
+ 

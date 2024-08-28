@@ -1,0 +1,158 @@
+	------
+	Event Processing Service - Testing functionalities depending on EPS
+	------
+
+Introduction
+
+	EPS is a core component and many features use it. For integration testing EPS has to be deployed along,
+	to test solution handlers and flows. JUnit tests that must be written for EPS handlers and adapters 
+	may need to mock context and subscribers.
+	To see some example tests you can download {{{./eps-archetypes.html}EPS archetype}}.
+
+JSE integrations tests
+
+	First of all environment should be set up and EPS should be deployed as 
+	described for {{{./eps-jboss-deploy.html}JBoss}} or {{{./eps-standalone-install.html}standalone}}. 
+	Event flows (described in .xml files or modeled) should be deployed as described 
+	{{{ ${documentation_FlowFramework}/eventflow-api/flow-descriptor.html}here}}. In standalone integration 
+	tests context, if EPS lifecycle is not managed otherwise, EPS service should be started before running tests 
+	and stopped after.
+	EPS should be run in a separate thread. Following is an example snippet code:
+	
++-------------------------------+ 
+private final ExecutorService execService = Executors.newSingleThreadExecutor();      
+
+@Before
+public void setup() throws InterruptedException, ExecutionException {
+final Future<EpsInstanceManager> epsFuture = execService.submit(
+	new Callable<EpsInstanceManager>() {
+		@Override
+		public EpsInstanceManager call() {
+			EpsInstanceManager instanceManager = EpsInstanceManager.getInstance();
+			instanceManager.start();
+			return instanceManager;
+		}
+	}
+);
+return epsFuture.get();
+}
++-------------------------------+
+
+	To stop EPS instance in a proper way, first of all stop EpsInstanceManager, that stops listening for new 
+	flow descriptors deployment
+	and undeploys all flow descriptors, and then EPS provider should be cleaned. This ensures that
+	no pending threads remain after test termination, environment is reset and so tests results are
+	not dependent on test execution order. 
+
++-------------------------------+
+@After
+public void tearDown() {
+    EpsInstanceManager epsInstanceManager = EpsInstanceManager.getInstance();
+    epsInstanceManager.stop();
+    epsInstanceManager = null;
+    // clean also the EpsProvider, required in case of exception and errors during test.
+    EpsProvider.getInstance().clean();
+    // stop the executor service
+    execService.shutdownNow();
+}
++-------------------------------+
+
+	To test if a specific flow descriptor has been deployed it is possible to access the internal ModuleManage.
+
++-------------------------------+
+@Test
+public void test_deploy_simple_flow() throws Exception {
+    final ModuleManager flowManager = EpsInstanceManager.getInstance().getModuleManager();
+    Assert.assertEquals(1, flowManager.getDeployedModulesCount());
+    ...
+}
++-------------------------------+
+
+	To use the EPS internal classes (EpsInstanceManager, EpsProvider & ModuleManager) for integration purposes,
+	it is necessary that eps-core-api dependency should be included as test-scoped in pom.
+	
++-------------------------------+
+<dependency>
+	<groupId>${project.groupId}</groupId>
+	<artifactId>eps-core-api</artifactId>
+	<version>${eps.version}</version>
+	<scope>test</scope>
+</dependency>
++-------------------------------+	
+
+JEE integration tests
+
+	EPS should be installed as described {{{./eps-jboss-deploy.html}here for JBoss }} or {{{./eps-standalone-install.html}here for standalone} . 
+	Event flows (described in .xml files or modeled) should be deployed as described {{{${documentation_FlowFramework}/eventflow-api/flow-descriptor.html}here}}.
+	To deploy JBoss module add following artifact to maven dependency plugin unpack execution to the test maven profile:
+	
++-------------------------------+
+<artifactItem>
+	<groupId>com.ericsson.oss.services</groupId>
+	<artifactId>eps-jboss-module</artifactId>
+	<version>${eps.version}</version>
+	<classifier>CXP9030382</classifier>
+	<type>zip</type>
+</artifactItem>
++-------------------------------+
+
+		Usually EPS war should be deployed within the EAR under test, but if test includes a micro-deployment EPS war shall be added through Shrinkwrap. 
+		To resolve this artifact through Shrinkwrap Maven add eps-war dependency in pom and :
+		use string "com.ericsson.services.oss.eps:eps-war:war:?".
+			
++-------------------------------+
+Maven.resolver().loadPomFromFile("pom.xml")
+	.resolve("com.ericsson.services.oss.eps:eps-war:war:?").withoutTransitivity()
+                .asSingle(WebArchive.class);
++-------------------------------+
+
+	When deployed EPS starts it is ready to deploy flows according to its {{{./configuration-options.html}configuration}}; its 
+	lifecycle is managed by container.
+
+Mocking in JUnits for EPS handlers and adapters
+
+	JUnits for EPS handlers and adapters may need mocking context, subscribers and other services. EpsExtensions is as an example of a solution project.
+	Following snippet is an example  to mock EventHandlerContext, Configuration and EventSubscriber(s) to test that the hander/adapter is initialized 
+	correctly and sends events to its subscriber as expected.
+
++-------------------------------+                
+@RunWith(MockitoJUnitRunner.class)
+public class MockingTest {
+	
+	@Mock
+	EventHandlerContext mockEventHandlerContext;
+	
+	@Mock
+	Configuration mockConfig;
+	
+	List<EventSubscriber> mockedSubscriberList;
+	
+	@Before
+	public void initMocks() {
+		mockedSubscriberList = setUpSubscribers(numberOfSubscribers);
+		MockitoAnnotations.initMocks(this);
+	}
+	
+	public List<EventSubscriber> setUpSubscribers(final int subscriberCount) {
+	    final List<EventSubscriber> subscribersList = new ArrayList<>();
+	    for (int i = 0; i < subscriberCount; i++) {
+	        subscribersList.add(mock(EventSubscriber.class));
+	    }
+	    return subscribersList;
+	}
+	
+	@Test
+	public void testMethod() throws Exception {
+	    
+	    when(mockConfig.getStringProperty("schemaType")).thenReturn("celltrace");
+	    when(mockConfig.getStringProperty("subnetwork"))
+	    	.thenReturn("SubNetwork=ONRM_RootMo,SubNetwork=RNC01");
+	    when(mockConfig.getStringProperty("utcoffset")).thenReturn("+00.00");
+	    
+	    when(mockEventHandlerContext.getEventSubscribers()).thenReturn(subscribersList);
+	    when(mockEventHandlerContext.getEventHandlerConfiguration()).thenReturn(mockConfig);
+	    
+	    //...
+	}
+}
++-------------------------------+

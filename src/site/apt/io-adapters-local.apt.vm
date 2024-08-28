@@ -1,0 +1,43 @@
+	------
+	Local I/O Adapters
+	------
+	
+Local I/O Adapters
+
+	Local I/O adapters allow different Solution Sets deployed inside EPS to exchange events by naming channel to be used for sending/receiving events.
+	All communication is in-memory (no remoting, no proxies). It is possible to have multiple Solution Sets sending and multiple Solution Sets receiving events
+	in this way.
+	
+	Performance impact of using local IO adapter is very low because everything is performed in-memory, without locking or intermediate threading. And it
+	is very easy to switch to remote event-bus in case when particular flow needs to scale horizontally or requires event distribution for any other reason.
+
+	Local IO adapters can be used for easy splitting of events into multiple paths.
+
+	URI protocol <<local:/>>
+	
+	Configuration properties:
+	
+*-------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+|| Configuration parameter name                               || Description                                       || Default value (acceptable range) |
+*-------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| channelId                                                   | The name of local channel used for communication   | None                              |
+*-------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+
+	It is very important to match <<channelId>> so that input and output adapters can be connected properly. Within the same EPS instance all IO
+	adapters using same <<channelId>> will be connected. 
+	
+	Example: declaring local I/O adapters in flow descriptor
+	
++-------------------------------+
+<!-- Local input adapter -->
+<input name="localInput">
+	<attribute name="uri" value="local:/" />
+	<attribute name="channelId" value="testChannel" />
+</input>
+
+<!-- Local output adapter -->
+<output name="localOutput">
+	<attribute name="uri" value="local:/" />
+	<attribute name="channelId" value="testChannel" />
+</output>
++-------------------------------+

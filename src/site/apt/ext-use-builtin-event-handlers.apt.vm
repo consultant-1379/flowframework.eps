@@ -1,0 +1,73 @@
+	------
+	Use Built-in Event Handlers
+	------
+	
+Use Built-in Event Handlers
+
+	Built-in handlers are already packaged with EPS distribution, so if you are using EPS you will get all built-in extensions with it.
+
+	For adding Event Handlers definitions in a flow descriptor see {{{${documentation_FlowFramework}/eventflow-api/flow-descriptor-handler-definition.html}here}}.
+
+	Only if you want to use built-in handlers in some other flow engine then follow steps described below.
+
+	<<Step 1>> Add package dependency. All available built-in Event Handlers are available as Maven dependency
+
++-------------------------------+
+<dependency>
+	<groupId>com.ericsson.oss.services</groupId>
+	<artifactId>eps-builtin-components</artifactId>
+	<version>${project.version}</version>
+	<type>jar</type>
+</dependency>
++-------------------------------+
+
+	<<Step 2>> Declare a handler by providing a handler name and the fully qualified handler class name under the step node inside {{{./flow-descriptor.html}flow descriptor}}. 
+	The handler attributes can also be defined along with their values if necessary.
+	
+	<<NOTE:>> The handler name could be any string, but shall be matched with URI value in step 3. For handler class name, check the available built-in Event Handlers as below.
+	
++-------------------------------+
+<step name="[HANDLER_NAME]">
+	<handler>
+		<className>[FULLY_QUALIFIED_HANDLER_CLASS_NAME]</className>
+	</handler>
+	<attribute name="[ATTRIBUTE_NAME]" value="[ATTRIBUTE_VALUE]" />
+	...
+</step>
++-------------------------------+
+	
+	<<Step 3>> Use it inside path. The URI value shall be the same as the handler name defined in step 2.
+	
++-------------------------------+	
+<path>
+	...
+	<to uri="[HANDLER_NAME]" />
+	...
+</path>
++-------------------------------+	
+	
+	<<Example>> Using {{{./builtin-collection-splitter.html} Collection splitter Event Handler}}
+	
++-------------------------------+
+<step name="splitter">
+	<handler>
+		<className>
+			com.ericsson.oss.services.eps.builtin.components.CollectionSplitterComponent
+		</className>
+	</handler>
+</step>
+
+<path>
+	<from uri="local:/channelId=flow2flow" />
+	<to uri="splitter" />
+	<!-- any collection or Object[] will be split from input before being sent to duplicator Event Handler -->
+	<to uri="duplicator" />
+	<to uri="flowOutput" />
+</path>
++-------------------------------+
+
+	
+	
+
+	
+

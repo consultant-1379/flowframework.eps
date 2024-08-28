@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+	xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	oc:ns="com.test1" oc:name="sameNameFlow1" oc:version="1.1.0">
+
+	<oc:modelCreationInfo author="author"
+		creationDate="today">
+		<oc:designedModel componentId="compatibilityApiIoAdapters" />
+	</oc:modelCreationInfo>
+
+	<oc:desc>example flows</oc:desc>
+
+	<input name="compatibilityInput">
+		<attribute name="uri" value="epsApiInput:/" />
+	</input>
+
+	<output name="compatibilityOutput">
+		<attribute name="uri" value="zookeeper-test-output" />
+	</output>
+
+	<step name="eventDuplicator">
+		<handler>
+			<className>com.ericsson.component.aia.services.eps.core.integration.jse.TestEventDuplicatorComponent</className>
+		</handler>
+		<attribute name="duplicationCount" value="3" />
+	</step>
+
+	<path>
+		<from uri="compatibilityInput" />
+		<to uri="eventDuplicator" />
+		<to uri="compatibilityOutput" />
+	</path>
+
+</FlowDefinition>

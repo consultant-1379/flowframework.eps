@@ -1,0 +1,20 @@
+	------
+	Null Output Adapters
+	------
+	
+Null Output Adapters
+	
+	Null output adapter does not send events anywhere. Can be used for testing. Behaves like </dev/null>.
+
+	URI protocol <<null:/>>
+	
+	This Input Adapter can not be configured.
+
+	Example: declaring a null output adapter in flow descriptor
+	
++-------------------------------+
+<!-- Null output adapter -->
+<output name="nullOutput">
+	<attribute name="uri" value="null:/" />
+</output>
++-------------------------------+

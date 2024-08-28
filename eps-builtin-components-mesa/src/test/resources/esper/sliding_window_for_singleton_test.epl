@@ -1,0 +1,10 @@
+MODULE sliding_window_singleton;
+
+CREATE VARIABLE INTEGER var_win_length_singleton = 4;
+
+@Name('sliding_window_singleton')
+SELECT
+	* 
+FROM
+	INTERNAL_SYSTEM_UTILIZATION_60MIN.std:groupwin(resourceId).ext:sort(var_win_length_singleton, ropId desc)
+OUTPUT SNAPSHOT EVERY 1 EVENTS;

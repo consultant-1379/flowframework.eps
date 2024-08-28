@@ -1,0 +1,68 @@
+	------
+	HornetQ I/O Adapters
+	------
+	
+HornetQ I/O Adapters
+
+	HornetQ I/O adapters allow EPS to use the {{{http://hornetq.jboss.org/} HornetQ}}
+	messaging system for event sending and receiving.
+	It is the user's responsibility to configure and start the physical HornetQ
+	server.
+
+	URI protocol <<hornetq:/>>
+	
+	HornetQ input adapter configuration properties:
+	
+*-------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+|| Configuration parameter name                               || Description                                       || Default value (acceptable range) |
+*-------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| hornetqServerIPAddress                                      | The IP address of the HornetQ Server               | None                              |
+*-------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| hornetqServerPort                                           | The port number of the HornetQ Server              | None                              |
+*-------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| channelName                                                 | The channel name to consume messages from          | None                              |
+*-------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| windowSizeMB                                                | The size of the consumer window                    | 50 (any valid positive integer value)|
+*-------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| consumerMaxRateMsgPerSec                                    | The max limit of message receiving rate (num/sec)  | -1 (any valid positive integer value or -1 if no max limit)|
+*-------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| consumerSessionsNumber                                      | The number of consumer sessions                    | 1 (any valid positive integer value)|
+*-------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+
+	HornetQ output adapter configuration properties:
+	
+*-------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+|| Configuration parameter name                               || Description                                       || Default value (acceptable range) |
+*-------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| hornetqServerIPAddress                                      | The IP address of the HornetQ Server               | None                              |
+*-------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| hornetqServerPort                                           | The port number of the HornetQ Server              | None                              |
+*-------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| channelName                                                 | The channel name to consume messages from          | None                              |
+*-------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| windowSizeMB                                                | The size of the consumer window                    | 50 (any valid positive integer value)|
+*-------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+	
+	Example: declaring HornetQ I/O adapters in flow descriptor
+	
++-------------------------------+
+<!-- HornetQ input adapter -->
+<input name="hornetqInput">
+	<attribute name="uri" value="hornetq:/" />
+	<attribute name="hornetqServerIPAddress" value="221.158.1.12" />
+	<attribute name="hornetqServerPort" value="5225" />
+	<attribute name="channelName" value="InTestQueue" />
+	<attribute name="windowSizeMB" value="80" />
+	<attribute name="consumerMaxRateMsgPerSec" value="20" />
+	<attribute name="consumerSessionsNumber" value="2" />
+</input>
+
+<!-- HornetQ output adapter -->
+<output name="hornetqOutput">
+	<attribute name="uri" value="hornetq:/" />
+	<attribute name="hornetqServerIPAddress" value="221.158.1.12" />
+	<attribute name="hornetqServerPort" value="5225" />
+	<attribute name="channelName" value="InTestQueue" />
+	<attribute name="windowSizeMB" value="80" />
+</output>
++-------------------------------+

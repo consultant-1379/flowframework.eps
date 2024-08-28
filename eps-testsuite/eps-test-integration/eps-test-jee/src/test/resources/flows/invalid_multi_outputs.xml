@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+	xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	oc:ns="com.test" oc:name="oneInputMultiOutputs" oc:version="1.0.0">
+
+	<oc:modelCreationInfo author="author"
+		creationDate="today">
+		<oc:designedModel componentId="oneInputMultiOutputs" />
+	</oc:modelCreationInfo>
+
+	<oc:desc>Eps Test - One Input Adapter which feeds multiple Paths</oc:desc>
+
+	<attributeGroup name="duplicationCountConfig">
+		<attribute name="duplicationCount" value="5" />
+	</attributeGroup>
+	
+	<input name="hcInputOneInMultiOut">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-topic-in" />
+	</input>
+	
+	<output name="hcOutputOneInMultiOut1">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-topic1-out" />
+	</output>
+	
+	<output name="hcOutputOneInMultiOut2">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-topic2-out" />
+	</output>
+	
+	<step name="threading1">
+		<handler>
+			<className>com.ericsson.component.aia.services.eps.builtin.components.ThreadManagementComponent</className>
+		</handler>
+		<attribute name="threadPoolSize" value="10" />
+		<attribute name="threadPriority" value="9" />
+	</step>
+
+	<step name="duplicator1">
+		<handler>
+			<className>com.ericsson.component.aia.services.eps.core.integration.jee.flow.components.CippaDuplicatorComponent</className>
+		</handler>
+		<attributeGroupRef groupName="duplicationCountConfig" />
+	</step>
+
+	<step name="duplicator2">
+		<handler>
+			<className>com.ericsson.component.aia.services.eps.core.integration.jee.flow.components.JeeTestEventDuplicatorComponent</className>
+		</handler>
+		<attributeGroupRef groupName="duplicationCountConfig" />
+	</step>
+	
+	<clonedStep name="threading2" clonedStepRef="threading1" />
+
+	<path>
+		<from uri="hcInputOneInMultiOut" />
+		<to uri="threading1" />
+		<to uri="duplicator1" />
+		<to uri="hcOutputOneInMultiOut1" />
+	</path>
+	
+	<path>
+		<from uri="hcInputOneInMultiOut" />
+		<to uri="threading2" />
+		<to uri="duplicator2" />
+		<to uri="hcOutputOneInMultiOut2" />
+	</path>
+
+</FlowDefinition>

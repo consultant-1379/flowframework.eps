@@ -1,0 +1,12 @@
+MODULE $name;
+
+CREATE VARIABLE INTEGER var_window_length = ${varWindowLength};
+
+@Name('$name')
+SELECT
+	* 
+FROM
+	${eventName}(eventTypeId in (${eventTypeIds})).std:groupwin(resourceId).ext:sort(var_window_length, ropId desc)
+OUTPUT SNAPSHOT EVERY 1 EVENTS;
+
+

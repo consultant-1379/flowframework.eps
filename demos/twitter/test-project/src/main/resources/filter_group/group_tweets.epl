@@ -1,0 +1,13 @@
+module calculateTweetStats;
+
+insert into tweetStats select 
+		"TweetStats" as event, 
+		username, 
+		avg(retweetCount) as averageRetweets, 
+		count(*) as numberOfTweets 
+	from com.ericsson.eps.demo.tweeter.Tweet.win:time(5 sec) group by username 
+	having count(*) > 0
+	order by averageRetweets desc, username asc;                        
+                                
+@Name("tweetStatsEsperOut")	
+select * from tweetStats;

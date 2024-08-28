@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+	xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	oc:ns="com.ericsson.test" oc:name="EsperTestWithConfiguration"
+	oc:version="1.0.0">
+
+	<oc:modelCreationInfo author="author"
+		creationDate="today">
+		<oc:designedModel componentId="someComponentId" />
+	</oc:modelCreationInfo>
+
+	<oc:desc>Esper Test With Configuration</oc:desc>
+
+	<input name="hcInput">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-input-flow" />
+	</input>
+
+	<output name="localOutput">
+		<attribute name="uri" value="local:/" />
+		<attribute name="channelId" value="flow2flow" />
+	</output>
+
+	<path>
+		<from uri="hcInput" />
+		<to uri="localOutput" />
+	</path>
+
+</FlowDefinition>

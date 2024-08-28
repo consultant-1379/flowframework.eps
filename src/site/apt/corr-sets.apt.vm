@@ -1,0 +1,23 @@
+	------
+	Event Processing Service - Solution Sets
+	------
+	
+What are Solution Sets
+
+	Solution sets are artifacts understood by EPS and used by EPS users to extend core EPS functionality. 
+	This is the main way of extending EPS and providing feature specific event processing solutions.
+	
+	A big part of EPS solution sets is built using {{{${documentation_FlowFramework}}Flow Framework}}.
+	
+	Solution sets consist of:
+
+	[[1]] {{{./flow-descriptor.html} Flow descriptor}}
+	
+	[[2]] {{{./eps-extensions.html} EPS extensions}}
+
+	[[3]] {{{./referencing-resources.html} Referenced Resouces}}
+
+	[]
+	
+	All solution sets must be deployed appropriately, as described in {{{./eps-standalone-install.html}Standalone Install}} and {{{./eps-jboss-deploy.html}Packaging and deploying EPS in JBoss}}. 
+

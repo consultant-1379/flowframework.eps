@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+	xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	oc:ns="com.ericsson.eps.services" oc:name="LoadBalancingFlow" oc:version="1.1.0">
+
+	<oc:modelCreationInfo author="author"
+		creationDate="today">
+		<oc:designedModel componentId="someComponentId" />
+	</oc:modelCreationInfo>
+
+	<oc:desc>Example LB flow</oc:desc>
+
+	<input name="hcInputLBRound1">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-topicLBRound1" />
+	</input>
+
+	<output name="hcOutputLBRound1">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-topicOutLBRound1" />
+	</output>
+	
+	<output name="hcOutputLBRound2">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-topicOutLBRound2" />
+	</output>
+	
+	<step name="loadBalancer">
+		<handler>
+			<className>com.ericsson.component.aia.services.eps.builtin.components.LoadBalancer</className>
+			<attribute name="strategy" value="roundRobin" />
+		</handler>
+	</step>
+
+	<path>
+		<from uri="hcInputLBRound1" />
+		<to uri="loadBalancer" />
+	</path>
+	
+	<path>
+		<from uri="loadBalancer" />
+		<to uri="hcOutputLBRound1" />
+	</path>
+	
+	<path>
+		<from uri="loadBalancer" />
+		<to uri="hcOutputLBRound2" />
+	</path>
+
+</FlowDefinition>

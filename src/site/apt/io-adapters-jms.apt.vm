@@ -1,0 +1,56 @@
+	------
+	JMS I/O Adapters
+	------
+	
+JMS I/O Adapters
+
+	JMS I/O adapter allows EPS to use Java Message Service (JMS) for event sending and receiving.
+	
+	JMS connection factory name, destination name and destination type should be configured. 
+	But it is the user's responsibility to create the corresponding physical connection factory and destination. 
+	By default, a local JNDI lookup is performed. But if you want do a remote lookup (in a different JVM) of JMS broker, JNDI properties must be defined.
+	
+	JNDI relevant properties can be configured depending on the specific JNDI provider. In general, those property name should start with the
+	standard prefix which is "<<java.naming>>". For example, the codes below shows an example of the HornetQ JNDI configuration.
+	
+	URI protocol <<jms:/>>
+	
+	Configuration properties:
+	
+*--------------------------------------+----------------------------------------------------+-----------------------------------+
+|| Configuration parameter name        || Description                                       || Default value (acceptable range) |
+*--------------------------------------+----------------------------------------------------+-----------------------------------+
+| jndiJmsConnectionFactory             | The name of the JMS connection factory             | None                              |
+*--------------------------------------+----------------------------------------------------+-----------------------------------+
+| jmsDestinationType                   | The type of JMS destination used for communication | None (Queue/Topic)                |
+*--------------------------------------+----------------------------------------------------+-----------------------------------+
+| jmsDestinationName                   | The name of JMS destination used for communication | None                              |
+*--------------------------------------+----------------------------------------------------+-----------------------------------+
+| threadPoolSize                   	   | The size of thread pool for output adapter         | 5 (any valid non-negative integer value) |
+*--------------------------------------+----------------------------------------------------+-----------------------------------+
+
+	Example: declaring JMS I/O adapters in flow descriptor
+	
++-------------------------------+
+<!-- JMS input adapter -->
+<input name="jmsInput">
+ <attribute name="uri" value="jms:/" />
+ <attribute name="jndiJmsConnectionFactory" value="/EpsTestConnectionFactory" />
+ <attribute name="jmsDestinationType" value="Queue" />
+ <attribute name="jmsDestinationName" value="InTestQueue" />
+
+ <!-- Remote JMS Broker JNDI properties (not needed if doing a local lookup in the same JVM) -->
+ <attribute name="java.naming.factory.initial" value="org.jnp.interfaces.NamingContextFactory" />
+ <attribute name="java.naming.provider.url" value="jnp://localhost:1099" />
+ <attribute name="java.naming.factory.url.pkgs" value="org.jboss.naming:org.jnp.interfaces" />
+ <!-- any other JNDI attributes needed to access remote broker (e.g. username, password) -->
+</input>
+
+<!-- JMS output adapter -->
+<output name="jmsOutput">
+ <attribute name="uri" value="jms:/" />
+ <attribute name="jndiJmsConnectionFactory" value="/EpsTestConnectionFactory" />
+ <attribute name="jmsDestinationType" value="Queue" />
+ <attribute name="jmsDestinationName" value="OutTestQueue" />
+</output>
++-------------------------------+

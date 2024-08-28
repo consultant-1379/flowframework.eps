@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<policy-specification>
+	<general>
+		<name>policy-1</name>
+		<namespace>com.ericsson.component.aia.wcdma</namespace>
+		<version>1.0</version>
+	</general>
+	<rules>
+		<rule-group match-mode="ALL" id="1">
+			<rule id="1">
+				<name>isu60_consumed_credits_threshold_matrix</name>
+				<type>STATELESS</type>
+				<output>alert</output>
+				<flexiable-jython-name-binding>false</flexiable-jython-name-binding>
+				<params>
+					<param>
+						<name>var_cc_ul</name>
+						<type>INT</type>
+						<default>300</default>
+					</param>
+					<param>
+						<name>var_cc_dl</name>
+						<type>INT</type>
+						<default>40</default>
+					</param>
+				</params>
+				<reference>src/test/resources/rules/stateless_matrix.py</reference>
+			</rule>
+			<input>
+				<events view="matrix">
+					<event>
+						<name>INTERNAL_SYSTEM_UTILIZATION_60MIN</name>
+						<namespace>com.ericsson.component.aia.services.eps.builtin.components.mesa.event.sample</namespace>
+						<version>ANY</version>
+					</event>
+					<event>
+						<name>INTERNAL_SYSTEM_UTILIZATION</name>
+						<namespace>com.ericsson.component.aia.services.eps.builtin.components.mesa.event.sample</namespace>
+						<version>ANY</version>
+					</event>
+				</events>
+			</input>
+		</rule-group>
+		<rule-group match-mode="ALL" id="2">
+			<rule id="2">
+				<name>isu60_consumed_credits_threshold_sequence</name>
+				<type>STATELESS</type>
+				<output>alert</output>
+				<flexiable-jython-name-binding>true</flexiable-jython-name-binding>
+				<params>
+					<param>
+						<name>var_cc_ul</name>
+						<type>INT</type>
+						<default>300</default>
+					</param>
+					<param>
+						<name>var_cc_dl</name>
+						<type>INT</type>
+						<default>40</default>
+					</param>
+				</params>
+				<reference>src/test/resources/rules/stateless_sequence.py</reference>
+			</rule>
+			<input>
+				<events view="sequence">
+					<event>
+						<name>INTERNAL_SYSTEM_UTILIZATION_60MIN</name>
+						<namespace>com.ericsson.component.aia.services.eps.builtin.components.mesa.event.sample</namespace>
+						<version>ANY</version>
+					</event>
+				</events>
+			</input>
+		</rule-group>
+		<rule-group match-mode="ALL" id="3">
+			<rule id="3">
+				<name>isu60_consumed_credits_threshold_singleton</name>
+				<type>STATEFUL</type>
+				<output>alarm</output>
+				<flexiable-jython-name-binding>true</flexiable-jython-name-binding>
+				<params>
+					<param>
+						<name>var_cc_ul</name>
+						<type>INT</type>
+						<default>300</default>
+					</param>
+					<param>
+						<name>var_cc_dl</name>
+						<type>INT</type>
+						<default>40</default>
+					</param>
+				</params>
+				<reference>src/test/resources/rules/stateful_singleton.py</reference>
+			</rule>
+			<input>
+				<events view="singleton">
+					<event>
+						<name>INTERNAL_SYSTEM_UTILIZATION_60MIN</name>
+						<namespace>com.ericsson.component.aia.services.eps.builtin.components.mesa.event.sample</namespace>
+						<version>ANY</version>
+					</event>
+				</events>
+			</input>
+		</rule-group>
+	</rules>
+</policy-specification>

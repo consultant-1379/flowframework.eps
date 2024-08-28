@@ -1,0 +1,9 @@
+/fbp_flow/com.standalone.deployment/flow_with_single_destroyable_component/1.1.0
+/fbp_flow/com.standalone.simpleio/simple_input_output_flow/1.1.0
+/fbp_flow/com.standalone.simpleio/simple_input_output_flow_2/1.1.0
+/fbp_flow/com.test.cdi/dummy_module_zero/1.1.0
+/oss_channel/global/epsModEvAdapterDataInputChannel
+/oss_channel/global/epsModEvAdapterDataOutputChannel
+/oss_eventtype/MyTestNameSpace/MyTestInputEvent/1.0.0
+/oss_eventtype/MyTestNameSpace/MyTestInputEventSubclass/1.0.0
+/oss_eventtype/MyTestNameSpace/MyTestOutputEvent/1.0.0

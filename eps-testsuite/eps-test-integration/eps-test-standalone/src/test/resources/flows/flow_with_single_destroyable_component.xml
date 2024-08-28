@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+	xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	oc:ns="com.test1" oc:name="testFlow1" oc:version="1.1.0">
+
+	<oc:modelCreationInfo author="author"
+		creationDate="today">
+		<oc:designedModel componentId="someComponentId" />
+	</oc:modelCreationInfo>
+
+	<oc:desc>example flows</oc:desc>
+
+	<input name="hcInput1">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-topic-destroyable1" />
+	</input>
+
+	<output name="hcOutput1">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-topic-destroyable2" />
+	</output>
+
+	<step name="testComponent">
+		<handler>
+			<className>com.ericsson.component.aia.services.eps.core.integration.jse.TestUndeploymentComponent</className>
+		</handler>
+	</step>
+
+	<path>
+		<from uri="hcInput1" />
+		<to uri="testComponent" />
+		<to uri="hcOutput1" />
+	</path>
+
+</FlowDefinition>

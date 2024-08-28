@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module xmlns="urn:jboss:module:1.1" name="com.ericsson.oss.services.eps" slot="3.x">
+	<!-- WARN: do not change this module -->
+	<!-- use eps/extensions/ module for listing your own dependencies -->
+	<!--
+	All artifacts required in EPS classpath must be referenced in here.
+	EPS runtime will extend its classpath with everything referenced
+	in this module and use that when processing events
+	-->
+    <resources>
+    	<!-- LIBRARIES REQUIRED FOR EPS TO FUNCTION PROPERLY -->
+    	<!-- SOLUTION SETS SHOULD NOT HAVE COMPILE-TIME DEPENDENCY ON ANY OTHER LIBRARIES FROM EPS -->
+		<!-- 
+			replace with appropriate version of eventflow-api jar (if using different one than provided here), 
+			put it inside module and reference it 
+		-->
+		<resource-root path="eventflow-api-${version_flow_framework}.jar"/>
+		<resource-root path="eps-api-${project.version}.jar"/>
+		<resource-root path="eps-internal-model-${project.version}.jar"/>
+    </resources>
+    
+    <dependencies>
+    	<!-- MANDATORY DEPENDENCIES TO OTHER JBOSS MODULES -->
+		<module name="org.slf4j" />
+		<module name="javax.api" />
+		<module name="javax.xml.bind.api" />
+    </dependencies>
+</module>

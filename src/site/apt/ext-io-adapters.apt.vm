@@ -1,0 +1,43 @@
+	------
+	IO Adapters
+	------
+	
+Purpose of IO Adapters
+
+	Input Output Adapters are described {{{${documentation_FlowFramework}/eventflow-api/flow-io-adapters.html}here}}.
+
+	Providing IO adapters is not core business of EPS, but some basic IO adapters are needed so that EPS can be used in a convenient way.
+	It is possible for end users of EPS to provide their own IO adapters (or replace existing ones with improved versions) as described {{{./ext-io-adapters-creating.html}here}}.
+	
+	<<NOTE:>> In case when multi-threading needs to be used by IO adapters it is recommended to add {{{./builtin-thread-mgmt.html}reusable threading event handler}}
+	to the flow. For example, when input adapter needs to receive messages using multiple threads, for performance reasons, it is enough to add <<threading>>
+	component to the flow, immediately after input component. 
+
+Built-in IO Adapters
+
+	EPS provides few IO adapters packaged with core EPS which can be reused.
+	
+	* {{{./io-adapters-hazelcast.html} Hazelcast I/O adapters}}	
+	
+	* {{{./io-adapters-hornetq.html} HornetQ I/O adapters}}
+
+	* {{{./io-adapters-jms.html} JMS I/O adapters}}
+	
+	* {{{./io-adapters-local.html} Local I/O adapters}}
+	
+	* {{{./io-adapters-modeled-event-bus.html} Modeled event bus I/O adapters}}
+	
+	* {{{./io-adapters-null.html} Null output adapters}}
+
+How to use IO Adapters
+
+	For IO Adapter definitions in a flow descriptor see {{{${documentation_FlowFramework}/eventflow-api/io-adapter-definition.html}here}}.
+
+Alternative way of using IO Adapters
+
+	Another way to declare and use IO adapters is described {{{${documentation_FlowFramework}/eventflow-api/io-adapter-definition.html#Alternative way of using IO Adapters}here}}.
+	
+Deploying IO Adapters
+
+	IO adapters are deployed as extensions of EPS. Details of EPS extensions deployment are described {{{./flow-descriptor.html}here}}.
+

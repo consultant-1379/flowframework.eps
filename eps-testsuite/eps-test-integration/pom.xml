@@ -1,0 +1,169 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.ericsson.component.aia.services.eps</groupId>
+    <artifactId>eps-testsuite</artifactId>
+    <version>3.0.30-SNAPSHOT</version>
+  </parent>
+  <artifactId>eps-test-integration</artifactId>
+  <packaging>pom</packaging>
+  <name>EPS TestSuite Integration</name>
+
+  <properties>
+        <managed.jboss.home.folder>target/jboss-eap-${version_jboss_as}</managed.jboss.home.folder>
+        <managed.jboss.modules.folder>${managed.jboss.home.folder}/modules/system/layers/base/</managed.jboss.modules.folder>
+        <db.username>postgres</db.username>
+        <db.password>postgres</db.password>
+  </properties>
+
+  <modules>
+        <module>eps-test-model-jar</module>
+        <module>eps-test-model-xml</module>
+        <!-- !ts.skip.integration.standalone</name-->
+        <module>eps-test-standalone</module>
+        <module>eps-test-jee</module>
+        <module>eps-test-jee-ear</module>
+        <!--
+        !ts.skip.integration.jee
+
+         -->
+  </modules>
+
+
+  <dependencyManagement>
+        <dependencies>
+            <!-- Import Model-Service BOM -->
+            <dependency>
+                <groupId>com.ericsson.oss.itpf.modeling</groupId>
+                <artifactId>Modeling-BOM</artifactId>
+                <version>${version_modeling_bom}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+
+        <dependency>
+            <groupId>org.jboss.arquillian.junit</groupId>
+            <artifactId>arquillian-junit-container</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>eps-core-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>eps-core-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>eps-io-adapter-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>eps-io-adapter-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>eps-builtin-components</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>eps-processing-engine-esper</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>eps-processing-engine-java</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>eps-processing-engine-jvm-scripting</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>eps-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hornetq</groupId>
+            <artifactId>hornetq-core-client</artifactId>
+            <version>${version.hornetq}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hornetq</groupId>
+            <artifactId>hornetq-server</artifactId>
+            <version>${version.hornetq}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hornetq</groupId>
+            <artifactId>hornetq-jms-server</artifactId>
+            <version>${version.hornetq}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hornetq</groupId>
+            <artifactId>hornetq-journal</artifactId>
+            <version>${version.hornetq}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hornetq</groupId>
+            <artifactId>hornetq-jms-client</artifactId>
+            <version>${version.hornetq}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.ericsson.oss.itpf.modeling</groupId>
+            <artifactId>model-service-api-jar</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.ericsson.oss.itpf.modeling</groupId>
+            <artifactId>model-service-jar</artifactId>
+        </dependency>
+
+   </dependencies>
+
+    <profiles>
+        <!--
+            skip tests
+         -->
+        <profile>
+            <id>skip_integration</id>
+            <activation>
+                <property><name>ts.skip.integration</name></property>
+            </activation>
+            <properties>
+                <maven.test.skip>true</maven.test.skip>
+            </properties>
+        </profile>
+    </profiles>
+
+</project>

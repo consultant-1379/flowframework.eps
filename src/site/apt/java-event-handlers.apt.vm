@@ -1,0 +1,33 @@
+	------
+	Java Event Handlers
+	------
+	
+Native Java Event Handlers
+
+	Java processing language enables users of EPS to use full power of Java language when writing event handlers (you could call them event processing rules). In order to use Java handler,
+	you should write your own event handler using {{{${documentation_eventFlowApi}}event-flow API}},
+	or use the {{{./ext-event-handlers.html}built-in Event Handlers}} wherever possible. 
+	
+	This version of EPS supports ${version_flow_framework} version of Flow Framework.
+	
+	Writing Java event handlers is as simple as implementing Java interface.
+	
+	Event handlers written in Java are especially interesting because they provide EPS users a way to use full power of Java language when processing events. This is useful in cases
+	when Esper rules are not the best choice (in some cases Java is faster, or maybe you need to use Java libraries directly in order to process events).
+	
+	Java {{{./cdi-event-handlers.html}CDI Event Handlers}} are also supported. 	
+	
+	Example of using Java event handlers:
+	
++-------------------------------+	
+<step name="duplicator">
+	<!-- FQN of Java class implementing event handler. Class must be present in the classpath of EPS -->
+	<handler>
+		<className>com.ericsson.oss.services.eps.core.integration.jse.TestEventDuplicatorComponent</className>
+	</handler>
+	
+	<!-- any configuration properties that needs to be passed to event handler via context -->
+	<attribute name="duplicationCount" value="5" />
+	<attribute name="someOtherProperty" value="propertyValue" />
+</step>	
++-------------------------------+

@@ -1,0 +1,38 @@
+	------
+	Event Processing Service - EPS Extensions
+	------
+	
+What are EPS extensions?
+
+	EPS is extensible service. Instead of providing functionality for every possible use case it provides set of interfaces
+	that can be implemented by anyone and given to core EPS to be used.
+	
+	{{{${documentation_Extensions}/index.html}EpsExtensions}} external repository contains generic reusable extensions which can be used by different solution sets. 
+	Newly developed extensions, which may be used by more than one solution, can be added to EpsExtensions. 
+	If the extension is generic and widely usable, it can be added to EPS. The EPS architect will decide which extensions will be added to EPS.
+	Extensions which are solution specific will not be added to EPS or EpsExtensions.
+
+	Only the publicly exposed API should be used, other classes may be renamed or removed between EPS releases without any warning.
+	This applies to JEE and JSE environment but in JEE this is strictly enforced.
+		
+	<<NOTE:>> Take a look at {{{./ext-event-handlers.html}reusable built-in event handlers}} 
+	and {{{${documentation_Extensions}/index.html}available  EpsExtension handlers}}.
+	
+What can be provided as EPS extensions?
+
+	[[1]] {{{./ext-io-adapters.html}Input/Output adapters}}
+	
+	[[2]] {{{./ext-event-handlers.html}Event handlers}}
+	
+How can I create new EPS extensions?
+
+	Detailed instruction for creating new custom handlers and adapters are here:
+	
+	[[1]] {{{./ext-io-adapters-creating.html}Create new Input/Output adapters}}
+	
+	[[2]] {{{./ext-event-handlers-creating.html}Create new Event handlers}}
+	
+How are EPS extensions deployed?
+
+	Deployment of EPS extensions is described {{{./eps-jboss-deploy.html}here}} for JBoss environment 
+	and {{{./eps-standalone-install.html}here}} for standalone install.

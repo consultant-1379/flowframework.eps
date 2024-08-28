@@ -1,0 +1,103 @@
+	------
+	CDI Event Handlers
+	------
+
+Java Event Handlers with {{{http://docs.jboss.org/weld/reference/1.0.0/en-US/html/index.html}CDI}} support
+
+	Support for CDI event handlers is always turned on in JEE environment. In JSE environment it has to be {{{./configuration-options.html}turned on explicitly}}.
+ 
+ 	Java Event Handlers supports Context and Dependency Injection that enables EPS users to make use of the powerful CDI features within Event Handlers.
+ 	
+	A CDI enabled Event Handler should be annotated with <<javax.inject.@Named>> annotation. The value provided within the <<@Named>> annotation will be used to perform the Event Handlers 
+	lookup through CDI so the same name should be used while defining <<step>> in flow descriptor.
+	
+	Example of how to write a CDI enabled Java event handler:
+
++-------------------------------+	
+@Named("testEventHandler")
+public class TestEventHandlerComponent extends AbstractEventHandler implements EventInputHandler {
+    
+    @Override
+    public void onEvent(final Object inputEvent) {
+    	// Sending the processed event downstream to its subscribers
+        sendToAllSubscribers(inputEvent);
+    }
+    
+}
++-------------------------------+ 	
+
+
+	Example of how to define step for CDI enabled Java Event Handlers in solution set. 
+	Key things to remember while defining the <step> within solution set are:
+	
+	1. The <<named>> node should be defined inside <<handler>> node.
+	
+	1. The <<name>> attribute of <<step>> node should be used as the <<uri>> value inside <<path>> node.
+	
+	2. The <<named>> node value inside <<handler>> node should be same as defined in <<@Named>> annotation.
+	
+	
+
++-------------------------------+	
+<step name="cdiHandler">
+	<handler>
+		<named>testEventHandler</named>
+	</handler>
+</step>
+
+<path>
+	...
+	<to uri="cdiHandler">
+	...
+</path>
++-------------------------------+
+
+
+	Example of how to use CDI events and observers inside CDI-enabled event handlers. This is to show that event handlers can use full power of CDI environment.
+	
+	<< NOTE: >> In example below <<CdiEvent>> is a Java POJO.
+
++-------------------------------+	
+@Named("testEventHandler")
+public class TestEventHandlerComponent extends AbstractEventHandler implements EventInputHandler {
+
+    @Inject
+    private Event<CdiEvent> cdiEvents;
+    
+    @Override
+    public void onEvent(final Object inputEvent) {
+    	// send CDI events to CDI observers
+    	// in order to do some processing parallel to flow event processing
+    	cdiEvents.fire(new CdiEvent(inputEvent));
+    
+    	// Sending the processed event downstream to its subscribers
+        sendToAllSubscribers(inputEvent);
+    }
+    
+    // somewhere in our solution set someone is listening for CDI events to do something
+    public void listenForCdiEvent(@Observes final CdiEvent cdiEvent) {
+       // process CDI events
+    }    
+}
++-------------------------------+ 
+
+
+	Example of how to inject EJBs into CDI enabled Java Event Handlers
+
++-------------------------------+	
+@Named("testEventHandler")
+public class TestEventHandlerComponent extends AbstractEventHandler implements EventInputHandler {
+
+    @EJB
+	private EventProcessingEJB eventProcessingEJB;
+    
+    @Override
+    public void onEvent(final Object inputEvent) {
+		// send events to EJB
+		eventProcessingEJB.processEvent(inputEvent);
+    
+    	// Sending the processed event downstream to its subscribers
+		sendToAllSubscribers(inputEvent);
+    }
+}
++-------------------------------+

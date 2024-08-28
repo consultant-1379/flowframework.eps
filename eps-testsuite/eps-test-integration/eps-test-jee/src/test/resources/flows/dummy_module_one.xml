@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+	xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	oc:ns="com.test.cdi" oc:name="DummyOne" oc:version="1.1.0">
+
+	<oc:modelCreationInfo author="author"
+		creationDate="today">
+		<oc:designedModel componentId="someComponentId" />
+	</oc:modelCreationInfo>
+
+	<oc:desc>example flows</oc:desc>
+
+	<input name="hcInputCdi1Dummy1">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-topic1" />
+	</input>
+
+	<output name="hcOutputCdi1Dummy1">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-topic2" />
+	</output>
+
+	<step name="testPassThroughComponent">
+		<handler>
+			<className>com.ericsson.component.aia.services.eps.core.integration.jee.flow.components.JeeTestPassThroughEventHandler</className>
+		</handler>
+	</step>
+
+	<path>
+		<from uri="hcInputCdi1Dummy1" />
+		<to uri="testPassThroughComponent" />
+		<to uri="hcOutputCdi1Dummy1" />
+	</path>
+
+</FlowDefinition>

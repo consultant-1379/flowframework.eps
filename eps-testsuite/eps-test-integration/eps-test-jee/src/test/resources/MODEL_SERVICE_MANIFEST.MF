@@ -1,0 +1,2 @@
+Dependencies: com.ericsson.component.aia.itpf.modeling.modelservice.api meta-inf, com.ericsson.component.aia.itpf.modeling.modelservice.impl meta-inf
+

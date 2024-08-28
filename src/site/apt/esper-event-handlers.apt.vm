@@ -1,0 +1,343 @@
+	------
+	Esper Event Handlers
+	------
+	
+Esper Event Handlers
+	
+	{{{${url_Esper}}Esper}} handler can use full power of EPL (native language to express rules in Esper). EPS does not impose any restrictions on what EPL constructs can be used.
+	There is no need to write any event handlers when deploying rules for Esper processing handler. Event handlers that are using Esper rules are provided with EPS
+	and should only be referenced from solution set {{{./flow-descriptor.html}flow descriptor}}.
+
+	The rules are added to the handler declaration using the <rule> element which contain reference to EPL file, see below for details.
+	
+	Currently supported version of Esper is ${version_esper}.
+	
+	Event Handler configuration:
+
+*-----------------------------------+----------------------------------------+----------------------------------------------------------------------------------------+
+|| Configuration parameter name     || Description                    		 || Default value (acceptable range)  							   						  |
+*-----------------------------------+----------------------------------------+----------------------------------------------------------------------------------------+
+| configurationFilePath             | Location of Esper configuration file. This must be valid Esper configuration file (Mandatory) | None 		|
+*-----------------------------------+----------------------------------------+----------------------------------------------------------------------------------------+
+| esperInstanceName         		| Esper Instance Name, Esper instances with the same name will be reused across modules inside same JVM	 | Generated Random name  |
+*-----------------------------------+----------------------------------------+----------------------------------------------------------------------------------------+
+
+	Event Handler declaration:
+
+	The <named> element value must be <<EsperHandler>>, as in the examples below.
+
+* Esper rules
+	
+	An example of Esper rule is given below (note that we only reference built-in event handlers, no need to create any new event handlers and no need to create
+	any Esper specific <UpdateListener> implementations).
+
++-------------------------------+	
+<step name="filter">
+	<!-- Marker class informing EPS to use Esper engine for this step -->
+	<handler>
+		<named>EsperHandler</named>
+	</handler>
+	
+	<!-- Location of Esper configuration file. This must be valid Esper configuration file -->
+	<attribute name="configurationFilePath" value="classpath:/config/esper-test-config.xml" />
+	
+	<!-- It is possible to reuse Esper engines inside same EPS instance -->
+	<!-- Esper instances with the same name will be reused across modules inside same JVM -->
+	<attribute name="esperInstanceName" value="esperEngine1" />
+	
+	<rule name="epl02-rule">
+		<!-- only specify if you intend to send Map objects to Esper -->
+		<!-- if you are sending POJOs to Esper no need to specify this attribute -->
+		<inputPort name="inputStream1" />
+		
+		<!-- what Esper statements should be used to receive output events -->
+		<!-- There must exist Esper statement with this name annotated with Esper @Name annotation -->
+		<!-- It is possible to have multiple output ports and use them to branch events from Esper to different event handlers -->
+		<outputPort name="CALL_CLOSURE" />
+		
+		<!-- Where to find epl file with rules. This can be classpath or file system -->
+		<!-- Standard Esper EPL files (without any restrictions) can be used -->
+		<!-- It is possible to have multiple rule resources declared one after another -->
+		<ruleResource uri="file:/epl/rules_02.epl" />
+	</rule>
+</step>
+
+<!-- It is very important to have one handler (or output adapter) immediately after esper handler (downstream) in order to receive and process events created by Esper engine -->
++-------------------------------+
+
+	Only one <<rule>> tag can be specified for each step.
+	
+	<<outputPort>> is the name of EPL statement that is producing results. Under the hood EPS subscribes to the statement with given name using Esper <UpdateListener> and sends all events
+	downstream to the next event handler in the flow. You can have multiple <<outputPort>> tags if you want to receive results from multiple Esper statements. It is important
+	to annotate all Esper statements you want to receive results from with <<@Name>> annotation provided as part of Esper API.
+	
+	<<inputPort>> should only be used if you are sending events of <<java.util.Map>> type to Esper. If you are sending POJOs there is no need to specify this. <<inputPort>> should be a valid 
+	event name, which is configured properly in Esper configuration file. See {{{ ${doc_Esper_docs}event_representation.html} Esper event representations}} in detail.
+	Only one <<inputPort>> tag can be specified for each step.
+	
+* Example: how to use Esper multiple EPL files in the same rule.
+
+	It is possible to specify more than one EPL file in the same rule, by using several \<<ruleResource>\> sections.
+	The following flow descriptor snippet illustrates an event flow which receives events representing strings from one source, the first EPL file uses an intermediary structure 
+	to calculate the string length to the stream, while the second EPL filters on the strings by keeping just the ones with even length:
+	
++-------------------------------+
+
+<input name="hcInput9">
+	<attribute name="uri" value="hazelcast:/" />
+	<attribute name="channelName" value="eps-input-topic-mixed" />
+</input>
+
+<output name="hcOutput9">
+	<attribute name="uri" value="hazelcast:/" />
+	<attribute name="channelName" value="eps-output-topic-mixed" />
+</output>
+
+<step name="filter9">
+	<handler>
+		<named>EsperHandler</named>
+	</handler>
+	<attribute name="esperInstanceName" value="esperEngine9" />
+
+	<rule name="rules_esper">
+		<inputPort name="inputStream1" />
+		<outputPort name="outputStream1" />
+			
+		<!-- Multiple rule resources declared one after another -->
+		<ruleResource uri="classpath:/epl/rules_esper.epl" />
+		<ruleResource uri="file:src/test/resources/epl/rules_esper2.epl" />
+	</rule>
+
+</step>
+
+<path>
+	<from uri="hcInput9" />
+	<to uri="filter9" />
+	<to uri="hcOutput9" />
+</path>
++-------------------------------+
+
+ being <rules_esper.epl>:
+  
++-------------------------------+
+ module defineEsperStreams;
+
+ create schema inputStream1 as (str string);
+ create schema intermediaryStream as (str string, charNum int);
++-------------------------------+   
+ 
+ and <rules_esper2.epl>:
+ 
++-------------------------------+
+ module filterOddNumbers;
+
+ uses defineEsperStreams;
+
+ insert into intermediaryStream select is1.str as str, 
+	com.ericsson.oss.services.eps.core.integration.jse.esperutil.EsperFunctions.getNumberOfCharacters(is1.str) as charNum 
+	from inputStream1 is1;
+	
+
+ @Name("outputStream1")	
+ select str from intermediaryStream where (charNum % 2 = 0);
++-------------------------------+
+
+* Example: how to use Esper multiple inline EPL statements in the same rule.
+
+	One or more Esper statements can be written directly in the flow by using the \<<ruleInline>\> element in place of \<<ruleResource>\>, which is related to EPL file.
+	The following flow snippet illustrates this:
+  
++-------------------------------+ 
+ <step name="doRule1">
+	<handler>
+		<named>EsperHandler</named>
+	</handler>
+	<rule name="rule1">
+		<inputPort name="inputStream1" />
+		<outputPort name="outputStream1" />
+		
+		<!-- Multiple EPL statements declared one after another -->			
+		<ruleInline>create schema inputStream1 as (str string)</ruleInline>
+		<ruleInline>create schema intermediaryStream as (str string, charNum int)</ruleInline>
+		<ruleInline>insert into intermediaryStream select is1.str as str, 
+			com.ericsson.oss.services.eps.core.integration.jse.esperutil.EsperFunctions.getNumberOfCharacters(is1.str) as charNum 
+			from inputStream1 is1</ruleInline>
+		<ruleInline>@Name("outputStream1") select str from intermediaryStream where (charNum % 2 = 1)</ruleInline>
+		
+	</rule>
+</step>
++-------------------------------+
+ 
+* Example: how to map different output ports to different steps in the flow.
+
+	The following flow snippet illustrates the case of an event flow which receives events from one source and sends them to Esper 
+	rule handler, which internally branches different results to different output ports. A different event handler is attached (subscribed)
+	to each of the output ports.
+ 
++-------------------------------+
+<input name="numbersIn">
+	<attribute name="uri" value="hazelcast:/" />
+	<attribute name="channelName" value="numbersIn" />
+</input>
+	
+<output name="evenOut">
+	<attribute name="uri" value="hazelcast:/" />
+	<attribute name="channelName" value="evenOut" />
+</output>
+
+<output name="oddOut">
+	<attribute name="uri" value="hazelcast:/" />
+	<attribute name="channelName" value="oddOut" />
+</output>
+
+<step name="someHandler">
+	<handler>
+		<className>com.ericsson.oss.services.SomeHandler</className>
+	</handler>
+</step>
+
+<step name="someOtherHandler">
+	<handler>
+		<className>com.ericsson.oss.services.SomeOtherHandler</className>
+	</handler>
+</step>
+        
+<step name="filterNumbers">
+	<handler>
+		<named>EsperHandler</named>
+	</handler>
+	<attribute name="esperInstanceName" value="esperEngineFilteringNumbers" />
+
+	<rule name="rule_01">
+		<inputPort name="inputStream1" />
+		<!-- Esper rules inside separateOddEvenNumbers.epl are branching out data to two different output ports -->
+		<outputPort name="outputOdd" />
+		<outputPort name="outputEven" />
+		<ruleResource uri="classpath:/epl/separateOddEvenNumbers.epl" />
+	</rule>
+</step>
+
+<path>
+	<from uri="numbersIn" />
+	<!-- all data is being passed to Esper rules -->
+	<to uri="filterNumbers" />
+</path>
+		
+<path>
+   <!-- One subset of data is sent to another handler and to an output adapter -->
+	<from uri="filterNumbers.outputEven" />
+	<to uri="someHandler" />
+	<to uri="evenOut" />
+</path>
+
+<path>
+   <!-- The other subset of data is sent to another handler and to an output adapter -->
+	<from uri="filterNumbers.outputOdd" />
+	<to uri="someOtherHandler" />
+	<to uri="oddOut" />
+</path>
+
++-------------------------------+
+
+* Example: how to use multiple EPL files in the same rule and map different output ports to different steps in the flow.
+
+	The following flow snippet illustrates the case of an event flow which receives events from one source and sends them to Esper 
+	rule handler, which internally branches different results to different output ports. A different event handler is attached (subscribed)
+	to each of the output ports.
+	
+	The first EPL file uses an intermediary structure to calculate the string length to the stream, while the second EPL rule dispatch the strings by the even/odd length: 
+ 
++-------------------------------+
+<input name="numbersIn">
+	<attribute name="uri" value="hazelcast:/" />
+	<attribute name="channelName" value="numbersIn" />
+</input>
+	
+<output name="evenOut">
+	<attribute name="uri" value="hazelcast:/" />
+	<attribute name="channelName" value="evenOut" />
+</output>
+
+<output name="oddOut">
+	<attribute name="uri" value="hazelcast:/" />
+	<attribute name="channelName" value="oddOut" />
+</output>
+
+<step name="someHandler">
+	<handler>
+		<className>com.ericsson.oss.services.SomeHandler</className>
+	</handler>
+</step>
+
+<step name="someOtherHandler">
+	<handler>
+		<className>com.ericsson.oss.services.SomeOtherHandler</className>
+	</handler>
+</step>
+        
+<step name="filterNumbers">
+	<handler>
+		<named>EsperHandler</named>
+	</handler>
+	<attribute name="esperInstanceName" value="esperEngineFilteringNumbers" />
+
+	<rule name="rule_01">
+		<inputPort name="inputStream1" />
+		<outputPort name="outputOdd" />
+		<outputPort name="outputEven" />
+
+		<!-- Esper rules inside rules_esperB.epl are branching out data to two different output ports -->
+		<ruleResource uri="classpath:/epl/rules_esperA.epl" />
+		<ruleResource uri="file:src/test/resources/epl/rules_esperB.epl" />
+	</rule>
+</step>
+
+<path>
+	<from uri="numbersIn" />
+	<!-- all data is being passed to Esper rules -->
+	<to uri="filterNumbers" />
+</path>
+		
+<path>
+   <!-- One subset of data is sent to another handler and to an output adapter -->
+	<from uri="filterNumbers.outputEven" />
+	<to uri="someHandler" />
+	<to uri="evenOut" />
+</path>
+
+<path>
+   <!-- The other subset of data is sent to another handler and to an output adapter -->
+	<from uri="filterNumbers.outputOdd" />
+	<to uri="someOtherHandler" />
+	<to uri="oddOut" />
+</path>
+
++-------------------------------+
+
+  being <rules_esperA.epl>:
+  
++-------------------------------+
+ module defineEsperStreams;
+
+ create schema inputStream1 as (str string);
+ create schema intermediaryStream as (str string, charNum int);
++-------------------------------+   
+ 
+ and <rules_esperB.epl>:
+ 
++-------------------------------+
+ module filterOddNumbers;
+
+ uses defineEsperStreams;
+
+ insert into intermediaryStream select is1.str as str, 
+	com.ericsson.oss.services.eps.core.integration.jse.esperutil.EsperFunctions.getNumberOfCharacters(is1.str) as charNum 
+	from inputStream1 is1;
+	
+@Name("outputOdd")
+select str from intermediaryStream where (charNum % 2 = 1);
+
+@Name("outputEven")
+select str from intermediaryStream where (charNum % 2 = 0);
++-------------------------------+
+ 

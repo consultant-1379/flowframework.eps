@@ -1,0 +1,654 @@
+	------
+	Event Processing Service - Solution Set Examples
+	------
+	
+Flow Descriptor Examples
+
+	Basic description and some of examples are available in {{{./flow-descriptor.html}flow descriptor section}}.
+
+	* {{Event flow using combined Java and Esper processing steps}}
+	
+	* {{Event flow using only Java processing steps}}
+	
+	* {{Event flow using cloned steps}}
+
+	* {{Event flow using CDI event handlers}}
+	
+	* {{Event flow with multiple paths in parallel}}
+	
+	* {{Event flow with multiple paths in sequence}}
+	
+	* {{Event flow with one input adapter and multiple output adapters}}
+	
+	* {{Event flow using output ports}}
+	
+	[]
+
+* {Event flow using combined Java and Esper processing steps}
+
+	This example shows an event flow that uses both Java and Esper event handlers.
+	
++-------------------------------+
+<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+	xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	oc:ns="com.ericsson.ecds" oc:name="EUTRAN_MOBILITY_S1" oc:version="1.0.0">
+
+	<oc:modelCreationInfo author="WW" creationDate="2013-06-05">
+		<oc:designedModel componentId="EUTRAN_MOBILITY_S1" />
+	</oc:modelCreationInfo>
+
+	<oc:desc>This is the EPS Module for EUTRAN MOBILITY S1 Correlations</oc:desc>
+
+	<input name="s1HcInput">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="event.topic" />
+		<attribute name="hazelcastConfigFileUrl" value="file:/opt/ericsson/ECDS/hazelcast-config/hazelcast.xml" />
+	</input>
+
+	<output name="s1HcOutput">
+		<attribute name="uri" value="null" />
+	</output>
+	
+	<step name="inputThreading">
+		<handler>
+			<className>com.ericsson.oss.services.eps.builtin.components.ThreadManagementComponent</className>
+		</handler>
+		<attribute name="threadPoolSize" value="10" />
+		<attribute name="threadPriority" value="8" />
+	</step>
+	
+	<!-- splitter is an Java event handler -->
+	<step name="splitter">
+		<handler>
+			<className>com.ericsson.oss.services.eps.builtin.components.CollectionSplitterComponent</className>
+		</handler>
+	</step>
+	
+	<step name="outputThreading">
+		<handler>
+			<className>com.ericsson.oss.services.eps.builtin.components.ThreadManagementComponent</className>
+		</handler>
+		<attribute name="threadPoolSize" value="5" />
+		<attribute name="threadPriority" value="8" />
+	</step>
+	
+	<!-- s1Filter is an Esper event handler -->
+	<step name="s1Filter">
+		<handler>
+			<named>EsperHandler</named>
+		</handler>
+		<attribute name="configurationFilePath" value="file:/opt/ericsson/ECDS/esper-config/ecds-esper-configuration.xml" />
+		<attribute name="esperInstanceName" value="esperEngine1" />
+		
+		<rule name="s1IncomingEvents">
+			<inputPort name="inputStream1" />	
+			<outputPort name="S1_HANDOVER_OUTGOING" />	
+			<outputPort name="S1_HANDOVER_INCOMING" />
+			<ruleResource uri="classpath:/ecds-epl/LTE_EUTRAN_MOBILITY_S1HO_CORRELATION.epl" />		
+		</rule>
+	</step>
+
+	<path>
+		<from uri="s1HcInput" />
+		<to uri="inputThreading" />
+		<to uri="splitter" />
+		<to uri="s1Filter" />
+		<to uri="outputThreading" />
+		<to uri="s1HcOutput" />
+	</path>	
+
+</FlowDefinition>
++-------------------------------+
+
+
+* {Event flow using only Java processing steps}
+
+	This example shows an event flow that uses Java event handlers only.
+
++-------------------------------+
+<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+	xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	oc:ns="com.ericsson.ecds" oc:name="IMSI_ENRICHMENT" oc:version="1.0.0">
+
+	<oc:modelCreationInfo author="WW" creationDate="2013-06-05">
+		<oc:designedModel componentId="IMSI_ENRICHMENT" />
+	</oc:modelCreationInfo>
+
+	<oc:desc>This is the EPS Module for IMSI enrichment</oc:desc>
+
+	<input name="eventInput">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="events.for.imsi.enrichment" />
+		<attribute name="hazelcastConfigFileUrl" value="file:/opt/ericsson/ECDS/hazelcast-config/ecds-hazelcast.xml" />
+		<attribute name="hazelcastListenerThreadpoolSize" value="3" />
+		<attribute name="hazelcastListenerThreadpoolThreadPriority" value="9" />
+	</input>
+
+	<output name="eventOutput">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="events.for.session.merge" />
+		<attribute name="hazelcastConfigFileUrl" value="file:/opt/ericsson/ECDS/hazelcast-config/ecds-hazelcast.xml" />
+	</output>
+
+	<!-- The steps below are all Java event handlers -->
+	<step name="splitter">
+		<handler>
+			<className>com.ericsson.oss.services.eps.builtin.components.CollectionSplitterComponent</className>
+		</handler>
+	</step>
+
+	<step name="batch">
+		<handler>
+			<className>com.ericsson.oss.services.eps.builtin.components.BatchComponent</className>
+		</handler>
+		<attribute name="maxBatchSize" value="10000" />
+	</step>
+
+	<step name="outputThreading">
+		<handler>
+			<className>com.ericsson.oss.services.eps.builtin.components.ThreadManagementComponent</className>
+		</handler>
+		<attribute name="threadPoolSize" value="5" />
+		<attribute name="threadPriority" value="8" />
+	</step>
+
+	<step name="eventImsiEnricher ">
+		<handler>
+			<className>com.ericsson.wwecds.correlation.service.EnrichmentTopicListener</className>
+		</handler>
+	</step>
+
+	<path>
+		<from uri="eventInput" />
+		<to uri="splitter" />
+		<to uri="eventImsiEnricher" />
+		<to uri="batch" />
+		<to uri="outputThreading" />
+		<to uri="eventOutput" />
+	</path>
+
+</FlowDefinition>
++-------------------------------+
+* {Event flow using cloned steps}
+
+	This example shows an event flow which receives events from one source,	sends them to three instances of the same step, then sends results of each instance to different output ports.
+	The same step is cloned two times with different names, obtaining three steps instances without code duplication.      
+
++-------------------------------+
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+	xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	oc:ns="com.ericsson.test" oc:name="clonedStepTest" oc:version="1.0.0">
+
+	<oc:modelCreationInfo author="author"
+		creationDate="today">
+		<oc:designedModel componentId="someComponentId" />
+	</oc:modelCreationInfo>
+
+	<oc:desc>example flows</oc:desc>
+
+	<input name="csInput">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-input-topic" />
+	</input>
+
+	<output name="csOutputA">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-output-topic-A" />
+	</output>
+	
+	<output name="csOutputB">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-output-topic-B" />
+	</output>
+	
+	<output name="csOutputC">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-output-topic-C" />
+	</output>
+
+	<!-- This is a normal step node of an event handler instance -->
+	<step name="csFilterA">
+		<handler>
+			<named>EsperHandler</named>
+		</handler>
+		<attribute name="configurationFilePath" value="classpath:/config/esper-test-config.xml" />
+
+		<rule name="epl02-rule">
+			<inputPort name="inputStream1" />
+			<outputPort name="outputStream1" />
+			<ruleResource uri="classpath:/epl/rules_02.epl" />
+		</rule>
+	</step>
+	
+	<!-- The following are two clonedStep nodes cloned from csFilterA -->
+	<clonedStep name="csFilterB" clonedStepRef="csFilterA" />
+	<clonedStep name="csFilterC" clonedStepRef="csFilterA" />
+
+	<path>
+		<from uri="csInput" />
+		<toMany>
+			<to uri="csFilterA" />
+			<to uri="csFilterB" />
+			<to uri="csFilterC" />
+		</toMany>
+	</path>
+	
+	<path>
+		<from uri="csFilterA" />
+		<to uri="csOutputA" />
+	</path>
+	
+	<path>
+		<from uri="csFilterB" />
+		<to uri="csOutputB" />
+	</path>
+	
+	<path>
+		<from uri="csFilterC" />
+		<to uri="csOutputC" />
+	</path>
+
+</FlowDefinition>
++-------------------------------+
+
+* {Event flow using CDI event handlers}
+
+	This example shows an event flow that uses CDI event handlers.
+
++-------------------------------+
+<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+	xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	oc:ns="com.test.cdi" oc:name="testCDIFlow" oc:version="1.1.0">
+
+	<oc:modelCreationInfo author="author"
+		creationDate="today">
+		<oc:designedModel componentId="someComponentId" />
+	</oc:modelCreationInfo>
+
+	<oc:desc>example flows</oc:desc>
+
+	<input name="hcInput1">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-topic1" />
+	</input>
+
+	<output name="hcOutput1">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-topic2" />
+	</output>
+
+	<!-- This is a CDI event handler -->
+	<step name="cdiEventGenerator">
+		<handler>
+			<named>cdiEventGenerator</named>
+		</handler>
+		<attribute name="count" value="2" />
+	</step>
+
+	<!-- This is a normal Java event handler -->
+	<step name="testPassThroughComponent">
+		<handler>
+			<className>com.ericsson.oss.services.eps.core.integration.jee.cdi.TestPassThroughEventHandler</className>
+		</handler>
+	</step>
+
+	<!-- This is a CDI event handler -->
+	<step name="cdiEventHandler">
+		<handler>
+			<named>cdiEventDuplicator</named>
+		</handler>
+		<attribute name="duplicationCount" value="5" />
+	</step>
+
+	<path>
+		<from uri="hcInput1" />
+		<to uri="cdiEventGenerator" />
+		<to uri="testPassThroughComponent" />
+		<to uri="cdiEventHandler" />
+		<to uri="hcOutput1" />
+	</path>
+
+</FlowDefinition>
++-------------------------------+
+
+
+* {Event flow with multiple paths in parallel}
+
+	This example shows an event flow which has two paths working in parallel. 
+	Each event flow uses its own input adapter, output adapter and event handlers without influence on each other.
+
++-------------------------------+
+<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+	xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	oc:ns="com.test" oc:name="multiPathsInParallel" oc:version="1.0.0">
+
+	<oc:modelCreationInfo author="author" creationDate="today">
+		<oc:designedModel componentId="multiPathsInParallel" />
+	</oc:modelCreationInfo>
+
+	<oc:desc>Eps Test - Multiple paths and multiple IOs</oc:desc>
+
+	<input name="hcInput1">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-topic1-in" />
+	</input>
+	
+	<input name="hcInput2">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-topic2-in" />
+	</input>
+
+	<output name="hcOutput1">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-topic1-out" />
+	</output>
+	
+	<output name="hcOutput2">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-topic2-out" />
+	</output>
+	
+	<step name="threading1">
+		<handler>
+			<className>com.ericsson.oss.services.eps.builtin.components.ThreadManagementComponent</className>
+		</handler>
+		<attribute name="threadPoolSize" value="10" />
+		<attribute name="threadPriority" value="9" />
+	</step>
+	
+	<step name="threading2">
+		<handler>
+			<className>com.ericsson.oss.services.eps.builtin.components.ThreadManagementComponent</className>
+		</handler>
+		<attribute name="threadPoolSize" value="10" />
+		<attribute name="threadPriority" value="9" />
+	</step>
+
+	<step name="duplicator1">
+		<handler>
+			<className>com.ericsson.oss.services.eps.core.integration.jee.flow.components.JeeTestEventDuplicatorComponent</className>
+		</handler>
+		<attribute name="duplicationCount" value="3" />
+	</step>
+
+	<step name="duplicator2">
+		<handler>
+			<className>com.ericsson.oss.services.eps.core.integration.jee.flow.components.JeeTestEventDuplicatorComponent</className>
+		</handler>
+		<attribute name="duplicationCount" value="5" />
+	</step>
+
+	<!-- These two paths below works in parallel -->
+	<!-- The first path has its own input adapter (hcInput1), output adapter (hcOutput1) and event handlers (threading1, duplicator1) -->
+	<path>
+		<from uri="hcInput1" />
+		<to uri="threading1" />
+		<to uri="duplicator1" />
+		<to uri="hcOutput1" />
+	</path>
+	
+	<!-- The second path has its own input adapter (hcInput2), output adapter (hcOutput2) and event handlers (threading2, duplicator2) -->
+	<path>
+		<from uri="hcInput2" />
+		<to uri="threading2" />
+		<to uri="duplicator2" />
+		<to uri="hcOutput2" />
+	</path>
+
+</FlowDefinition>
++-------------------------------+
+
+
+* {Event flow with multiple paths in sequence}
+
+	This example shows an event flow which connects two paths in sequence. The events output by the first path is sent downstream to the second path.
+
++-------------------------------+
+<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+	xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	oc:ns="com.test" oc:name="multiPathsInSequence" oc:version="1.0.0">
+
+	<oc:modelCreationInfo author="author" creationDate="today">
+		<oc:designedModel componentId="multiPathsInSequence" />
+	</oc:modelCreationInfo>
+
+	<oc:desc>Eps Test - Multiple paths: one path feeds another path</oc:desc>
+
+	<input name="hcInput">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-topic-in" />
+	</input>
+	
+	<output name="hcOutput">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-topic-out" />
+	</output>
+	
+	<step name="threading">
+		<handler>
+			<className>com.ericsson.oss.services.eps.builtin.components.ThreadManagementComponent</className>
+		</handler>
+		<attribute name="threadPoolSize" value="10" />
+		<attribute name="threadPriority" value="9" />
+	</step>
+	
+	<step name="duplicator">
+		<handler>
+			<className>com.ericsson.oss.services.eps.core.integration.jee.flow.components.JeeTestEventDuplicatorComponent</className>
+		</handler>
+		<attribute name="duplicationCount" value="6" />
+	</step>
+
+	<!-- path 1 -->
+	<path>
+		<from uri="hcInput" />
+		<to uri="threading" />
+		<to uri="duplicator" />
+	</path>
+	
+	<!-- The first step of path 2 uses the same component with the last step of path 1 (both duplicator). 
+	It will connect these 2 paths in sequence, which means the events output by path 1 will be sent to path 2 -->
+	<!-- path 2 -->
+	<path>
+		<from uri="duplicator" />
+		<to uri="hcOutput" />
+	</path>
+
+</FlowDefinition>
++-------------------------------+
+
+
+* {Event flow with one input adapter and multiple output adapters}
+
+	This example shows an event flow which receives events from one source and send them to multiple destinations. 
+	It uses one input adapter and two output adapters defined in two paths.
+
++-------------------------------+
+<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+	xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	oc:ns="com.test" oc:name="multicasting" oc:version="1.0.0">
+
+	<oc:modelCreationInfo author="author" creationDate="today">
+		<oc:designedModel componentId="multicasting" />
+	</oc:modelCreationInfo>
+
+	<oc:desc>Eps Test - One Input Adapter which feeds multiple Paths</oc:desc>
+
+	<input name="hcInput">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-topic-in" />
+	</input>
+	
+	<output name="hcOutput1">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-topic1-out" />
+	</output>
+	
+	<output name="hcOutput2">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-topic2-out" />
+	</output>
+	
+	<step name="threading1">
+		<handler>
+			<className>com.ericsson.oss.services.eps.builtin.components.ThreadManagementComponent</className>
+		</handler>
+		<attribute name="threadPoolSize" value="10" />
+		<attribute name="threadPriority" value="9" />
+	</step>
+	
+	<step name="threading2">
+		<handler>
+			<className>com.ericsson.oss.services.eps.builtin.components.ThreadManagementComponent</className>
+		</handler>
+		<attribute name="threadPoolSize" value="10" />
+		<attribute name="threadPriority" value="9" />
+	</step>
+
+	<step name="duplicator1">
+		<handler>
+			<className>com.ericsson.oss.services.eps.core.integration.jee.flow.components.JeeTestEventDuplicatorComponent</className>
+		</handler>
+		<attribute name="duplicationCount" value="3" />
+	</step>
+
+	<step name="duplicator2">
+		<handler>
+			<className>com.ericsson.oss.services.eps.core.integration.jee.flow.components.JeeTestEventDuplicatorComponent</className>
+		</handler>
+		<attribute name="duplicationCount" value="5" />
+	</step>
+
+	<!-- These 2 paths below uses the same input adapters (hcInput), and each path uses its own output adapter (hcOutput1, hcOutput2).
+	Events received by hcInput will be sent to both paths for processing and finally output via both hcOutput1 and hcOutput2 -->
+	<path>
+		<from uri="hcInput" />
+		<to uri="threading1" />
+		<to uri="duplicator1" />
+		<to uri="hcOutput1" />
+	</path>
+	
+	<path>
+		<from uri="hcInput" />
+		<to uri="threading2" />
+		<to uri="duplicator2" />
+		<to uri="hcOutput2" />
+	</path>
+
+</FlowDefinition>
++-------------------------------+
+
+* {Event flow using output ports}
+
+	This example shows an event flow which receives events from one source, sends them to Esper rule handler and then branches results into different output ports.
+	Esper rules internally would branch different results to different output ports, and different output adapter are subscribed to different output ports.
+	Any event handler can follow Esper event handler and be attached (subscribed) to specific output port.
+
++-------------------------------+
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+	xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	oc:ns="com.ericsson.test" oc:name="EsperSimpleTest" oc:version="1.0.0">
+
+	<oc:modelCreationInfo author="author"
+		creationDate="today">
+		<oc:designedModel componentId="someComponentId" />
+	</oc:modelCreationInfo>
+
+	<oc:desc>example flows</oc:desc>
+
+	<input name="numbersIn">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="numbersIn" />
+	</input>
+
+	<output name="oddOut">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="oddOut" />
+	</output>
+	
+	<output name="oddOut1">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="oddOut1" />
+	</output>
+	
+	<output name="evenOut">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="evenOut" />
+	</output>
+	
+	<output name="evenOut1">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="evenOut1" />
+	</output>
+	
+	<output name="evenOut2">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="evenOut2" />
+	</output>
+	
+	<step name="someHandler">
+		<handler>
+			<className>com.ericsson.oss.services.SomeHandler</className>
+		</handler>
+	</step>
+	
+	<step name="someOtherHandler">
+		<handler>
+			<className>com.ericsson.oss.services.SomeOtherHandler</className>
+		</handler>
+	</step>
+
+	<step name="filterNumbers">
+		<handler>
+			<named>EsperHandler</named>
+		</handler>
+		<attribute name="esperInstanceName" value="esperEngineFilteringNumbers" />
+
+		<rule name="rule_01">
+			<inputPort name="inputStream1" />
+			<!-- Esper rules inside separateOddEvenNumbers.epl are branching out data to two different output ports -->
+			<outputPort name="outputOdd" />
+			<outputPort name="outputEven" />
+			<ruleResource uri="classpath:/epl/separateOddEvenNumbers.epl" />
+		</rule>
+
+	</step>
+
+	<path>
+		<from uri="numbersIn" />
+		<!-- all data is being passed to Esper rules -->
+		<to uri="filterNumbers" />
+	</path>
+	
+	<path>
+		<!-- After being branched by Esper rules only subset of data is sent to each output port -->
+		<from uri="filterNumbers.outputOdd" />
+		<to uri="oddOut" />
+	</path>
+	
+	<path>
+		<from uri="filterNumbers.outputOdd" />
+		<to uri="oddOut1" />
+	</path>
+	
+	<path>
+		<from uri="filterNumbers.outputEven" />
+		<to uri="evenOut" />
+	</path>
+	
+	<path>
+		<from uri="filterNumbers.outputEven" />
+		<to uri="someHandler" />
+		<to uri="evenOut1" />
+	</path>
+	
+	<path>
+		<from uri="filterNumbers.outputEven" />
+		<to uri="someOtherHandler" />
+		<to uri="evenOut2" />
+	</path>
+
+</FlowDefinition>
++-------------------------------+

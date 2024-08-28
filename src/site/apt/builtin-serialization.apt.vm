@@ -1,0 +1,35 @@
+	------
+	Event Serialization Event Handler
+	------
+	
+Event Serialization Event Handler
+
+	This Event Handler serializes a event object to a byte stream, and sends it downstream as a byte array.
+	
+	Serialization mode can be configured as compatibility mode or kryo mode. The <<compatibility>> mode uses default Java serialization. 
+	The <<kryo>> mode uses the {{{https://code.google.com/p/kryo/}KRYO serialization framework}} which is faster and more space-efficient. Thus, it is recommended to use kryo
+	mode instead of compatibility mode whenever possible. However, use compatibility mode if there are compatibility issues with the KRYO 
+	serialization.	
+
+	Event Handler configuration:
+	
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+|| Configuration parameter name                                        || Description                                       || Default value (acceptable values) |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| serializationMode                                                    | The mode of serialization                          | kryo (compatibility, kryo)        |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+
+	Event Handler declaration:
+
+	This is a {{{./java-event-handlers.html}Java Event Handler}}, should be declared using the <className> element, as in the example below. 
+	
+	Event Handler class name <<com.ericsson.oss.services.eps.builtin.components.io.EventSerializer>>
+	
++-------------------------------+
+<step name="serializer">
+	<handler>
+		<className>com.ericsson.oss.services.eps.builtin.components.io.EventSerializer</className>
+	</handler>
+	<attribute name="serializationMode" value="compatibility" />
+</step>
++-------------------------------+

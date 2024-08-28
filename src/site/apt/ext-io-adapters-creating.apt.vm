@@ -1,0 +1,167 @@
+	------
+	Creating new IO Adapters
+	------
+
+Creating new IO Adapters
+
+	It is possible for end users of EPS to provide their own IO adapters (or replace existing ones with improved versions).
+
+    To create a new IO Adapter from scratch the following steps should be followed:
+
+    [[1]] Include EPS in your project (see {{{./using-eps.html} here}} for details).
+
+    [[2]] Add to your project POM file the dependencies from EPS-API and Flow Framework API
+
++-------------------------------+
+	<dependency>
+		<groupId>com.ericsson.oss.services</groupId>
+		<artifactId>eps-api</artifactId>
+		<version>${project.version}</version>
+		<scope>provided</scope>
+	</dependency>
+	<dependency>
+		<groupId>com.ericsson.oss.services</groupId>
+		<artifactId>event-flow-api</artifactId>
+		<version>${version_flow_framework}</version>
+		<scope>provided</scope>
+	</dependency>
++-------------------------------+
+
+    [[3]] Create IO Adapter implementation, as described {{{${documentation_FlowFramework}/eventflow-api/howto-create-ioadapter.html}here}}.
+
+    <<Example>>
+
++-------------------------------+
+import java.util.concurrent.BlockingQueue;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.Guage;
+import com.codahale.metrics.Meter;
+
+import com.ericsson.oss.itpf.common.event.handler.AbstractEventHandler;
+import com.ericsson.oss.services.eps.EpsEngineConstants;
+import com.ericsson.oss.services.eps.statistics.EpsStatisticsRegister;
+
+public class SampleInputAdapter extends AbstractEventHandler implements InputAdapter {
+        private final Logger log = LoggerFactory.getLogger(getClass());
+
+        private EpsStatisticsRegister statisticsRegister;
+
+	// Customized metrics attribute can be defined if necessary
+        private Meter eventMeter;
+
+	// Customized configuration attribute can be defined if necessary
+	private String sampleAttribute;
+
+	// A name should be provided for the attribute, it is used as the key in configuration
+	private static final String SAMPLE_CONFIG_ATTRIBUTE_NAME = "attributeName";
+
+	// Method inherited from InputAdapter
+	@Override
+	public boolean understandsURI(final String uri) {
+		// uniqueness of the URI it understands must be ensured
+		return uri != null && uri.startsWith("sampleUri:");
+	}
+
+	@Override
+	public void onEvent(final Object inputEvent) {
+		// Processing the received event
+		Object newEvent = processingEvent(event);
+
+		// Sending the processed event downstream to its subscribers
+		sendToAllSubscribers(newEvent);
+		// it is also possible to send events to
+		// specific subscribers (by position or identifier)
+
+		updateStatisticsWithEventReceived(inputEvent);
+	}
+
+	// Method inherited from AbstractEventHandler
+	@Override
+	public void doInit(final EventHandlerContext ctx) {
+		// Invoked only once by flow engine during initialization but
+		// before any event processing
+
+		// The attribute values can be obtained using getConfiguration method
+		sampleAttribute =
+                      getConfiguration().getStringProperty(SAMPLE_CONFIG_ATTRIBUTE_NAME);
+
+		// initialise statistics if custom statistics are required
+                // EPS maintains a Meter to measure the number of events received by each event handler
+                initialiseStatistics();
+                createMetrics();
+	}
+
+	// Method inherited from AbstractEventHandler
+	@Override
+	public void destroy() {
+		super.destroy();
+		// Invoked by flow engine before instance is destroyed
+		// (when undeploying flow or shutting down flow engine instance)
+	}
+
+	// logic to process event
+	private Object processingEvent(final Object event) {
+		// Processing the received event, and return the result as a new event
+	}
+
+       /**
+        * Initialise statistics.
+        */
+        private void initialiseStatistics() {
+		statisticsRegister = (EpsStatisticsRegister) getEventHandlerContext().getContextualData(
+		EpsEngineConstants.STATISTICS_REGISTER_CONTEXTUAL_DATA_NAME);
+		if (statisticsRegister == null) {
+		    log.error("statisticsRegister should not be null");
+		} else {
+		    statisticsOn = statisticsRegister.isStatisticsOn();
+                }
+        }
+
+
+        private void updateStatisticsWithEventReceived(final Object inputEvent) {
+                if (isStatisticsOn()) {
+                    // if inputEvent meets the criteria for eventMeter, then increment it
+                    eventMeter.mark();
+                }
+        }
+
+        private void createMetrics() {
+                if (statisticsRegister.isStatisticsOn()) {
+                    eventMeter = statisticsRegister.createMeter("eventsOfInterest", this);
+                }
+        }
+
+        private boolean isStatisticsOn() {
+                return (statisticsRegister != null) && statisticsRegister.isStatisticsOn();
+        }
+}
++-------------------------------+
+
+    [[4]] Add custom statistics if required - EPS will automatically measure (as a Meter) all events received by each Event Handler and IO Adapter.
+          Initialise statistics in the doInit() method, then increment the measurements in onEvent() method.
+
+    [[5]] Add to the flow descriptor a section related to your new Adapter
+    	(see {{{${documentation_FlowFramework}/eventflow-api/io-adapter-definition.html}here}} for details
+     	or {{{${documentation_FlowFramework}/eventflow-api/howto-create-flow.html}here}} to create a new flow descriptor from scratch).
+
+    [[6]] Deploy the IO Adapter, as described {{{./eps-jboss-deploy.html}EPS Jboss deploy}} and {{{./eps-standalone-install.html}EPS Standalone install}}.
+
+    [[7]] In case the new IO Adapter is considered be useful even for different solution sets,
+    	it could be made publicly available by adding it to {{{${documentation_Extensions}/index.html}EpsExtensions}} external repository.
+
+
+    <<NOTE 1:>> IO Adapters do not support CDI capability. If CDI capability is needed (e.g. flow management business logic
+    	 or utility routine injection), it should be (best practice) used in Event Handler which in turn supports CDI capability:
+    	{{{${documentation_FlowFramework}/eventflow-api/howto-create-eventhandler.html}How to create your own Event Handlers}}
+		Otherwise, inside IO Adapter code, bean lookup may be considered too.
+
+	<<NOTE 2:>> Only the publicly exposed API should be used, other classes may be renamed or removed between EPS releases without any warning.
+		This applies to JEE and JSE environment but in JEE this is strictly enforced. e.g. using an EPS class (regardless if it’s public or not)
+		which is not part of the interface can break class loading in JEE, and is not allowed.
+		If you need to provide customized configuration attributes for your own IO adapters, it is recommended to use camelCase when giving
+		attribute names (e.g. maxBatchSize). However, it is allowed to use dots inside the attribute names if you really have to, but not recommended.
+

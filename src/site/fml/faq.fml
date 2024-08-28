@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<faqs id="FAQ" title="Event Processing Service FAQs">
+  <part id="Flows">
+	<title>Flows</title>
+
+    <faq id="multiPathElements">
+      <question>Can I have multiple &lt;path&gt; elements inside the same flow xml file?</question>
+      <answer>
+        <p>
+			Yes. See example <a href="./corr-set-examples.html#Event_flow_with_multiple_paths_in_parallel">here</a>.
+        </p>
+      </answer>
+    </faq>
+    <faq id="howToSplitEvents">
+      <question>How do I split events to go from one event handler into multiple paths?</question>
+      <answer>
+        <p>
+			Simply attach multiple input adapters to the same input adapter. This can be done by providing separate flow xml files or within the same flow xml file
+			by using multiple &lt;path&gt; elements. 
+			See example <a href="./corr-set-examples.html#Event_flow_with_multiple_paths_in_parallel">here</a>.
+        </p>
+        <p>
+        	If you need to do this within the same JVM (no need for remoting) use <a href="./io-adapters-local.html">local IO adapters</a>.
+        </p>
+      </answer>
+    </faq>
+  </part>
+  <part id="Event_Handlers">
+	<title>Event Handlers</title>
+    <faq id="howToChooseHandler">
+      <question>How do I choose what event handler to use?</question>
+      <answer>
+        <p>
+        	This depends on use case. <a href="http://esper.codehaus.org/">Esper</a> is very good for processing event streams if you need full power of CEP (complex event processing) using
+        	declarative programming language (SQL-like).
+        </p>
+	    <p>
+        	In case when you need imperative programming language then Java might be better choice.
+        </p>
+	    <p>
+	    	Combining these two engines is also possible - so you can split your logic and use the appropriate tool for your event processing solution.
+	    </p>
+      </answer>
+    </faq>
+    <faq id="isEsperMandatory">
+      <question>Do I have to use Esper if I use EPS?</question>
+      <answer>
+        <p>
+        	No. If Java is good enough for your event processing solution there is no need to use Esper at all.
+        </p>
+      </answer>
+    </faq>    
+    <faq id="rulesFormat">
+      <question>In what format do I write my rules?</question>
+      <answer>
+        <p>
+        	Rules can be written in any format understood by one of event handlers available inside EPS. So, rules can be written in
+        	<ul>
+        		<li>Java</li>
+        		<li>EPL (Esper language)</li>
+        		<li>JVM scripting languages installed inside JVM</li>
+        	</ul>
+        </p>
+      </answer>
+    </faq>
+    <faq id="wantDifferentEventHandler">
+      <question>What if I want to use different event handlers (like Drools)?</question>
+      <answer>
+        <p>
+			EPS enables you to provide plugin for this. Check out <a href="./ext-event-handlers-creating.html">Creating new Event Handlers</a> how to extend eps with new event handler.
+        </p>
+      </answer>
+    </faq>
+    <faq id="handlerMarkerClasses">
+      <question>Where are the EsperHandler and JvmScriptingHandler classes?</question>
+      <answer>
+        <p>
+            These classes are marker classes that do not exist and are there only to tell EPS to use Esper or JVM scripting event handler for certain steps.
+        </p>
+      </answer>
+    </faq>
+     <faq id="cdi">
+      <question>Can I use CDI when building my event handlers?</question>
+      <answer>
+        <p>
+            Yes, event handlers can use full power of injection (CDI and JEE resources). See <a href="./cdi-event-handlers.html">here for details</a>.
+        </p>
+      </answer>
+    </faq>
+    <faq id="accessDB">
+      <question>Can I access database from my event handler implementations?</question>
+      <answer>
+        <p>
+         Yes. Event handlers do not restrict use of Java language. Be careful, accessing external systems (caches, databases, remote interfaces)
+         from event processing components will most likely have big performance impact on your system.
+        </p>
+      </answer>
+    </faq>
+  </part>
+
+
+  <part id="Events">
+	<title>Events</title>
+
+    <faq id="eventFormat">
+      <question>Does EPS assume specific event format?</question>
+      <answer>
+        <p>
+         No, EPS can use any event format. It is up to Solution Set event handlers and rules (epl files) to be able to understand event
+         format input adapters subscribe to.
+        </p>
+      </answer>
+    </faq>
+    <faq id="controlEvents">
+      <question>What are control events?</question>
+      <answer>
+        <p>
+			Control events are used to notify <a href="./ext-event-handlers.html">event handlers</a> inside event flows about some changes.
+			Flow framework intentionally separates data plane from control plane. Data plane is supposed to be dealing with high throughput
+			of events and control plane is there to reconfigure event handlers and how they process data plane events.
+        </p>
+      </answer>
+    </faq>
+  </part>
+
+
+  <part id="IO">
+	<title>IO</title>
+
+    <faq id="getEventsFromTorEventBus">
+      <question>How can I get events from EventBus inside DataLayer(TOR) and pass to EPS?</question>
+      <answer>
+        <p>
+			Use the <a href="./io-adapters-jms.html"> JMS I/O adapters</a> for standard JMS events and 
+			<a href="./io-adapters-modeled-event-bus.html">Modeled Event Bus I/O adapters</a> for modeled events.
+        </p>
+      </answer>
+    </faq>
+    <faq id="injectDpsAsEjB">
+      <question>Do I need to inject DPS as EJB bean, so that I can use API to get events from EventBus?</question>
+      <answer>
+        <p>       
+            No. You do not need to inject DPS in order to access event bus. 
+            If on the other hand, you need to inject DPS into running event-flow components there is no problem doing that - you just use Service Framework to inject remote (or local) DPS instance.
+        </p>
+      </answer>
+    </faq>
+    <faq id="ioAdapterNotProvided">
+      <question>EPS does not provide IO adapter that I need, what do I do?</question>
+      <answer>
+        <p>
+			EPS is <a href="./eps-extensions.html">extensible</a>. You can always provide your own IO adapter. Even if you think currently provided IO adapters
+			are slow or not good enough you can always provide your own (better) version.
+        </p>
+      </answer>
+    </faq>
+    <faq id="outputAdapterAsLastComponent">
+      <question>Do I have to have output adapter as the last component in my flow?</question>
+      <answer>
+        <p>       
+            No. But in most cases you would want one of the components in your flow (usually last one) to do something with processed (correlated, enriched) events.
+        </p>
+      </answer>
+    </faq>
+    <faq id="multipleIOSameFlow">
+      <question>Can I have multiple input/output adapters in the same flow?</question>
+      <answer>
+        <p>       
+            Yes, it is possible to have arbitrary number of input and output adapters.
+        </p>
+      </answer>
+    </faq>
+  </part>
+
+
+  <part id="install_and_deploy">
+	<title>Installation and Deployment</title>
+
+    <faq id="installExtensions">
+      <question>How do I install extensions (IO adapters, event handlers etc..)?</question>
+      <answer>
+        <p>
+			Package the extensions in one or more jar files, then provide those jar files to be available on EPS Instance classpath.
+			 Detail are available for <a href="./eps-jboss-deploy.html"> JBoss deployment</a> or <a href="./eps-standalone-install.html">standalone
+			 installation</a>.
+        </p>
+      </answer>
+    </faq>
+    <faq id="undeployEPSmodule">
+      <question>How do I undeploy a EPS module (event flow)? </question>
+      <answer>
+        <p>       
+            You need to use ModuleManager instance to undeploy a EPS module (undeployModule(String id) method) or undeploy all modules (undeployAllModules() method).
+            Removing of flow descriptor xml files from deployment folder doesn't undeploy modules.
+            In order to use ModuleManager it is necessary to put in your EAR/META_INF folder a file named jboss-deployment-structure.xml with the following content
+            (and substituting YOUR_EAR_NAME and YOUR_EPS_VERSION placeholder names with your specific values):
+       
+    <pre>
+    &lt;jboss-deployment-structure&gt;
+       &lt;ear-subdeployments-isolated&gt;false&lt;/ear-subdeployments-isolated&gt;
+          &lt;deployment&gt;
+             &lt;dependencies&gt;
+                &lt;module name="deployment.YOUR_EAR_NAME.ear.eps-jee-war-YOUR_EPS_VERSION.war" export="true"/&gt;
+             &lt;/dependencies&gt;
+          &lt;/deployment&gt;
+    &lt;/jboss-deployment-structure&gt;
+	</pre>
+        </p>
+      </answer>
+    </faq>
+    <faq id="epsJbossMandatory">
+      <question>Is it a mandatory requirement to download and install the eps-jboss-module when I'm using EPS in JEE environment.</question>
+      <answer>
+        <p>       
+            Yes, it is absolutely necessary to have the eps-jboss-module installed inside jboss, as it contains the EPS API.    
+            See <a href="./using-eps.html">Using EPS as a bundle inside a JEE application installing eps-jboss-module</a> for more details.
+        </p>
+      </answer>
+    </faq>
+  </part>
+
+
+  <part id="nonFunctionalIssues">
+	<title>Non Functional Issues</title>
+
+    <faq id="howManyEventsHowMuchMemory">
+      <question>How many events can EPS handle (per JVM) and how much memory (RAM) should be assigned to EPS JVM.</question>
+      <answer>
+        <p>       
+            It depends on complexity of rules. If rules are simple and not accessing external systems (database, webservices, disk, cache)
+            then it is possible to do few hundred thousand events per second. More complex rules and frequent access to external systems will reduce throughput.
+            The final speed depends on the complexity of your rules and the need to access external resources.
+        </p>
+        <p>
+        	We recommend to assign 4-8GB of RAM to every JVM running EPS.
+        </p>
+      </answer>
+    </faq>
+    <faq id="reduceData">
+      <question>How can I reduce the amount of data sent to my application (to avoid stressing the event bus)?</question>
+      <answer>
+        <p>
+		    You can move some of your application logic to EPS flow - for example, one of the processing steps in EPS flow can do some pre-filtering, enrichment, grouping just before sending events to event-bus.
+        </p>
+      </answer>
+    </faq>
+	
+    <faq id="performanceMonitoring">
+      <question>We have eps + solution-set deployed into JBoss and would like to assess its performance, such as: cpu/mem usage etc.
+Does EPS reports this type data itself, or, we need to rely on other tools?</question>
+      <answer>
+        <p>       
+		A good monitoring solution includes information from EPS, JBOSS and LITP.
+		</p> 
+        <p>       
+			EPS:    exposes <a href="./statistics.html">internal statistics</a> about events/sec etc..,
+			this can be picked by any appropriate tool (e.g. <a href="http://www.hyperic.com/">Hyperic</a> or VisualVM) from JMX.
+		</p> 
+        <p>       
+			JBoss:  exposes its own statistics
+		</p> 
+        <p>       
+			LITP:   includes <a href="http://www.hyperic.com/">Hyperic</a> for monitoring,
+			also available are the Linux tools
+			<a href="http://linux.die.net/man/1/sar">sar</a>,
+			<a href="http://linux.die.net/man/1/mpstat">mpstat</a>,
+			<a href="http://linux.die.net/man/1/iostat">iostat</a> and
+			<a href="http://linux.die.net/man/8/vmstat">vmstat</a>.
+			Logon to Hyperic and check "Resources" and monitoring status.
+		</p> 
+		<source>
+<![CDATA[ http://<MS_ipaddress>:57004/app/login]]>
+<![CDATA[ https://<MS_ipaddress>:57005/app/login]]>
+		</source>
+		<p>       
+			CPU Measurements must be collected from outside the JVM, using tools such as
+			<a href="http://www.hyperic.com/">Hyperic</a>,
+			<a href="http://linux.die.net/man/1/sar">sar</a>,
+			<a href="http://linux.die.net/man/1/mpstat">mpstat</a>,
+		</p>
+      </answer>
+    </faq>		
+  </part>
+
+
+  <part id="General">
+	<title>General</title>
+
+    <faq id="xstreamParsersPartOfEps">
+      <question>Are XStream parsers part of EPS?</question>
+      <answer>
+        <p>
+			No, they are not part of EPS but can be used to parse events before EPS receives them.
+        </p>
+      </answer>
+    </faq>
+  </part>
+</faqs>

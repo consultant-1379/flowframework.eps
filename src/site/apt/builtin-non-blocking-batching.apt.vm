@@ -1,0 +1,50 @@
+	------
+	Non-blocking Event Batching Event Handler
+	------
+	
+Non-blocking Event Batching Event Handler
+
+	This Event Handler batches individual events using {{{http://lmax-exchange.github.io/disruptor/}LMAX Disruptor}} and sends them downstream batched in {{{http://docs.oracle.com/javase/7/docs/api/java/util/Collection.html}Collection}}.
+	
+	Batching of events is configurable. Batch size limit, number of batch workers, periodic flushing, ring size and wait strategy can be configured.
+
+	Events are sent downstream whenever the batch reach the <<maxBatchSize>> limit, else the batch is flushed every <<flushBatchPeriodMillis>> milliseconds.
+
+	Set <<maxBatchSize>> to 0 to have an infinite batch size, or you can set <<flushBatchPeriodMillis>> to 0 or a negative integer to disable periodic flushing, but the handler throws an exception while loading the flow if either batch size limit and periodic flushing of batched events are disabled at the same time.  
+	
+	Null events are discarded by this Event Handler. This Event Handler never sends empty collections downstream.
+	
+	Event Handler configuration:
+	
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+|| Configuration parameter name                                        || Description                                       || Default value (acceptable range)  |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| maxBatchSize                    | Maximum size of batch before it will be flushed                    | 10000 (any valid non-negative integer value)           |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| numberOfBatchWorkers            | The number of batching worker threads                              | 3 (any valid non-negative integer value)               |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| flushBatchPeriodMillis          | How often (in milliseconds) background task should flush batched events (regardless how many are in the batch) | 10000 (any valid integer, non-positive integer turns off background flushing)  |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| ringSize                        | {{{https://github.com/LMAX-Exchange/disruptor/wiki/Frequently-Asked-Questions#what-size-should-i-make-the-ring-buffer}Disruptor}} specific configuration                                   | 131072                                                 |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| waitStrategy                    | The wait strategy to use for the ring buffer                       | blocking (blocking, yielding, busyspin, sleeping)      |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+
+	Event Handler declaration:
+
+	This is a {{{./java-event-handlers.html}Java Event Handler}}, should be declared using the <className> element, as in the example below. 
+	
+	Event Handler class name <<com.ericsson.oss.services.eps.builtin.components.NonBlockingBatchComponent>>
+	
++-------------------------------+
+<step name="nonBlockingBatch">
+	<handler>
+		<className>com.ericsson.oss.services.eps.builtin.components.NonBlockingBatchComponent</className>
+	</handler>
+	<attribute name="maxBatchSize" value="3000" />
+	<attribute name="numberOfBatchWorkers" value="6" />
+	<attribute name="flushBatchPeriodMillis" value="3000" />
+	<attribute name="ringSize" value="200000" />
+	<attribute name="waitStrategy" value="sleeping" />
+</step>
++-------------------------------+

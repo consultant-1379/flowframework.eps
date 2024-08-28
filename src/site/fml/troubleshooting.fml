@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<faqs id="Troubleshooting" title="Event Processing Service Troubleshooting">
+  <part id="General">
+    <faq id="notReceivingEvents">
+      <question>My event handlers are not receiving any events?</question>
+      <answer>
+        <p>
+          There are few things you can do:
+          <ul>
+            <li>Make sure your input adapter listens to appropriate event-bus and that event producer is really sending events on that same event-bus</li>
+            <li>Make sure your flow is connected properly, so that event handlers really send events to the next event handler in the flow</li>
+            <li>Turn on trace level and see what is happening with your events</li>
+            <li>Check <a href="./statistics.html">JMX statistics</a></li>
+            <li>If you are using Esper then make sure you are subscribing to appropriate <a href="./esper-event-handlers.html">output port</a></li>
+          </ul>
+        </p>
+      </answer>
+    </faq>
+    <faq id="ownEsperUpdateListener">
+      <question>I created my own implementation of Esper UpdateListener but it is not receiving any events?</question>
+      <answer>
+        <p>
+          There is no need for solution set developers to create their own implementations of <i>UpdateListener</i> interface provided by Esper.
+          EPS creates this automatically whenever <a href="./esper-event-handlers.html">Esper event handlers</a> are used in the flow. It is important
+          to have event handler (most probably of <a href="./java-event-handlers.html">Java type</a>) right after esper event handler in order to receive and process events created by Esper engine.
+        </p>
+      </answer>
+    </faq>
+    <faq id="tracing">
+      <question>How can I monitor events received by my event handler?</question>
+      <answer>
+        <p>
+            There are a some different options to monitor events:
+        </p>
+        <ul>
+            <li>Check <a href="./statistics.html">JMX statistics</a></li>
+            <li>Use the EPS built in component <a href="./builtin-individual-tracker.html">IndividualEventTracker</a> to track received events.<b>Should be used for debugging purposes only.</b></li>
+            <li>Create your own <a href="./ext-event-handlers-creating.html"> custom tracker</a> e.g. to output event contents</li>
+        </ul>
+      </answer>
+    </faq>
+    <faq id="unableToInitialiseComponentTwice">
+      <question>Got IllegalStateException: Unable to initialize component twice! Already initialized!</question>
+      <answer>
+        <p>
+          This IllegalStateException could be caused if two or more flow descriptors (flow xml files) define input adapters or output adapters with the same name. 
+          When writing flow descriptors, each input adapter should have an unique name within the scope of EPS instance. In other words, even two different flow descriptors should not 
+          define input adapters with the same name (same for output adapter). See <a href="./flow-descriptor.html">Flow Descriptors</a> for details.
+        </p>
+      </answer>
+    </faq>
+  </part>
+</faqs>

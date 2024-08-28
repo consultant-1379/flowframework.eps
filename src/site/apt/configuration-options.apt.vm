@@ -1,0 +1,242 @@
+	------
+	Event Processing Service - Configuration Options
+	------
+	
+Event Processing Service Configuration Options
+
+	EPS may be configured using a set of configuration parameters.
+
+    EPS will firstly look for the configuration parameter as a {{{Configure_as_VM_property} VM parameter}}
+    If not found, it will look for the configuration parameter value in OS environment properties and then in 
+    {{{Configure_using_EpsConfiguration.properties_file}EpsConfiguration.properties}} file.
+    
+
+    The default parameter value is used if no configuration parameter
+     is provided or if the configured value cannot be understood.
+
+
+* Configuration parameters
+
+*------------------------------------------------------------------------------+----------------------------------------------+
+|| Configuration parameter name                                                ||  Default value (acceptable range)           |
+*------------------------------------------------------------------------------+----------------------------------------------+
+| {{com.ericsson.oss.services.eps.core.statistics.off}}                        | false (false, true)                          |
+*------------------------------------------------------------------------------+----------------------------------------------+
+| {{com.ericsson.oss.services.eps.core.statistics.reporting.method}}           | JMX (CSV, JMX, SLF4J)                        |
+*------------------------------------------------------------------------------+----------------------------------------------+
+| {{com.ericsson.oss.services.eps.core.statistics.reporting.csv.location}}     | java.io.tmpdir (any valid pathname)          |
+*------------------------------------------------------------------------------+----------------------------------------------+
+| {{com.ericsson.oss.services.eps.core.statistics.reporting.frequency}}        | 1 (any positive long value)                  |
+*------------------------------------------------------------------------------+----------------------------------------------+
+| {{com.ericsson.oss.services.eps.module.deployment.folder.path}}              | /var/ericsson/eps/flows (any valid pathname) |
+*------------------------------------------------------------------------------+----------------------------------------------+
+| {{com.ericsson.oss.services.eps.module.deployment.modelservice.urn}}         | none (any valid model URN)                   |
+*------------------------------------------------------------------------------+----------------------------------------------+
+| {{com.ericsson.oss.services.eps.deploy.already.existing.modules.on.startup}} | true (true, false)                           |
+*------------------------------------------------------------------------------+----------------------------------------------+
+| {{com.ericsson.oss.services.eps.core.flow.deployment.failure.policy}}        | CONTINUE (CONTINUE, STOP_JVM)                |
+*------------------------------------------------------------------------------+----------------------------------------------+
+| {{com.ericsson.oss.services.eps.module.cdi.enabled}}                         | false (true, false)                          |
+*------------------------------------------------------------------------------+----------------------------------------------+
+
+
+
+* Statistics configuration parameters
+
+** {com.ericsson.oss.services.eps.core.statistics.off}
+
+  Disables {{{./statistics.html} statistics}} collection in EPS.
+
+  * Type: boolean
+
+  * Values:
+
+    * false: statistics collection is disabled
+
+    * true: statistics collection is enabled
+
+  []
+
+
+** {com.ericsson.oss.services.eps.core.statistics.reporting.method}
+
+  Selects the method to report {{{./statistics.html} statistics}}
+  measurements.
+
+  Only applicable if statistics is
+  {{com.ericsson.oss.services.eps.core.statistics.off}} enabled.
+
+  * Type: String
+
+  * Values:
+
+    * JMX, Statistics are exposed as JMX MBeans.
+
+    * CSV, Statistics are periodically appended (added as new row) to a set of
+     .csv files in the configured directory.
+
+    * SLF4J, Statistics are periodically logged to an SLF4J Logger
+
+  []
+
+
+** {com.ericsson.oss.services.eps.core.statistics.reporting.frequency}
+
+  Frequency in seconds to report {{{./statistics.html} statistics}}.
+
+  Applicable if statistics reporting method is CSV or SLF4J
+  ({{com.ericsson.oss.services.eps.core.statistics.reporting.method}}).
+
+  * Type: long
+
+  * Values:
+
+      * any positive long value (by default statistics are output every second)
+
+  []
+
+
+** {com.ericsson.oss.services.eps.core.statistics.reporting.csv.location}
+
+  Pathname for directory to output {{{./statistics.html} statistics}} .csv
+  files
+
+  Applicable if statistics reporting method is CSV
+  ({{com.ericsson.oss.services.eps.core.statistics.reporting.method}}).
+
+  * Type: String
+
+  * Values:
+
+     * any valid directory path
+
+  []
+
+==================================================
+
+* Flow Deployment configuration parameters
+
+** {com.ericsson.oss.services.eps.module.deployment.folder.path}
+
+ Absolute path where flow.xml files will be placed.
+ EPS will monitor this folder and deploy newly added flows.
+
+ Applicable if {{com.ericsson.oss.services.eps.module.deployment.modelservice.urn}}
+ is not set.
+
+  * Type: String
+
+  * Values:
+
+   * a valid directory path
+
+  []
+
+** {com.ericsson.oss.services.eps.module.deployment.modelservice.urn}
+
+ {{{${documentation_ModelService}/over_aboutmodels.html}Model URN}} to find
+ and deploy models matching this urn. EPS will also subscribe for notifications
+ for new models matching this urn.
+
+ If set, then EPS will use ModelService to find flows and will ignore any flows
+ on the file system.
+
+ If not set, then EPS will deploy flow delivered as xml files and placed
+ in the location specified by
+ {{com.ericsson.oss.services.eps.module.deployment.folder.path}}
+
+  * Type: String
+
+  * Values:
+
+     * a valid urn
+
+  []
+
+
+** {com.ericsson.oss.services.eps.deploy.already.existing.modules.on.startup}
+
+ Should existing flow descriptors (found in deployment folder or ModelService)
+ be deployed when EPS starts EPS.
+
+  * Type: boolean
+
+  * Values:
+
+    * true: on startup EPS will process every flow descriptor it finds
+
+    * false: EPS will only deploy flow descriptors added after startup.
+
+ []
+
+
+** {com.ericsson.oss.services.eps.core.flow.deployment.failure.policy}
+
+ Response if a flow descriptor fails to deploy.
+
+  * Type: String
+
+  * Values:
+
+    * CONTINUE: EPS will log details about the flow descriptor failure, then
+     continue to process successfully deployed flows.
+
+    * STOP_JVM: EPS will log details about the flow descriptor failure, then
+    stop. This means that successfully deployed flows will not be processed.
+
+    STOP_JVM should be used with care because it will kill the JVM instance if
+    any flow deployment fails.
+
+  []
+
+
+* JSE specific configuration parameters
+
+** {com.ericsson.oss.services.eps.module.cdi.enabled}
+
+  Enables {{{./cdi-event-handlers.html}CDI in EPS}} for JSE deployments.
+
+  * Type: boolean
+
+  * Values:
+
+    * false: cdi is disabled (for JSE)
+
+    * true:  cdi is enabled (for JSE)
+
+  []
+
+
+* {Configure using EpsConfiguration.properties file}
+
+    Each line in EpsConfiguration.properties file stores a single parameter, as
+    a key value pair delimited by the equals("=") character.
+
+    Example:
+
++-------------------------------+
+com.ericsson.oss.services.eps.core.statistics.off=true
+com.ericsson.oss.services.eps.deploy.already.existing.modules.on.startup=false
++-------------------------------+
+
+    It is important to place this file in the root of the classpath.
+    For JEE deployments it must be in a private module (not visible to any
+    other service), e.g. in the ear root or jar.
+
+    There should be a EpsConfiguration.properties file for each EPS instance,
+    so that each EPS instance is configured separately.
+
+
+* {Configure as VM property}
+
+    In <<JEE>> environment, those parameters may be configured in JBoss.
+
+    In a <<JSE>> environment, configuration parameters may be passed to
+    <<$EPS_HOME/bin/eps.sh>> for each EPS instance.
+
+    Example:
+
++-------------------------------+
+-Dcom.ericsson.oss.services.eps.core.statistics.off=true
+-Dcom.ericsson.oss.services.eps.deploy.already.existing.modules.on.startup=false
++-------------------------------+

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+	xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	oc:ns="com.ericsson.test" oc:name="esper_engine_flow_fs_resource" oc:version="1.0.0">
+
+	<oc:modelCreationInfo author="author"
+		creationDate="today">
+		<oc:designedModel componentId="esperEngineComponent" />
+	</oc:modelCreationInfo>
+
+	<oc:desc>example flows</oc:desc>
+
+	<input name="hcInput9">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-input-topic-mixed" />
+	</input>
+
+	<output name="hcOutput9">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-output-topic-mixed" />
+	</output>
+
+	<step name="filter9">
+		<handler>
+			<named>EsperHandler</named>
+		</handler>
+		<attribute name="esperInstanceName" value="esperEngine9" />
+
+		<rule name="rules_esper">
+			<inputPort name="inputStream1" />
+			<outputPort name="outputStream1" />
+			<ruleResource uri="classpath:/epl/rules_esper.epl" />
+			<ruleResource uri="file:src/test/resources/epl/rules_esper2.epl" />
+		</rule>
+
+	</step>
+
+	<path>
+		<from uri="hcInput9" />
+		<to uri="filter9" />
+		<to uri="hcOutput9" />
+	</path>
+
+</FlowDefinition>

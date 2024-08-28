@@ -1,0 +1,45 @@
+Describe following modules: vocabulary, locator, contextualizer, view, state
+
+By default, vocabulary object is bound under variables called 'v' and 'vocabulary'.
+
+By default, locator object is bound under variables called 'l' and 'locator'.
+
+Currently only one instance of Vocabulary per JVM is allowed. This might change in the future, 
+depending on requirements.
+
+Currently, up to 4 different instances of Locator are allowed per JVM. There can be one instance
+of locator for each of the following stores: IMKVS (Infinispan i.e. Jboss Data Grid), ADS (Sybase IQ)
+and two locators for BDS: one for Hbase and one for Hive/Impala.
+
+Name of both core and conf has to match in order to correctly apply conf to core. Name is general
+tag from XML.
+
+TODO concurrency tuning...
+
+variable names have to begin with var_ as internal convention...
+
+Name of directory in which policy is deployed has to follow pattern com.ericsson.component.aia.wcdma_test-policy_1.0
+Name of core file has to be core.xml
+Name of conf file has to follow pattern conf_1.xml where 1 is id of conf.
+Do not create directories under any of the policy dirs.
+
+"Premature optimization is root of all evil", hence performance shall be tested and tuned with first actual feature.
+
+Core.xml is currently in the process of being added to the model service, once done updates will be required to add the project and update our own.
+conf.xml is considered meta data and thus does not live inside the modeling service.
+
+Deployer assumes that movement of directories is atomic. That is how new policies should be deployed by
+moving directory into directory which is periodically scanned by deployer.
+
+Need to imperically look at performance once we have a valid use case implemented current logs look something like this, further the samples taken here represent some of the worst values:
+
+15:42:18.860 [eps-hazelcast-input-adapter-70835964-e484-4f3f-bbf0-50884405fc0000] WARN  c.e.o.s.e.b.c.m.r.s.StatelessRule - The rule isu60_consumed_credits_threshold_matrix is exceeding the current evaluation time limit of 0, the evaluation duration was 5
+15:42:19.164 [eps-hazelcast-input-adapter-70835964-e484-4f3f-bbf0-50884405fc0000] WARN  c.e.o.s.e.b.c.m.r.s.StatelessRule - The rule isu60_consumed_credits_threshold_sequence is exceeding the current evaluation time limit of 0, the evaluation duration was 3
+15:42:20.079 [eps-hazelcast-input-adapter-70835964-e484-4f3f-bbf0-50884405fc0001] WARN  c.e.o.s.e.b.c.m.r.s.StatefulRule - The rule isu60_consumed_credits_threshold_singleton is exceeding the current evaluation time limit of 0, the evaluation duration was 3
+
+Additionally worth looking into is thread blocking as this was part of a unit test output threads were restricted but the following was seen in the output:
+15:42:19.248 [eps-hazelcast-input-adapter-70835964-e484-4f3f-bbf0-50884405fc0003] WARN  c.e.o.s.e.b.c.m.r.s.StatefulRule - The rule isu60_consumed_credits_threshold_singleton is exceeding the current evaluation time limit of 0, the evaluation duration was 83
+15:42:19.818 [pool-3-thread-1] INFO  c.e.o.s.e.b.c.m.d.SimpleDeployer - Detected 1 policy directories
+
+........
+........

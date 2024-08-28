@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.ericsson.component.aia.services.eps</groupId>
+		<artifactId>EventProcessingService</artifactId>
+		<version>3.0.13-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>ERICepsmodule_CXP9031864</artifactId>
+	<name>EPS API JBoss Module RPM module</name>
+	<packaging>${rpm.packaging}</packaging>
+	<properties>
+		<publish_artifact>true</publish_artifact>
+        <media.category>service</media.category>
+                <maven.site.skip>true</maven.site.skip>
+                <maven.site.deploy.skip>true</maven.site.deploy.skip>
+                <latest.unversioned.version>2.0.27</latest.unversioned.version>
+	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>unpack</goal>
+						</goals>
+						<configuration>	
+							<artifactItems>
+								<artifactItem>
+									<groupId>${project.groupId}</groupId>
+									<artifactId>eps-jboss-module </artifactId>
+									<version>${project.version}</version>
+									<classifier>CXP9031864</classifier>
+					  				<type>tar.gz</type>
+									<outputDirectory>${project.build.directory}/sources</outputDirectory>
+								</artifactItem>
+								<!-- The following is to add the latest version of EPS 2.x (for backward compatibility) -->
+								<artifactItem>
+									<groupId>com.ericsson.component.aia.services</groupId>
+									<artifactId>eps-jboss-module </artifactId>
+									<version>${latest.unversioned.version}</version>
+									<classifier>CXP9031864</classifier>
+									<type>tar.gz</type>
+									<outputDirectory>${project.build.directory}/sources</outputDirectory>
+								</artifactItem>								
+							</artifactItems>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>rpm-maven-plugin</artifactId>
+				<extensions>true</extensions>
+				<configuration combine.self="merge">
+					<copyright>2015 Ericsson AB All rights reserved</copyright>
+					<group>Applications/System</group>
+					<mappings>
+						<mapping>
+							<directory>${eap.ext.modules.dir}</directory>
+							<filemode>775</filemode>
+							<username>litp_jboss</username>
+							<groupname>litp_jboss</groupname>
+							<sources>
+								<source>
+									<location>${project.build.directory}/sources</location>
+								</source>
+							</sources>
+
+							<dependency />
+						</mapping>
+					</mappings>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

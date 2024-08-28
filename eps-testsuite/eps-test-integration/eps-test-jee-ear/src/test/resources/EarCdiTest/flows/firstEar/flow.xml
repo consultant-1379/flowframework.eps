@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+	xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	oc:ns="com.test.cdi1" oc:name="testCDIFlow1" oc:version="1.1.0">
+
+	<oc:modelCreationInfo author="author"
+		creationDate="today">
+		<oc:designedModel componentId="someComponentId1" />
+	</oc:modelCreationInfo>
+
+	<oc:desc>example flows1</oc:desc>
+
+	<input name="hcInputCdi1">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-cdi-topic1" />
+	</input>
+
+	<output name="hcOutputCdi1">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-cdi-topic2" />
+	</output>
+
+	<step name="cdiEventGenerator">
+		<handler>
+			<named>cdiEventGenerator</named>
+		</handler>
+		<attribute name="count" value="2" />
+	</step>
+
+	<step name="testPassThroughComponent">
+		<handler>
+			<named>testPassThroughComponent</named>
+		</handler>
+	</step>
+
+	<step name="cdiEventHandler">
+		<handler>
+			<named>cdiEventDuplicator</named>
+		</handler>
+		<attribute name="duplicationCount" value="5" />
+	</step>
+
+	<path>
+		<from uri="hcInputCdi1" />
+		<to uri="cdiEventGenerator" />
+		<to uri="testPassThroughComponent" />
+		<to uri="cdiEventHandler" />
+		<to uri="hcOutputCdi1" />
+	</path>
+
+</FlowDefinition>

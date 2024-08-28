@@ -1,0 +1,13 @@
+module twitterTrending;            
+	
+insert into tweetTrends select "UP" as event, a.username as username, b.retweetCount as higherRetweetCount, a.retweetCount as lowerRetweetCount
+	from pattern [every a=com.ericsson.eps.demo.tweeter.Tweet -> b=com.ericsson.eps.demo.tweeter.Tweet(username = a.username) where timer:within(5 sec)].win:time(5 min) 
+	where b.retweetCount > a.retweetCount and a.id <> b.id;
+	
+insert into tweetTrends select "DOWN" as event, a.username as username, b.retweetCount as lowerRetweetCount, a.retweetCount as higherRetweetCount
+	from pattern [every a=com.ericsson.eps.demo.tweeter.Tweet -> b=com.ericsson.eps.demo.tweeter.Tweet(username = a.username) where timer:within(5 sec)].win:time(5 min) 
+	where b.retweetCount < a.retweetCount and a.id <> b.id;           
+	           
+                                
+@Name("twitterTrendsEsperOut")	
+select * from tweetTrends;

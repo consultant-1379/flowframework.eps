@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+	xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	oc:ns="com.ericsson.test" oc:name="OutputFlow" oc:version="1.0.0">
+
+	<oc:modelCreationInfo author="author"
+		creationDate="today">
+		<oc:designedModel componentId="someComponentId" />
+	</oc:modelCreationInfo>
+
+	<oc:desc>example flows</oc:desc>
+	
+	<input name="inputFromLocal">
+		<attribute name="uri" value="local:/" />
+		<attribute name="channelId" value="flow2flow" />
+	</input>
+
+	<output name="flowOutput">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-output-flow" />
+	</output>
+	
+	<output name="flowOutput1">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-output-flow1" />
+	</output>
+	
+	<output name="flowOutput2">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-output-flow2" />
+	</output>
+	
+	<output name="flowOutput3">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-output-flow3" />
+	</output>
+
+	<step name="eventDuplicator">
+		<handler>
+			<className>com.ericsson.component.aia.services.eps.core.integration.jse.TestEventDuplicatorComponent</className>
+		</handler>
+		<attribute name="duplicationCount" value="3" />
+	</step>
+
+	<step name="threading">
+		<handler>
+			<className>com.ericsson.component.aia.services.eps.builtin.components.ThreadManagementComponent</className>
+		</handler>
+		<attribute name="threadPoolSize" value="3" />
+		<attribute name="threadPriority" value="5" />
+	</step>
+
+	<path>
+		<from uri="local:/channelId=flow2flow" />
+		<to uri="threading" />
+		<to uri="eventDuplicator" />
+		<to uri="flowOutput" />
+	</path>
+	
+	<path>
+		<from uri="local:/channelId=flow2flow" />
+		<to uri="flowOutput1" />
+	</path>
+	
+	<path>
+		<from uri="inputFromLocal" />
+		<to uri="flowOutput2" />
+	</path>
+	
+	<path>
+		<from uri="inputFromLocal" />
+		<to uri="flowOutput3" />
+	</path>
+
+</FlowDefinition>

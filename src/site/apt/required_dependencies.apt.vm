@@ -1,0 +1,43 @@
+	------
+	Required Dependencies
+	------
+
+Required Dependencies
+	
+* Java and JEE Platform
+
+	Event Processing Service is tested against Oracle Java 1.7.x
+
+	Event Processing Service is tested against RedHat EAP ${version_jboss_as} platform (available {{{${nexusRootUrl}/index.html#nexus-search;quick~jboss-as-dist}here}}).
+
+* Flow Framework
+
+	This version of EPS supports {{{${documentation_FlowFramework}eventflow-api/index.html}event-flow API}} version ${version_flow_framework}. There is no need to install this API separately, it is bundled with EPS, but all handlers
+	must be written using compatible version of event-flow API.
+
+* Service Framework
+
+   A compatible version of ServiceFramework should be used. This version of EPS uses ServiceFramework version ${version_service_framework}.
+
+   In a JSE environment, EPS will include the service framework libraries.
+
+   In a JEE environment the following are required:
+
+   * {{{${nexusSearchUrl};quick~service-framework-bundle}ServiceFramework JBoss module}}, version ${version_service_framework}
+
+   * {{{${nexusSearchUrl};quick~model-service-api-module}Model Service API JBoss module}}, version specified in Modeling-BOM ${version_modeling_bom}
+
+   * {{{${nexusSearchUrl};quick~model-service-module}Model Service JBoss module}}, version specified in Modeling-BOM ${version_modeling_bom}
+
+* JEE dependencies
+	
+	In JEE environment it is required to install the {{{${nexusSearchUrl};quick~eps-jboss-module}EPS jboss module}} with same version as the EPS you are using.
+	
+	The <<eps-jboss-module>> is delivered also for deployment as RPM {{{${nexusSearchUrl};quick~ERICepsmodule} Download}}
+	
+* OS dependencies
+
+	EPS is tested on Linux and Windows environment. Since EPS (currently) uses file system to find newly deployed flows it is mandatory to create required folders or point EPS
+	to watch different folders. See {{{./configuration-options.html}configuration options}}.
+	
+	For further installation information check {{{./using-eps.html}how to install EPS}}.

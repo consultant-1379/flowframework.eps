@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+	xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	oc:ns="com.ericsson.test2" oc:name="OutputFlow2" oc:version="1.0.0">
+
+	<oc:modelCreationInfo author="author"
+		creationDate="today">
+		<oc:designedModel componentId="someComponentId" />
+	</oc:modelCreationInfo>
+
+	<oc:desc>example flows</oc:desc>
+	
+	<input name="inputFromLocalA">
+		<attribute name="uri" value="local:/" />
+		<attribute name="channelId" value="flow2flow" />
+	</input>
+
+	<output name="flowOutput4">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-output-flow4" />
+	</output>
+
+	<step name="eventDuplicator">
+		<handler>
+			<className>com.ericsson.component.aia.services.eps.core.integration.jse.TestEventDuplicatorComponent</className>
+		</handler>
+		<attribute name="duplicationCount" value="5" />
+	</step>
+
+	<path>
+		<from uri="inputFromLocalA" />
+		<to uri="eventDuplicator" />
+		<to uri="flowOutput4" />
+	</path>
+
+</FlowDefinition>

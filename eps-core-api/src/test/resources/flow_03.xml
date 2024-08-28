@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+	xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	oc:ns="com.ericsson.test" oc:name="test_name" oc:version="1.1.0">
+
+	<oc:modelCreationInfo author="author"
+		creationDate="today">
+		<oc:designedModel componentId="someComponentId" />
+	</oc:modelCreationInfo>
+
+	<oc:desc>example flows</oc:desc>
+
+	<step name="doRule1">
+		<handler>
+			<named>EsperHandler</named>
+		</handler>
+		<rule name="rule1">
+			<inputPort name="in" />
+			<outputPort name="out" />
+			<ruleInline>some rule</ruleInline>
+		</rule>
+	</step>
+
+	<step name="doRule2">
+		<handler>
+			<className>com.ericsson.component.aia.examples.Foo</className>
+		</handler>
+		<attribute name="prop1" value="val1" />
+	</step>
+
+	<step name="doRule3">
+		<handler>
+			<named>EsperHandler</named>
+		</handler>
+		<attribute name="prop1" value="val1" />
+		<attribute name="prop2" value="val2" />
+		<attribute name="prop3" value="val3" />
+
+		<rule name="externalRule3">
+			<ruleResource uri="classpath:/rule3.epl" />
+			<ruleResource uri="classpath:/rule4.epl" />
+		</rule>
+	</step>
+
+	<step name="jythonRuleHandler">
+		<handler>
+			<named>JvmScriptingHandler</named>
+		</handler>
+		<attribute name="script_handler_name" value="jython" />
+		
+		<rule name="jythonRule">
+			<ruleResource uri="classpath:/scripts/script.py" />
+		</rule>
+	</step>
+
+	<path>
+		<from uri="file://tmp/file1" />
+		<to uri="doRule1" />
+		<to uri="doRule2" />
+		<to uri="local:/channelId=channelToAnotherFlow" />
+	</path>
+</FlowDefinition>

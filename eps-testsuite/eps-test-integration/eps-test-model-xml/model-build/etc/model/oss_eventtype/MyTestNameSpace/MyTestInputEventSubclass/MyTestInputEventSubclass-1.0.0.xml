@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+
+*******************************************************************************
+* COPYRIGHT Ericsson LMI 2018. All rights reserved.
+*
+* No part of this document may be reproduced in any form without the
+* written permission of the copyright owner.The contents of this document
+* are subject to revision without notice due to continued progress in
+* methodology, design and manufacturing. Ericsson shall have no liability
+* for any error or damage of any kind resulting from the use of this document.
+*
+*******************************************************************************
+
+
+--><ns2:EventTypeDefinition xmlns:ns1="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:ns2="urn:com:ericsson:schema:xml:oss:oss_eventtype" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" defaultChannelUrn="//global/epsModEvAdapterDataInputChannel" eventPersistence="NON_PERSISTENT" ns1:lifeCycle="CURRENT" ns1:name="MyTestInputEventSubclass" ns1:ns="MyTestNameSpace" ns1:version="1.0.0" priority="4" timeToLive="0">
+  <ns1:modelCreationInfo author="elasabn" creationDate="Tue Nov 20 17:33:12 GMT 2018">
+    <ns1:designedModel className="com.ericsson.component.aia.services.eps.core.integration.jee.modeledevent.TestInputModeledEventSubclass" componentId="eps-test-model-jar"/>
+  </ns1:modelCreationInfo>
+  <ns1:inheritsFrom urn="//MyTestNameSpace/MyTestInputEvent/1.0.0"/>
+  <ns1:desc>MyTestInputEventSubclass</ns1:desc>
+  <ns2:attribute filterable="false" immutable="false" key="false" mandatory="true" ns1:lifeCycle="CURRENT" ns1:name="subClassField" sensitive="false">
+    <ns1:desc>Integer subclass field</ns1:desc>
+    <ns1:type xsi:type="ns1:integerType">
+      <ns1:notNullConstraint/>
+    </ns1:type>
+  </ns2:attribute>
+</ns2:EventTypeDefinition>

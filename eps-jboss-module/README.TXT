@@ -1,0 +1,1 @@
+This is module that packages jboss module for EPS. This jboss module is used as extension point to EPS.

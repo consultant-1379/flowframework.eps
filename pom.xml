@@ -1,0 +1,664 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.ericsson.aia</groupId>
+        <artifactId>integration</artifactId>
+        <version>1.0.46</version>
+    </parent>
+    <groupId>com.ericsson.component.aia.services.eps</groupId>
+    <artifactId>EventProcessingService</artifactId>
+    <version>3.0.30-SNAPSHOT</version><!-- forked from 3.16.1-SNAPSHOT -->
+    <packaging>pom</packaging>
+
+
+
+    <url>http://www.ericsson.com</url>
+    <organization>
+        <name>Ericsson</name>
+        <url>${project.url}</url>
+    </organization>
+
+    <issueManagement>
+        <system>jira</system>
+        <url>${jira.url}</url>
+    </issueManagement>
+
+    <!-- This information will be included in the CI report target/site/integration.html -->
+    <!-- notifiers not specified -->
+    <ciManagement>
+        <system>jenkins</system>
+        <url>https://fem113-eiffel004.lmera.ericsson.se:8443/jenkins/view/Service%20Layer%20-%20Event%20Processing%20Service/</url>
+    </ciManagement>
+
+    <name>Event Processing Service</name>
+    <description>Event Processing Service (EPS) is a common component used for event processing (event correlation, aggregation, transformation, enrichment etc) .</description>
+
+    <properties>
+        <target.java.version>1.7</target.java.version>
+
+        <git.repository>AIA/common/flowframework/flowframework.eps</git.repository>
+        <!-- for YMER SDK automated Jenkins jobs -->
+        <version.service.framework.bom>3.46.3</version.service.framework.bom>
+        <version.service.framework.api.bom>3.23.4</version.service.framework.api.bom>
+
+        <version.model-service>13.30.2</version.model-service>
+        <version.model-service-api>12.18.1</version.model-service-api>
+
+        <!-- To cater for Velocity : can't use '.' character in property names -->
+        <version_service_framework>${version.service.framework.bom}</version_service_framework>
+        <version_modeling_bom>${version.modeling.bom}</version_modeling_bom>
+
+        <!--<ericsson.scm.url>scm:git:[fetch=]ssh://gerritmirror.lmera.ericsson.se:29418/AIA/com.ericsson.component.aia.services.eps/${project.artifactId}[push=]ssh://gerrit.ericsson.se:29418/AIA/com.ericsson.component.aia.services.eps/${project.artifactId}</ericsson.scm.url>-->
+
+        <version.junit>4.10</version.junit>
+        <version.mockito>1.9.5</version.mockito>
+        <version.powermock.module>1.6.1</version.powermock.module>
+        <version.powermock.mockito>1.6.1</version.powermock.mockito>
+        <!-- modeling of flow language -->
+        <version.metamodels>2.0.15</version.metamodels>
+
+        <!-- eventflow API -->
+        <version_flow_framework>2.0.0</version_flow_framework>
+        <jira.url>http://jira-nam.lmera.ericsson.se/browse/CDS/component/16663</jira.url>
+        <releases.url>http://confluence-oss.lmera.ericsson.se/display/EPS/Release+Notes</releases.url>
+
+        <!-- links for maven site docs -->
+        <documentation.server.addr>https://arm101-eiffel004.lmera.ericsson.se:8443</documentation.server.addr>
+        <documentation_root_url>${documentation.server.addr}/nexus/content/sites/cds</documentation_root_url>
+
+        <documentation_FlowFramework>${documentation_root_url}/FlowFramework/${version_flow_framework}/</documentation_FlowFramework>
+        <documentation_Extensions>${documentation_root_url}/EpsExtensions/latest</documentation_Extensions>
+        <documentation_LITP2>${documentation.server.addr}/nexus/content/sites/litp2/ERIClitpdocs/latest</documentation_LITP2>
+
+        <documentation_eventFlowApi>${documentation_FlowFramework}/eventflow-api/index.html</documentation_eventFlowApi>
+        <documentation_ModelService>${documentation_root_url}/Modeling-Sdk/latest</documentation_ModelService>
+        <documentation_modelingsdk>${documentation_ModelService}/dpsu_overview.html</documentation_modelingsdk>
+        <nexusRootUrl>https://arm101-eiffel004.lmera.ericsson.se:8443/nexus</nexusRootUrl>
+        <nexusSearchUrl>${nexusRootUrl}/index.html#nexus-search</nexusSearchUrl>
+        <nexusUrl>${nexusSearchUrl}EventProcessingService</nexusUrl>
+
+        <url_Esper>http://www.espertech.com/esper</url_Esper>
+        <!-- esper only publishes docs for latest version -->
+        <doc_Esper_docs>${url_Esper}/release-5.1.0/esper-reference/html/</doc_Esper_docs>
+
+        <!-- cxp number is used in documentation. -->
+        <eps_cxp_number>CXP9031864</eps_cxp_number>
+        <eps_jee_cxp_number>CXP9031864</eps_jee_cxp_number>
+
+        <!-- arquillian versions -->
+        <version.weld>1.1.10.Final</version.weld>
+        <version.arquillian.bom>1.1.7.Final</version.arquillian.bom>
+        <version.arquillian-weld-se-embedded>1.0.0.CR8</version.arquillian-weld-se-embedded>
+        <version.arquillian.suite.extension>1.1.1</version.arquillian.suite.extension>
+
+        <!-- EPS does not depend on JBoss, but for JEE tests we have JBoss version
+            to be used -->
+        <version_jboss_as>6.4.5</version_jboss_as>
+
+        <version.jboss.as.arquillian>7.2.0.Final</version.jboss.as.arquillian>
+
+        <!-- library used for exposing metrics -->
+        <version.metrics>3.0.1</version.metrics>
+
+        <!-- must not use dot for Esper version because maven site does not like
+            it -->
+        <version_esper>4.10.0</version_esper>
+        <version.logback>1.0.13</version.logback>
+        <version.disruptor>2.10.4</version.disruptor>
+        <version.hornetq>2.3.0.Final</version.hornetq>
+        <version.jython>2.5.3</version.jython>
+        <version_curator>2.5.0</version_curator>
+
+        <!-- testing dependencies -->
+        <version.modeling.bom>18.7.1</version.modeling.bom>
+        <version-mdt>7.35.2</version-mdt>
+        <version.annotation.processor>3.23.1</version.annotation.processor>
+        <version.model.processing>1.35.1</version.model.processing>
+
+        <!-- The two following properties are used for multiple ear testing with
+            a previous EPS version -->
+        <version_old_eps>2.0.6</version_old_eps>
+        <version_old_service_framework>2.3.3</version_old_service_framework>
+
+        <!-- coverage -->
+        <sonar.jacoco.reportPath>${basedir}/../target/jacoco.exec</sonar.jacoco.reportPath>
+        <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+        <sonar.language>java</sonar.language>
+
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>javax.enterprise</groupId>
+                <artifactId>cdi-api</artifactId>
+                <version>1.1.EDR1.2</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.inject</groupId>
+                <artifactId>javax.inject</artifactId>
+                <version>1</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.jms</groupId>
+                <artifactId>jms</artifactId>
+                <version>1.1</version>
+            </dependency>
+
+            <!-- Import the Service Framework BOM. Implementation modules included
+                in the JSE/JEE specific dist modules. eps-dist for JSE implementations eps-jboss-module-dist
+                for JEE implementations -->
+            <dependency>
+                <groupId>com.ericsson.oss.itpf.sdk</groupId>
+                <artifactId>ServiceFrameworkJBossBOM</artifactId>
+                <version>${version.service.framework.bom}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.ericsson.oss.itpf.sdk</groupId>
+                <artifactId>ServiceFrameworkBOM</artifactId>
+                <version>${version.service.framework.bom}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.ericsson.oss.itpf.sdk</groupId>
+                <artifactId>ServiceFrameworkAPIBOM</artifactId>
+                <version>${version.service.framework.api.bom}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.eu.ingwar.tools</groupId>
+                <artifactId>arquillian-suite-extension</artifactId>
+                <version>${version.arquillian.suite.extension}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.arquillian</groupId>
+                <artifactId>arquillian-bom</artifactId>
+                <version>${version.arquillian.bom}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.ericsson.oss.itpf.modeling</groupId>
+                <artifactId>model-service-jar</artifactId>
+                <version>${version.model-service}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.ericsson.oss.itpf.modeling</groupId>
+                <artifactId>model-service-api-jar</artifactId>
+                <version>${version.model-service-api}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${version.jacoco}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.codahale.metrics</groupId>
+                <artifactId>metrics-core</artifactId>
+                <version>${version.metrics}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <!-- <version>1.1</version> -->
+                <executions>
+                    <execution>
+                        <id>enforce-versions</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <bannedDependencies>
+                                    <excludes>
+                                        <exclude>commons-logging:commons-logging:*:*:jar:compile</exclude>
+                                        <exclude>log4j:log4j:*:*:jar:compile</exclude>
+                                    </excludes>
+                                </bannedDependencies>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>aggregate</id>
+                        <phase>none</phase>
+                        <goals>
+                            <goal>aggregate</goal>
+                        </goals>
+                        <configuration>
+                            <author>false</author>
+                        </configuration>
+                    </execution>
+                </executions>
+                <configuration>
+                    <author>false</author>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <configuration>
+                    <failOnViolation>false</failOnViolation>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>check-style</id>
+                        <configuration>
+                            <failsOnError>true</failsOnError>
+                            <failOnViolation>true</failOnViolation>
+                            <maxAllowedViolations>0</maxAllowedViolations>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+        <pluginManagement>
+            <plugins>
+
+                <!--This plugin's configuration is used to store Eclipse m2e settings
+                    only. It has no influence on the Maven build itself. -->
+                <plugin>
+                    <groupId>org.eclipse.m2e</groupId>
+                    <artifactId>lifecycle-mapping</artifactId>
+                    <version>1.0.0</version>
+                    <configuration>
+                        <lifecycleMappingMetadata>
+                            <pluginExecutions>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>org.apache.maven.plugins</groupId>
+                                        <artifactId>maven-dependency-plugin</artifactId>
+                                        <versionRange>[2.4,)</versionRange>
+                                        <goals>
+                                            <goal>analyze-dep-mgt</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore />
+                                    </action>
+                                </pluginExecution>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>org.apache.maven.plugins</groupId>
+                                        <artifactId>maven-war-plugin</artifactId>
+                                        <versionRange>[2.7,)</versionRange>
+                                        <goals>
+                                            <goal>generate-application-xml</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore />
+                                    </action>
+                                </pluginExecution>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>com.ericsson.maven.plugins</groupId>
+                                        <artifactId>rstate-maven-plugin</artifactId>
+                                        <versionRange>[1.0,)</versionRange>
+                                        <goals>
+                                            <goal>rstate</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore />
+                                    </action>
+                                </pluginExecution>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>
+                                            org.codehaus.mojo
+                                        </groupId>
+                                        <artifactId>
+                                            build-helper-maven-plugin
+                                        </artifactId>
+                                        <versionRange>
+                                            [1.7,)
+                                        </versionRange>
+                                        <goals>
+                                            <goal>regex-property</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore />
+                                    </action>
+                                </pluginExecution>
+
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>org.apache.maven.plugins</groupId>
+                                        <artifactId>maven-checkstyle-plugin</artifactId>
+                                        <versionRange>[2.10,)</versionRange>
+                                        <goals>
+                                            <goal>checkstyle</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore />
+                                    </action>
+                                </pluginExecution>
+
+                            </pluginExecutions>
+                        </lifecycleMappingMetadata>
+                    </configuration>
+                </plugin>
+                            <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>3.3</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>javax.enterprise</groupId>
+            <artifactId>cdi-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.powermock</groupId>
+          <artifactId>powermock-module-junit4-rule-agent</artifactId>
+          <version>${version.powermock.mockito}</version>
+        <scope>test</scope>
+      </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-core</artifactId>
+            <version>1.3</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${version.mockito}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-module-junit4</artifactId>
+            <version>${version.powermock.module}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-mockito</artifactId>
+            <version>${version.powermock.mockito}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+
+    </dependencies>
+
+    <profiles>
+
+        <profile>
+            <id>site_review</id>
+            <distributionManagement>
+                <site>
+                    <id>site</id>
+                    <name>Site</name>
+                    <url>${site.url}</url>
+                </site>
+            </distributionManagement>
+        </profile>
+
+        <profile>
+            <id>site_latest</id>
+            <distributionManagement>
+                <site>
+                    <id>site</id>
+                    <name>Site</name>
+                    <url>${site.url}/EventProcessingService/latest</url>
+                </site>
+            </distributionManagement>
+        </profile>
+
+        <profile>
+            <id>site_stage</id>
+            <distributionManagement>
+                <site>
+                    <id>site</id>
+                    <name>Site</name>
+                    <url>${site.url}/EventProcessingService/snapshot</url>
+                </site>
+            </distributionManagement>
+        </profile>
+
+        <profile>
+            <id>linkcheck</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <reporting>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-linkcheck-plugin</artifactId>
+                        <configuration>
+                            <excludedPages>
+                                <excludedPage>modules.html</excludedPage>
+                                <excludedPage>surefire-report.html</excludedPage>
+                                <excludedPage>apidocs/**</excludedPage>
+                                <excludedPage>testapidocs/**</excludedPage>
+                                <excludedPage>project-info.html</excludedPage>
+                                <excludedPage>project-reports.html</excludedPage>
+                                <excludedPage>xref-test/**</excludedPage>
+                                <excludedPage>pmd.html</excludedPage>
+                                <excludedPage>cpd.html</excludedPage>
+                                <excludedPage>dependencies.html</excludedPage>
+                                <excludedPage>dependency-convergence.html</excludedPage>
+                                <excludedPage>dependency-management.html</excludedPage>
+                                <excludedPage>plugin-management.html</excludedPage>
+                            </excludedPages>
+                            <excludedLinks>
+                                <excludedLink>https://cds.ericsson.se/#portal</excludedLink>
+                                <excludedLink>apidocs/index.html</excludedLink>
+                            </excludedLinks>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </reporting>
+        </profile>
+
+        <profile>
+            <id>jacoco</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <configuration>
+                            <excludes>
+                                <exclude>**com.espertech*</exclude>
+                                <exclude>**com.ericsson.itpf*</exclude>
+                            </excludes>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>pre-unit-test</id>
+                                <goals>
+                                    <goal>prepare-agent</goal>
+                                </goals>
+                                <phase>test-compile</phase>
+                                <configuration>
+                                    <!-- Sets the path to the file which contains the execution data. -->
+                                    <destFile>${sonar.jacoco.reportPath}</destFile>
+                                    <propertyName>surefireArgLine</propertyName>
+                                    <append>true</append>
+                                    <output>file</output>
+                                </configuration>
+                            </execution>
+
+                            <!-- Ensures that the code coverage report for unit tests is created
+                                after unit tests have been run. -->
+                            <execution>
+                                <id>post-unit-test</id>
+                                <phase>test</phase>
+                                <goals>
+                                    <goal>report</goal>
+                                </goals>
+                                <configuration>
+                                    <!-- Sets the path to the file which contains the execution data. -->
+                                    <dataFile>${sonar.jacoco.reportPath}</dataFile>
+                                    <!-- Sets the output directory for the code coverage report. -->
+                                    <outputDirectory>${project.basedir}/../target/jacoco-ut/${project.build.finalName}</outputDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <!-- Sets the VM argument line used when unit tests are run. -->
+                            <argLine>${surefireArgLine} -XX:-UseSplitVerifier</argLine>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+    </profiles>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <aggregate>true</aggregate>
+                    <sourcepath>${basedir}/eps-api/src/main/java/</sourcepath>
+                    <linksource>true</linksource>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>2.1</version>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <!-- produces a report of those project dependencies which have newer
+                                versions available -->
+                            <report>dependency-updates-report</report>
+                            <!-- produces a report of those plugins which have newer versions
+                                available. -->
+                            <report>plugin-updates-report</report>
+                            <!-- produces a report of those properties which are used to control
+                                artifact versions and which properies have newer versions available -->
+                            <report>property-updates-report</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>2.7</version>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <!-- skipping goals: project-team, distribution-management, modules,
+                                mailing-list -->
+                            <report>dependencies</report>
+                            <report>dependency-convergence</report>
+                            <report>dependency-management</report>
+                            <report>plugin-management</report>
+                            <report>index</report>
+                            <report>cim</report>
+                            <report>issue-tracking</report>
+                            <report>license</report>
+                            <report>scm</report>
+                            <report>summary</report>
+                            <report>plugins</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+        </plugins>
+    </reporting>
+
+    <modules>
+        <module>eps-core-api</module>
+             <module>eps-core-impl</module>
+        <module>eps-jse</module>
+        <module>eps-processing-engine-esper</module>
+        <module>eps-processing-engine-java</module>
+    <module>eps-jee-war</module>
+        <module>eps-io-adapter-impl</module>
+        <module>eps-processing-engine-core</module>
+        <module>eps-api</module>
+        <module>eps-processing-engine-jvm-scripting</module>
+        <module>eps-io-adapter-core</module>
+        <module>eps-jboss-module</module>
+        <module>eps-builtin-components</module>
+        <module>eps-dist</module>
+        <module>eps-jboss-module-dist</module>
+        <module>eps-internal-model</module>
+    <module>eps-bom</module>
+            <!--test modules-->
+        <module>eps-testsuite</module>
+
+        <module>eps-builtin-components-mesa</module>
+        <module>eps-mesa-api</module>
+
+        <!-- <module>ERICepsmodule_CXP9031864</module> -->
+    </modules>
+
+    <scm>
+        <developerConnection>${ericsson.scm.url}</developerConnection>
+        <connection>${ericsson.scm.url}</connection>
+        <tag>HEAD</tag>
+    </scm>
+
+
+    <distributionManagement>
+        <site>
+            <id>site</id>
+            <name>Site</name>
+            <url>${site.url}/EventProcessingService/${project.version}</url>
+        </site>
+    </distributionManagement>
+</project>

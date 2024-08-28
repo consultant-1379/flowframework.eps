@@ -1,0 +1,1 @@
+java -cp ../ext-lib/test-project-0.0.1-SNAPSHOT.jar:../lib/hazelcast-2.6.jar:../ext-lib/jfiglet-0.0.7.jar com.ericsson.eps.demo.tweeter.TwitterMock

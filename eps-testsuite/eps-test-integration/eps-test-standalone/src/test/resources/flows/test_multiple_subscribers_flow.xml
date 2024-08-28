@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+	xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	oc:ns="com.test1" oc:name="test_multiple_subscribers" oc:version="1.1.0">
+
+	<oc:modelCreationInfo author="author"
+		creationDate="today">
+		<oc:designedModel componentId="someComponentId" />
+	</oc:modelCreationInfo>
+
+	<oc:desc>example flows</oc:desc>
+
+	<input name="hcInput">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-topic-in" />
+	</input>
+
+	<output name="hcOutputEven">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-topic-even" />
+	</output>
+
+	<output name="hcOutputOdd">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-topic-odd" />
+	</output>
+
+	<step name="loadBalanceEvenOdd">
+		<handler>
+			<className>com.ericsson.component.aia.services.eps.core.integration.jse.TestEvenOddLoadBalancerEventHandler</className>
+		</handler>
+	</step>
+
+	<step name="even">
+		<handler>
+			<className>com.ericsson.component.aia.services.eps.core.integration.jse.TestPassThroughEventHandler</className>
+		</handler>
+	</step>
+	
+	<step name="odd">
+		<handler>
+			<className>com.ericsson.component.aia.services.eps.core.integration.jse.TestPassThroughEventHandler</className>
+		</handler>
+	</step>
+	
+	<step name="duplicate2">
+		<handler>
+			<className>com.ericsson.component.aia.services.eps.core.integration.jse.TestEventDuplicatorComponent</className>
+		</handler>
+		<attribute name="duplicationCount" value="2" />
+	</step>
+	
+	<step name="duplicate3">
+		<handler>
+			<className>com.ericsson.component.aia.services.eps.core.integration.jse.TestEventDuplicatorComponent</className>
+		</handler>
+		<attribute name="duplicationCount" value="3" />
+	</step>
+
+	<path>
+		<from uri="hcInput" />
+		<to uri="loadBalanceEvenOdd" />
+		<toMany>
+			<to uri="odd" />
+			<to uri="even" />
+		</toMany>
+	</path>
+	
+	<path>
+		<from uri="odd" />
+		<to uri="duplicate3" />
+		<to uri="hcOutputOdd" />
+	</path>
+	
+	<path>
+		<from uri="even" />
+		<to uri="duplicate2" />
+		<to uri="hcOutputEven" />
+	</path>
+
+</FlowDefinition>

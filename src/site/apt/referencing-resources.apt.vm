@@ -1,0 +1,79 @@
+	------
+	Event Processing Service - Referencing Resources
+	------
+	
+What are resources?
+
+	Resources are external artifacts that can be referenced from {{{./flow-descriptor.html}Flow XML descriptors}}. Few examples of resources would be:
+	
+	[[1]] Esper configuration xml file
+	
+	[[2]] Hazelcast configuration xml file
+	
+	[[3]] EPL files containing Esper correlation rules
+	
+	[[4]] JVM scripting file implementing event handler logic (for example jython files)
+	
+Resources deployment
+
+	In both <<JSE>> and <<JEE>> environments:
+
+	Resources can be deployed as either classpath resources or file resources. 
+	
+	<<Classpath resources>> - resource files are deployed in the classpath. It can be built inside the EPS extensions and deployed along with the extensions.
+	
+	<<File resources>> - resource files are deployed on file system.
+	
+How to reference resources?
+
+	Resources can be referenced from certain parts of flow descriptor xml file.
+	
+* Classpath resources
+
+	Classpath resources must consist of <<classpath:/>> prefix and the full name of resource. For example:
+	
++-------------------------------+
+<step name="jythonTestRuleHandlerScript">
+	<handler>
+		<named>JvmScriptingHandler</named>
+	</handler>
+	<attribute name="script_handler_name" value="jython" />
+
+	<rule name="jythonTestRule">
+		<ruleResource uri="classpath:/scripts/triple_messages.py" />
+	</rule>
+</step>
++-------------------------------+
+
+	In the example above EPS will try to find </scripts/triple_messages.py> in the classpath.
+	
+	<<NOTE:>> Classpath resources must always use absolute path. If multiple resources (with the same name and path) exist in the classpath then behavior will be unpredictable.
+	
+* File resources
+
+	File resources must consist of <<file:/>> prefix and absolute file path of the resource. For example:
+	
++-------------------------------+
+<step name="filter">
+	<handler>
+		<named>EsperHandler</named>
+	</handler>
+	<attribute name="configurationFilePath" value="file:/opt/ericsson/config/esper-test-config.xml" />
+	<attribute name="esperInstanceName" value="esperEngine1" />
+	
+	<rule name="epl02-rule">
+		<inputPort name="inputStream1" />	
+		<outputPort name="S1_HANDOVER_OUTGOING" />	
+		<outputPort name="outputStream1" />
+		<!-- all resources are loaded in the order specified in flow descriptor -->
+		<ruleResource uri="file:/epl/rules_01.epl" />
+		<ruleResource uri="file:/epl/rules_02.epl" />
+		<!-- it is possible to mix both classpath and file resources -->
+		<ruleResource uri="classpath:/epl/rules_03.epl" />		
+	</rule>
+</step>
++-------------------------------+	
+
+	In the example above EPS will try to find multiple resources in the file system. Referenced resources must be readable files (not directories) on file system or available resources on the classpath.
+	
+	<<NOTE:>> File resources must always use absolute path.

@@ -1,0 +1,118 @@
+	------
+	Event Processing Service - Archtypes
+	------
+
+EPS solution with extensions archetype
+
+	This archetype is a full working set of a sample EPS solution including handlers, flows, input/output adapters and test cases. It can be used to explore a working
+	EPS solution code, to play around with and add handlers, flows and adapters to get used to EPS components, or to use this as a template for creating your own EPS solutions.
+
+	You can generate the solution from our Maven archetype {{{${nexusSearchUrl};quick~eps-solution-archetype}eps-solution-archetype}} using the Maven coordinates below:
+
++-----+
+    GroupId: com.ericsson.oss.services.archetype
+    ArtifactId: eps-solution-archetype
++-----+
+
+
+Steps to create EPS solution from command line
+
+	<<Step 1>> Make sure your local repository is up to date: {{{http://maven.apache.org/archetype/maven-archetype-plugin/crawl-mojo.html}mvn archetype:crawl}}.
+
+	<<Step 2>> Use the {{{http://maven.apache.org/guides/mini/guide-creating-archetypes.html} mvn archetype:generate}} command.
+
+	A sample command is as below:
+
++-------------------------------+
+mvn archetype:generate -B                                \
+  -DarchetypeGroupId=com.ericsson.oss.services.archetype \
+  -DarchetypeArtifactId=eps-solution-archetype           \
+  -DarchetypeVersion=<archetype-release-version>         \
+  -DgroupId=<my.groupid>                                 \
+  -DartifactId=<my-artifactId>
++-------------------------------+
+
+	<archetype-release-version> is a version of eps-extension-archetype from nexus.
+
+	If there are issues you can remove the -B to enable interactive mode.
+
+	<<Step 3>>  Build the project with the following command:
+
++---+
+mvn clean install -Dts -Pjboss_managed_local
++---+
+ 
+ 
+What needs change for your project
+
+	* Handlers:
+
+	  The archetype includes four types of event handlers(java, CDI, esper, jvm). You could change them to implement your own handlers. EPS also provides some {{{./ext-event-handlers.html} built-in event handlers}}.
+
+~~ using latest FF documentation instead of version because EPS cannot move to 1.1.x
+	  For more information on how to create handler, see {{{https://arm101-eiffel004.lmera.ericsson.se:8443/nexus/content/sites/cds/FlowFramework/latest/eventflow-api/howto-create-eventhandler.html}How to create handler}}
+
+	* Input/Output adapters:
+
+	The archetype includes one file input adapter and 1 file output adapter. You could implement your own adapters if you want.
+	 EPS also provides some {{{./ext-io-adapters.html}built-in input/output adapters}}.
+
+~~ using latest FF documentation instead of version because EPS cannot move to 1.1.x
+	  For more information on how to create an adapter, see {{{https://arm101-eiffel004.lmera.ericsson.se:8443/nexus/content/sites/cds/FlowFramework/latest/eventflow-api/howto-create-ioadapter.html} How to create adapter}}
+
+	* Flow descriptor:
+
+	The archetype includes one flow descriptor pointing to the handlers/adapters. Update this to point your own handlers/adapters.
+
+~~ using latest FF documentation instead of version because EPS cannot move to 1.1.x
+	  For more information on how to create a flow, see {{{https://arm101-eiffel004.lmera.ericsson.se:8443/nexus/content/sites/cds/FlowFramework/latest/eventflow-api/howto-create-flow.html} How to create flow}}
+
+	* Jee test case:
+
+	You need to add or change test cases depending on the implementation of your handlers.
+
+
+Archetype sample code explained
+
+  * <<Adapters>>
+
+    *File inputAdapter: <<SampleFileInputAdapter.java>>
+
+	Reads a file from the input directory configured in flow descriptor sends the file as event object downstream.
+
+    *File outputAdapter: <<SampleFileOutputAdapter.java>>
+
+	Receives an event containing file names and contents. Writes files to the output directory configured in the flow descriptor.
+
+  * <<Handlers>>
+
+    * Normal java handler: <<SampleEventHandler.java>>
+
+	Receives a File as an input event. Reads a configurable number of lines, parses each line and sends the parsed content to subscribers.
+ The number of lines to read & parse is configured in the flow descriptor.
+
+    * Esper handler: <<filter_even_cell.epl>>
+
+	Receives parsed event with cellId and value. Filters on even cellId. If the cellId is even, the event is sent downstream, otherwise it is discarded.
+
+    * Jvm handler: <<filter_specific_cell.py>>
+
+	Receives event with cellId and value. Filters on specific cellId. If the cellId matches the cellId if interest the event is sent downstream, otherwise it is discarded.
+
+    * CDI bean handler: <<SampleCdiEventHandler.java>>
+
+	Receives event with cellId and value. Prepare the output data which is sent to subscribers once only.
+	The event sent to subscribers contains a filename (based on the cellId) and content (value for cell provided in input file).
+
+
+  * <<Flow descriptors>>
+ 
+    *flow.xml: <<fileflow.xml>>:
+
+	Instructs EPS how to connect all adapters and handlers. The flow specifies the input, output and processing steps.
+
+  * <<Test cases>>
+
+    * Arquillian integration test: <<HelloworldEpsExtTest>>:
+
+	Deploys the flow descriptor and input file, then verifies that the expected files are generated in specified output directory.

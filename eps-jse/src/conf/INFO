@@ -1,0 +1,3 @@
+EventProcessingService
+
+version=${project.version}

@@ -1,0 +1,74 @@
+	------
+	Event Processing Service - How To Use
+	------
+	
+How to use EPS
+
+	EPS can be used in JEE and/or JSE environment. EPS can be used as it is but in most cases it will be extended with feature-specific
+	event processing rules, event formats and IO adapters, delivered in form of solution sets.
+	
+	EPS extensions can be {{{./eps-jboss-deploy.html}deployed in JBoss}} 
+	or {{{./eps-standalone-install.html}installed along with EPS as standalone application}}. 
+	At runtime it is possible to {{{./flow-descriptor.html}deploy flows}}.
+	
+	The {{{./eps-archetypes.html}EPS Archetype}} is a good starting point to understand how to use EPS.
+	
+What you need
+
+	Before using EPS, you need to:
+
+	* Decide whether you want to use it:
+	      
+		** as a standalone JSE application
+		
+		** bundled inside a JEE application
+	      
+	* Decide how to process events ({{{./corr-sets.html}Solution Sets}}), including:
+	
+		** where you want to receive events and where to send results
+	
+		This is controlled by {{{./ext-io-adapters.html} IO Adapters}}. EPS provides some built-in IO adapters, but
+		it is easy to {{{./ext-io-adapters-creating.html}add new IO adapters}} if necessary. For prototyping/learning purposes,
+		it is probably easiest to use {{{http://hazelcast.com/products/hazelcast/}Hazelcast}} for input and output.
+
+		** how to perform the event processing
+	
+		This is controlled by {{{./ext-event-handlers.html} Event Handlers}} ({{{./java-event-handlers.html}Java}}/{{{./jvm-scripting-event-handlers.html}Jython}}/{{{./esper-event-handlers.html}Esper}}/{{{./cdi-event-handlers.html}CDI}}). It is the event handlers which process/enrich
+		events coming from input adapters and send results downstream until finally event is sent to external world through output adapter. 
+
+		EPS provides some {{{./ext-event-handlers.html}built-in Event handlers}} which is useful and can be reused. It is recommended to use those built-in Event handlers wherever possible.
+		But, you can also {{{${documentation_FlowFramework}/eventflow-api/using-flow-framework.html} write your own Event Handler}} using {{{${documentation_eventFlowApi}}event-flow API}} if needed.
+		Supported version of event flow API is ${version_flow_framework}. See {{{./corr-set-examples.html}examples.}}
+
+		** how event flow looks like
+	
+		This is controlled by {{{./flow-descriptor.html} Flow Descriptors}}. Flow descriptor is a XML documentation which 
+		references EPS event processing components (IO adapters and event handlers), and connects them with each other as an event flow.
+	
+	[]
+	
+Use EPS in specific environment
+
+	Learn about the EPS relevant concepts above, and then you can follow the instructions below.
+
+	For using EPS as a standalone application see {{{./eps-standalone-install.html}Installing EPS as standalone}}
+
+	For bundling EPS inside a JEE application see {{{./eps-jboss-deploy.html}Packaging and deploying EPS in JBoss}}.
+
+Extending EPS
+
+	Adding event handlers has already been described {{{./ext-event-handlers.html}here}}. This is the main way of extending EPS and providing event processing steps.
+	
+	In case when EPS instance needs to be programmatically controlled or when any {{{./eps-extensions.html}extension}} (except event handler) needs to be provided
+	then <<eps-api>> module should be used.
+
++-------------------------------+	
+<dependency>
+	<groupId>com.ericsson.oss.services</groupId>
+	<artifactId>eps-api</artifactId>
+	<version>${project.version}</version>
+</dependency>
++-------------------------------+
+
+	This module contains all publicly exposed APIs of EPS. Having compile-time dependency on any other EPS module is not supported.
+

@@ -1,0 +1,11 @@
+module filterOddNumbers;
+
+uses defineEsperStreams;
+
+insert into intermediaryStream select is1.str as str, 
+	com.ericsson.component.aia.services.eps.core.integration.jse.esperutil.EsperFunctions.getNumberOfCharacters(is1.str) as charNum 
+	from inputStream1 is1;
+	
+
+@Name("outputStream1")	
+select str from intermediaryStream where (charNum % 2 = 0);

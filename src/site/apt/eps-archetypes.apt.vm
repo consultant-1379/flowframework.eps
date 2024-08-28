@@ -1,0 +1,51 @@
+	------
+	Event Processing Service - Archtypes
+	------
+
+What are archetypes?
+
+	Maven Archetypes are templates of projects. We have created sample projects of components in the service layer (including a full working set) and deployed them as archetypes on nexus. This way these sample projects can easily be used as templates from which to generate new projects.
+    The process of creating and using archetypes is as follows:	
+
+	[[1]] We create the sample project.
+
+	[[2]] From this project we create an archetype.
+
+	[[3]] We deploy this archetype to the {{{https://arm101-eiffel004.lmera.ericsson.se:8443/nexus/content/groups/public/archetype-catalog.xml}archetype-catalog on nexus}}.
+
+	[[4]] Users can generate a sample project using the archetype with the command 'mvn archetype:generate' and specifying the groupId, artifactId, and 
+	      version of the archetype for their new project. For more detail on how to use the archetypes see the available archetypes listed in the following
+	      section.
+
+What can they used for?
+
+    * Create a template of EPS solution, which includeds flows, handlers, input/output adapters. And also includes test case that tests flows you have
+      created will be triggered and executed.
+      
+  All the above can be done easier with the archetypes as you don’t have to worry about project set up, dependencies, latest versions. You get the template project
+  and working sample files and only need to edit the components that are specific to your project;  
+
+	* flow model
+
+	* handlers
+
+	* input/output adapters
+
+	* test case to ensure everything works
+
+Archtypes available
+
+    * {{{./create-an-extension-set.html}EPS extension sample archetype}} is a sample EPS solution including handlers, flows, input/output adapters, and
+      Arquillian integration tests
+      
+Steps to create your project from archetype
+
+    * Follow the above links to each archetype page you want and create your template project
+    
+    * Explore the code and make changes to the files to customize your own handlers/adapters/flows
+    
+    * Change the test cases to reflect your own handlers/adapters/flows
+    
+  Now you know that the flows/handlers/adapters you have written work well and they can be used in your projects and user stories.
+  
+	

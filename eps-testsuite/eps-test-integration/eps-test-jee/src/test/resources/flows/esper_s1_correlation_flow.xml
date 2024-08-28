@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+	xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	oc:ns="com.ericsson.test" oc:name="EpsS1CorrelationTest" oc:version="1.0.0">
+
+	<oc:modelCreationInfo author="author"
+		creationDate="today">
+		<oc:designedModel componentId="someComponentId" />
+	</oc:modelCreationInfo>
+
+	<oc:desc>Eps S1 Correlation Test</oc:desc>
+
+	<attributeGroup name="useHcAndConfig">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="hazelcastConfigFileUrl" value="classpath:/config-tests/test-hazelcast.xml" />
+	</attributeGroup>
+
+	<input name="s1HcInput">
+		<attributeGroupRef groupName="useHcAndConfig" />
+		<attribute name="channelName" value="eps-s1-input-topic" />
+	</input>
+
+	<output name="s1HcOutput">
+		<attributeGroupRef groupName="useHcAndConfig" />
+		<attribute name="channelName" value="eps-s1-output-topic" />
+	</output>
+
+	<step name="s1Filter">
+		<handler>
+			<named>EsperHandler</named>
+		</handler>
+		<attribute name="configurationFilePath"
+			value="classpath:/config-tests/esper-xstream-correlations-test-config.xml" />
+
+		<rule name="s1handover">
+			<inputPort name="inputStream1" />
+			<outputPort name="S1_HANDOVER_OUTGOING" />	<!-- output stream -->
+			<outputPort name="S1_HANDOVER_INCOMING" />	<!-- output stream -->
+			<ruleResource uri="classpath:/epl/LTE_RADIO_S1HO_CORRELATION.epl" />
+		</rule>
+
+	</step>
+
+	<path>
+		<from uri="s1HcInput" />
+		<to uri="s1Filter" />
+		<to uri="s1HcOutput" />
+	</path>
+
+</FlowDefinition>

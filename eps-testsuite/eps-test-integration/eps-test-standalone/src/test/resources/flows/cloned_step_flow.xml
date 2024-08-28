@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+	xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	oc:ns="com.ericsson.test" oc:name="clonedStepTest" oc:version="1.0.0">
+
+	<oc:modelCreationInfo author="author"
+		creationDate="today">
+		<oc:designedModel componentId="someComponentId" />
+	</oc:modelCreationInfo>
+
+	<oc:desc>example flows</oc:desc>
+
+	<input name="csInput">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-input-topic" />
+	</input>
+
+	<output name="csOutputA">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-output-topic-A" />
+	</output>
+	
+	<output name="csOutputB">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-output-topic-B" />
+	</output>
+	
+	<output name="csOutputC">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-output-topic-C" />
+	</output>
+
+	<step name="csFilterA">
+		<handler>
+			<named>EsperHandler</named>
+		</handler>
+		<attribute name="configurationFilePath" value="classpath:/config/esper-test-config.xml" />
+
+		<rule name="epl02-rule">
+			<inputPort name="inputStream1" />
+			<outputPort name="outputStream1" />
+			<ruleResource uri="classpath:/epl/rules_02.epl" />
+		</rule>
+	</step>
+	
+	<clonedStep name="csFilterB" clonedStepRef="csFilterA" />
+	<clonedStep name="csFilterC" clonedStepRef="csFilterA" />
+
+	<path>
+		<from uri="csInput" />
+		<toMany>
+			<to uri="csFilterA" />
+			<to uri="csFilterB" />
+			<to uri="csFilterC" />
+		</toMany>
+	</path>
+	
+	<path>
+		<from uri="csFilterA" />
+		<to uri="csOutputA" />
+	</path>
+	
+	<path>
+		<from uri="csFilterB" />
+		<to uri="csOutputB" />
+	</path>
+	
+	<path>
+		<from uri="csFilterC" />
+		<to uri="csOutputC" />
+	</path>
+
+</FlowDefinition>

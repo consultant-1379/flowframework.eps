@@ -1,0 +1,61 @@
+	------
+	JVM Scripting Event Handlers
+	------
+	
+JVM Scripting Event Handlers
+
+	It is also possible to use any {{{http://docs.oracle.com/javase/7/docs/technotes/guides/scripting/programmer_guide/}JVM scripting}} language implementing appropriate interfaces from {{{${documentation_eventFlowApi}}event-flow API}}
+	for writing event handlers. 
+	
+	Example of a flow step which uses Jython:
+	
++-------------------------------+	
+<step name="jythonTestRuleHandlerScript">
+	<!-- Marker class informing EPS to use JVM scripting engine for this step -->
+	<handler>
+		<named>JvmScriptingHandler</named>
+	</handler>
+	
+	<!-- Required property. Must have value of JVM scripting engine to be used -->
+	<attribute name="script_handler_name" value="jython" />
+
+	<rule name="jythonTestRule">
+		<ruleResource uri="classpath:/scripts/triple_messages.py" />
+	</rule>
+</step>	
++-------------------------------+
+
+	<<named>> value must be <<JvmScriptingHandler>>
+	
+	It is required to specify the <<exact>> name of JVM scripting language to be used through the <<script_handler_name>> attribute.
+
+	Example of an event handler (which receives an event and sends it downstream three times) written in Jython:
+	
++-------------------------------+
+import com.ericsson.oss.itpf.common.event.handler.EventInputHandler;
+import com.ericsson.oss.itpf.common.event.handler.EventHandlerContext;
+
+class EventHandler(com.ericsson.oss.itpf.common.event.handler.EventInputHandler):
+    """ Test EPS Script """
+
+    def __init__ (self):
+        print "This is test EPS script"
+        
+    def init(self, ctx):
+        self.__ctx = ctx
+
+    def setInstanceId(self, instId):
+        self.__instanceId = instId
+
+    def getInstanceId(self):
+        return self.__instanceId
+    
+    def onEvent(self, event):
+        for value in [1,2,3]:
+            for subscriber in self.__ctx.getEventSubscribers():
+                subscriber.sendEvent(event)
+        
+
+eventHandler = EventHandler()
+eventHandler.setInstanceId("jythonTripleMessagesHandler")
++-------------------------------+

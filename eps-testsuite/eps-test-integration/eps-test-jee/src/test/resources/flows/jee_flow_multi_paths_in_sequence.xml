@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+	xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	oc:ns="com.test" oc:name="multiPathsInSequence" oc:version="1.0.0">
+
+	<oc:modelCreationInfo author="author"
+		creationDate="today">
+		<oc:designedModel componentId="multiPathsInSequence" />
+	</oc:modelCreationInfo>
+
+	<oc:desc>Eps Test - Multiple paths: one path feeds another path</oc:desc>
+
+	<input name="hcInputMultiPahtSeq">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-topic-in" />
+	</input>
+	
+	<output name="hcOutputMultiPahtSeq">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-topic-out" />
+	</output>
+	
+	<step name="threading">
+		<handler>
+			<className>com.ericsson.component.aia.services.eps.builtin.components.ThreadManagementComponent</className>
+		</handler>
+		<attribute name="threadPoolSize" value="10" />
+		<attribute name="threadPriority" value="9" />
+	</step>
+	
+	<step name="duplicator">
+		<handler>
+			<className>com.ericsson.component.aia.services.eps.core.integration.jee.flow.components.JeeTestEventDuplicatorComponent</className>
+		</handler>
+		<attribute name="duplicationCount" value="6" />
+	</step>
+
+	<path>
+		<from uri="hcInputMultiPahtSeq" />
+		<to uri="threading" />
+		<to uri="duplicator" />
+	</path>
+	
+	<path>
+		<from uri="duplicator" />
+		<to uri="hcOutputMultiPahtSeq" />
+	</path>
+
+</FlowDefinition>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+	xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	oc:ns="com.ericsson.test" oc:name="EsperSimpleTest" oc:version="1.0.0">
+
+	<oc:modelCreationInfo author="author"
+		creationDate="today">
+		<oc:designedModel componentId="someComponentId" />
+	</oc:modelCreationInfo>
+
+	<oc:desc>example flows</oc:desc>
+
+	<input name="numbersIn">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="numbersIn" />
+	</input>
+
+	<output name="oddOut">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="oddOut" />
+	</output>
+
+	<output name="oddOut1">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="oddOut1" />
+	</output>
+
+	<output name="evenOut">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="evenOut" />
+	</output>
+
+	<output name="evenOut1">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="evenOut1" />
+	</output>
+
+	<output name="evenOut2">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="evenOut2" />
+	</output>
+
+	<step name="filterNumbers">
+		<handler>
+			<named>EsperHandler</named>
+		</handler>
+		<attribute name="esperInstanceName" value="esperEngineFilteringNumbers" />
+
+		<rule name="rule_01">
+			<inputPort name="inputStream1" />
+			<outputPort name="outputOdd" />
+			<outputPort name="outputEven" />
+			<ruleResource uri="classpath:/epl/separateOddEvenNumbers.epl" />
+		</rule>
+
+	</step>
+
+	<path>
+		<from uri="numbersIn" />
+		<to uri="filterNumbers" />
+	</path>
+
+	<path>
+		<from uri="filterNumbers.outputOdd" />
+		<to uri="oddOut" />
+	</path>
+
+	<path>
+		<from uri="filterNumbers.outputOdd" />
+		<to uri="oddOut1" />
+	</path>
+	
+	<path>
+		<from uri="filterNumbers.outputEven" />
+		<to uri="evenOut" />
+	</path>
+	
+	<path>
+		<from uri="filterNumbers.outputEven" />
+		<to uri="evenOut1" />
+	</path>
+
+	<path>
+		<from uri="filterNumbers.outputEven" />
+		<to uri="evenOut2" />
+	</path>
+
+</FlowDefinition>

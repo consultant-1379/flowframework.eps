@@ -1,0 +1,41 @@
+	------
+	Getting started
+	------
+
+Getting started
+
+	In this page you can find where to look for get started.
+	
+	* <<I want to .... learn about EPS>>
+
+		New to EPS? A general description is available in the {{{./index.html}Home}} page; also look the pages in the Overview section, 
+		starting with {{{./architecture.html}architecture}}.
+
+	* <<I want to .... deploy EPS on my local JBoss environment>>
+
+		EPS war must be bundled inside a service EAR and related JBoss module must be installed.
+		For detailed step-by-step guide see {{{./eps-jboss-deploy.html}here}}. 
+		
+	* <<I want to .... install EPS on my local JSE environment>>
+
+		EPS can run as standalone service in JSE, see the {{{./eps-standalone-install.html}step-by-step guide}} for details.
+
+	* <<I want to .... create and deploy flows  (or know about flows)>>
+
+		Flows are XML document describing how event flow looks like referencing handlers and adapters. See {{{./flow-descriptor.html}Flow XML descriptors}} for details, and look at some {{{./corr-set-examples.html}flow descriptor examples}}.
+
+	* <<I want to .... find about available handler/IO adapters>>
+	
+		Some built-in general-purpose extensions are delivered within EPS, listed in the {{{./ext-io-adapters.html}Input/Output adapters}} 
+		and {{{./ext-event-handlers.html}Event handlers}} pages. Some other extension is delivered externally, as documented {{{ ${documentation_root_url}/EpsExtensions/latest/index.html}here}}
+
+	* <<I want to .... create a custom handler/IO adapter>>
+
+		EPS can be extended and customized with new handlers and adapters created by user: follow step-by-step guides 
+		 {{{./ext-io-adapters-creating.html}to create adapters}} and {{{./ext-event-handlers-creating.html}to create event handlers}}. 
+
+	* <<I want to .... test my EPS Solution>>
+
+		How to use EPS in integration test of applications is described {{{./writing-tests.html}here}}  
+
+	

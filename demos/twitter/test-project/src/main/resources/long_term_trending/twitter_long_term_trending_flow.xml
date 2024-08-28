@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+                xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                oc:ns="test" oc:name="TwitterLongTermTrending" oc:version="1.0.0">
+
+    <oc:modelCreationInfo author="author" creationDate="today">
+        <oc:designedModel componentId="someComponentId" />
+    </oc:modelCreationInfo>
+    <oc:desc>Twitter long term trending</oc:desc>
+
+    <input name="twitterLongTermTrendingInputStream">
+        <attribute name="uri" value="hazelcast:/"/>
+        <attribute name="channelName" value="tweet_trending" />
+    </input>
+
+    <output name="tweetLongTermTrendingOut">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="tweet_statistics" />
+	</output>
+	
+	<step name="esperLongTermTrending">
+		<handler>
+			<named>EsperHandler</named>
+		</handler>
+		<rule name="long_term_trend_analysis">
+			<inputPort name="trendingUsers" />
+			<outputPort name="twitterLongTermTrendsEsperOut" />
+			<ruleResource uri="file:/var/ericsson/eps/flows/twitter_long_term_trending.epl" />
+		</rule>
+	</step>
+
+    <path>
+        <from uri="twitterLongTermTrendingInputStream" />
+        <to uri="esperLongTermTrending" />
+        <to uri="tweetLongTermTrendingOut" />
+    </path>
+
+</FlowDefinition>

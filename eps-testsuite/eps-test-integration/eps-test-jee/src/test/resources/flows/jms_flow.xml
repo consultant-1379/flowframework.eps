@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+	xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	oc:ns="com.test" oc:name="JmsTest" oc:version="1.0.0">
+
+	<oc:modelCreationInfo author="author"
+		creationDate="today">
+		<oc:designedModel componentId="someComponentId" />
+	</oc:modelCreationInfo>
+
+	<oc:desc>Eps Test</oc:desc>
+
+	<attributeGroup name="jmsConfig">
+		<attribute name="uri" value="jms:/" />
+		<attribute name="jndiJmsConnectionFactory" value="/EpsTestConnectionFactory" />
+		<attribute name="jmsDestinationType" value="Queue" />
+	</attributeGroup>
+
+	<input name="jmsInput">
+		<attributeGroupRef groupName="jmsConfig" />
+		<attribute name="jmsDestinationName" value="InTestQueue" />
+	</input>
+
+	<output name="jmsOutput">
+		<attributeGroupRef groupName="jmsConfig" />
+		<attribute name="jmsDestinationName" value="OutTestQueue" />
+        <attribute name="jmsAdapterThreadpoolSize" value="10"/>
+	</output>
+
+	<step name="handler">
+		<handler>
+			<className>com.ericsson.component.aia.services.eps.core.integration.jee.flow.components.JeeTestLongProcessingHandler</className>
+		</handler>
+	</step>
+
+	<path>
+		<from uri="jmsInput" />
+		<to uri="handler" />
+		<to uri="jmsOutput" />
+	</path>
+</FlowDefinition>

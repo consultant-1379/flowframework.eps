@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+	xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	oc:ns="com.test1" oc:name="jvm_script_invalid" oc:version="6.6.6">
+
+	<oc:modelCreationInfo author="author" creationDate="today">
+		<oc:designedModel componentId="someComponentId" />
+	</oc:modelCreationInfo>
+
+	<oc:desc>example flows</oc:desc>
+
+	<input name="hcInput_invalid">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-topic-jython-in" />
+	</input>
+
+	<output name="hcOutput_invalid">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-topic-jython-out" />
+	</output>
+
+	<step name="jythonTestRuleHandler_invalid">
+		<handler>
+			<named>JvmScriptingHandler</named>
+		</handler>
+		<rule name="jythonTestRule">
+			<ruleResource uri="classpath:/scripts/invalid_script.py" />
+		</rule>
+	</step>
+
+	<path>
+		<from uri="hcInput_invalid" />
+		<to uri="jythonTestRuleHandler_invalid" />
+		<to uri="hcOutput_invalid" />
+	</path>
+
+</FlowDefinition>

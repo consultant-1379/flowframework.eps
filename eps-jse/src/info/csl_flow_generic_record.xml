@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+               xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               oc:ns="com.ericsson.oss.services" oc:name="CSLSolutionSet" oc:version="1.0.0">
+ 
+               <oc:modelCreationInfo author="author"
+                              creationDate="today">
+                              <oc:designedModel componentId="someComponentId" />
+               </oc:modelCreationInfo>
+ 
+               <oc:desc>ExtEps Test for an extension Simple Stream</oc:desc>
+ 
+               <input name="TERMINATOR_TO_PARSER">
+                              <attribute name="uri" value="kafka:/" />
+                              <attribute name="group.id" value="raw_consumer_group" />
+                              <attribute name="bootstrap.servers" value="ieatrcxb3650.athtem.eei.ericsson.se:9092" />
+                              <!--<attribute name="bootstrap.servers" value="localhost:9092" />-->
+                              <attribute name="enable.auto.commit" value="true" />
+                              <attribute name="auto.commit.interval.ms" value="1000" />
+                              <attribute name="session.timeout.ms" value="30000" />
+                              <attribute name="eps.format.data" value="tcp" />
+                              <attribute name="kafka.Deserializer.class"                value="org.apache.kafka.common.serialization.StringDeserializer" />
+                              <attribute name="kafka.serializer.class" value=" org.apache.kafka.common.serialization.ByteArrayDeserializer" />
+                              <attribute name="eps.input.thread.pool.size" value="1" />
+                              <attribute name="eps.kafka.topicName" value="rawData" />
+                              <attribute name="rebalance.max.retries" value="3000" />
+                             
+               </input>
+ 
+               <output name="AVRO_OUPUT">
+                              <attribute name="uri" value="kafka:/" />
+                              <attribute name="bootstrap.servers" value="ieatrcxb3650.athtem.eei.ericsson.se:9092" />
+                              <!--<attribute name="bootstrap.servers" value="localhost:9092" />-->
+                              <attribute name="topicName" value="ctrUps" />
+                              <attribute name="acks" value="all" />
+                              <attribute name="retries" value="1" />
+                              <attribute name="batch.size" value="16384" />
+                              <attribute name="linger.ms" value="1" />
+                              <attribute name="buffer.memory" value="33554432" />
+                              <attribute name="key.serializer" value="org.apache.kafka.common.serialization.ByteArraySerializer" />
+                              <attribute name="value.serializer"                value="com.ericsson.aia.common.avro.kafka.encoder.KafkaGenericRecordEncoder" />
+                              <attribute name="eps.format.data" value="avro" />
+                              <!--  attribute name="partitioner.class" value="test.integration.StringPartitionerX" /-->
+                              <attribute name="eps.format.data" value="tcp" />
+                              <attribute name="eps.output.thread.pool.size" value="3" />
+                              <attribute name="eps.kafka.topicName" value="saj" />
+                             
+               </output>
+ 	       <step name="RawBytesCOnverter">
+	               <handler>
+                             <className>com.ericsson.component.aia.services.exteps.io.adapter.util.RawBytesConverter</className>
+                      </handler>	
+	       </step>
+               <step name="PMStreamParser">
+                              <handler>
+                                             <className>com.ericsson.aia.services.exteps.eh.parser.PmRecordStreamParser</className>
+                              </handler>
+                              <attribute name="schematype" value="celltrace" />
+                              <attribute name="subnetwork" value="Dublin" />
+                              <attribute name="utcoffset" value="+00.00" />
+                              <attribute name="decodedEventType" value="generic_record" />
+                              <attribute name="schemaProviderType" value="FILE_BASED" />
+               </step>
+ 
+               <!-- Define all Paths here -->
+               <path>
+                              <from uri="TERMINATOR_TO_PARSER" />
+			      <to uri="RawBytesCOnverter"/>
+                              <to uri="PMStreamParser" />
+                              <to uri="AVRO_OUPUT" />
+               </path>
+ 
+               <!-- End -->
+ 
+</FlowDefinition>

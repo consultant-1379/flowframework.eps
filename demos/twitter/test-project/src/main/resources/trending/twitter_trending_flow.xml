@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+                xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                oc:ns="test" oc:name="TwitterTrending" oc:version="1.0.0">
+
+    <oc:modelCreationInfo author="author" creationDate="today">
+        <oc:designedModel componentId="someComponentId" />
+    </oc:modelCreationInfo>
+    <oc:desc>Twitter trending</oc:desc>
+
+    <input name="twitterInputStream">
+        <attribute name="uri" value="hazelcast:/"/>
+        <attribute name="channelName" value="tweets" />
+    </input>
+
+    <output name="tweetTrendingStatsOut">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="tweet_statistics" />
+	</output>
+	
+	<output name="tweetTrendingOnlyOut">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="tweet_trending" />
+	</output>
+	
+	<step name="esperTrending">
+		<handler>
+			<named>EsperHandler</named>
+		</handler>
+		<rule name="trend_analysis">
+			<outputPort name="twitterTrendsEsperOut" />
+			<ruleResource uri="file:/var/ericsson/eps/flows/twitter_trending.epl" />
+		</rule>
+	</step>
+
+    <path>
+        <from uri="twitterInputStream" />
+        <to uri="esperTrending" />
+        <to uri="tweetTrendingStatsOut" />
+    </path>
+    
+    <path>
+        <from uri="esperTrending" />
+        <to uri="tweetTrendingOnlyOut" />
+    </path>
+
+</FlowDefinition>

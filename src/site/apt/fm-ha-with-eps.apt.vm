@@ -1,0 +1,84 @@
+
+Case Study: FM a solution built with EPS and HA for a low throughput solution in TOR
+
+
+
+	<This is not a complete description of the FM solution using EPS, but will just highlight FM with EPS from a HA perspective.>
+
+
+The scenario
+
+	  FM has multiple active/active EPS instances. Each takes the next event from the queue, processes it and then fetches the next event.
+
+	  Events are processed by a single EPS instance; there is no duplication of processing.
+
+	  There is no attempt to direct events to a particular EPS instance (e.g. to ensure that events of interest or events from the same ManagedElement are processed together). Each EPS instance performs the same correlations.
+
+	  TOR HornetQ is used to input events (events are placed on the queue by SNMP Mediation)
+
+[./images/HA_for_FM.png] Figure caption
+
+
+* Throughput
+
+	The expected throughput of alarm events is hundreds per second.
+
+
+* Data Persistency
+
+	* The Event Queue is persistent, so events are safe while on the event queue until acknowledged as consumed.
+
+	* When processing is complete the events are either stored persistently or put on a persistent queue.
+
+	* Events are vulnerable to loss during processing by the rules: between acknowledging as consumed from the queue and persistent storage.
+
+
+Solution
+
+	For FM correlation is needed between active and cleared alarms.
+
+	[[1]] An EPS instance processing FM rules will take events (alarms) from the queue
+
+	[[2]] The event is <<not>> acknowledged as consumed from the queue.
+
+	[[3]] FM will send the alarm to DPS for storage in the Historic Alarm Log
+
+	[[4]] FM will perform some processing of the alarm.
+
+		* If clear is received by service layer prior to original alarm, the cleared event is stored in a persistent cache for cleared alarms for a configurable time period
+
+		* Once original alarm is received within the configured time period, both original and cleared alarm are processed.
+
+		* Active alarms are sent to the DPS for storage in the open alarms list
+
+		* When cleared alarm is acknowledged by user, the alarm is removed from the open alarm list
+
+	[[5]] The alarm/event is acknowledged as consumed only when the alarm/event is processed and available in open alarm list.
+
+
+	Alarm cleared events are fetched from the persistent cache for cleared alarms. When an alarm cleared event is correlated the alarm cleared event is removed from the persistent cache for cleared alarm and the active alarm is removed/not stored in the active alarm log.
+
+
+
+* HA
+
+	If an EPS instance goes down, the remaining EPS instances will continue to process the events on the queue. When the EPS instance restarts it will start to consume events from the queue and share the load. There is no expectation that any particular EPS instance should process specific events.
+
+	The EPS instance will not acknowledge consuming the event until processing is complete. So if the EPS instance goes down while processing some events these events remain on the queue and are not lost.
+
+	As the alarm/event is only acknowledged after it is processed, it is always persistent.
+
+
+Applicability
+
+	This is a low throughput solution (x100s events/sec) where it is acceptable to:
+
+		* persistently store the event before it is acknowledged as consumed on the event queue
+
+		* share a persistent cache amongst the EPS instances
+
+	It is not applicable for a high throughput solution where event rates of 100,000 or 1M events per second are needed.
+
+    It is not applicable for a solution where correlation rules are complex and have to maintain complex internal state (e.g. using Esper with sliding windows).
+
+

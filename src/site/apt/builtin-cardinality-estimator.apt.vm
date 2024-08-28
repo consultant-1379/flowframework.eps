@@ -1,0 +1,35 @@
+	------
+	Cardinality Estimator Event Handler
+	------
+
+Cardinality Estimator Event Handler
+
+	This Event Handler uses the HyperLogLog algorithm to count distinctive objects.
+	For HyperLogLog background see:  {{{http://algo.inria.fr/flajolet/Publications/FlFuGaMe07.pdf}HyperLogLog algorithm}}
+	This algorithm provides memory efficient way to count distinctive objects with around 97% accuracy.
+	The component is capable of:
+	- counting distinctive objects, where the object is represented by a Long hash value
+	- cascade count - aggregating the output of two Cardinality Estimator components into a single distinct count
+	- the estimated value is reported to the next EPS component upon receiving of a "control event", which also resets the counter.
+
+	There are two control events:
+    - CONTROL_EVENT_GET_CARDINALITY with ID=100001. Used to pass the estimated value to the next component and reset the counter.
+    - CONTROL_EVENT_GET_BUCKETS with ID=100002. Used in cascade counting to obtain the "buckets".
+
+
+	This Event Handler can not be configured.
+
+
+	Event Handler declaration:
+
+	This is a {{{./java-event-handlers.html}Java Event Handler}}, should be declared using the <className> element, as in the example below. 
+
+	Event Handler class name <<com.ericsson.oss.services.eps.builtin.components.CardinalityEstimatorComponent>>
+
++-------------------------------+
+<step name="tracking">
+	<handler>
+		<className>com.ericsson.oss.services.eps.builtin.components.CardinalityEstimatorComponent</className>
+	</handler>
+</step>
++-----

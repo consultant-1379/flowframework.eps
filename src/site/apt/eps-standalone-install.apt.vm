@@ -1,0 +1,67 @@
+	------
+	Event Processing Service - Eps Standalone Deployment
+	------
+
+Eps Standalone Deployment
+
+Introduction
+
+	EPS can be deployed as standalone service in JSE environments.
+
+	The {{{./corr-sets.html}Solution Sets}} should be always in separate packages, and should be deployed as described below. 
+
+* JSE Environment Deployment
+
+	In JSE EPS will work as standalone application running in his own java machine. 
+
+	EPS is packaged as standard <<.rpm>> package for LITP/Linux, and as <<.zip>> and <<.tar.gz>> archives for other platforms, all required 3PP libraries are included. 
+
+	To deploy EPS in JSE Follow these steps:
+	
+	<<Step 1>> {{{${nexusSearchUrl};gav~com.ericsson.oss.services.eps~eps-jse~~~} Download}} the latest <<eps-jse>> archive and uncompress it.
+	
++-------------------------------+
+<dependency>
+  <groupId>com.ericsson.oss.services</groupId>
+  <artifactId>eps-jse</artifactId>
+  <version>${project.version}</version>
+  <classifier>bin</classifier>
+  <!-- or .zip -->
+  <type>tar.gz</type>
+</dependency>
++-------------------------------+
+
+	<<Step 2>> Configure EPS instance as described {{{./configuration-options.html} here}}
+
+	<<Step 3>> Define the {{{./corr-sets.html} Solution Sets}} including EPS extensions and Flow Descriptors. 
+	
+		You need to choose the appropriate {{{./ext-io-adapters.html} IO Adapters}} and {{{./ext-event-handlers.html} Event Handlers}}, 
+		and define the {{{./flow-descriptor.html} Flow Descriptors}} which references those EPS extensions and describes the event flow.
+		Write your own EPS extensions if necessary.
+
+	<<Step 4>> Deploy all {{{./eps-extensions.html} EPS extensions}}, {{{./flow-descriptor.html} Flow descriptor}}.   
+
+		All extensions must be built as <<jar>> files and deployed into <<$EPS_HOME/ext-lib>> folder. 
+		Then they will be automatically picked up by EPS when required (or when referenced from Solution Set flow descriptor).
+
+		Flow descriptor deployment detail are in the {{{./flow-descriptor.html} Flow descriptor}} page. 
+
+		See {{{./referencing-resources.html} Resources}} page for deployment instruction of all required resource. 
+	
+	<<Step 5>> Start EPS instance by using <<$EPS_HOME/bin/eps.sh>> script or create your own script with your own customization which will invoke <<eps.sh>>
+	
+		Script <<eps.sh>> contains all JVM tuning parameters. It also contains parameters for configuring EPS instance (where to look for new flow definitions 
+		etc). By default it will look for new flow definitions in <</var/ericsson/eps/flows>> folder. You can modify these by creating your own startup script 
+		and invoke <<eps.sh>> only after you applied all customizations.
+
+		Note: If the environment variable <<$\{JAVA_HOME\}>> is set it will be used, otherwise the script default java location is used.
+		
+	<<Step 6>> Open JConsole or {{{http://docs.oracle.com/javase/6/docs/technotes/guides/visualvm/}JVisualVM}} and you will see all your event handlers 
+		and their statistics
+    
+	<<Step 7>> Start sending events to input adapter and wait for processed events to come out of output adapters
+
+* EPS Litp Plugin
+
+	The deployment process can be automatically started using the {{{./eps-litp-plugin.html}Eps LITP plugin}}. 
+	

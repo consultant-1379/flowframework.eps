@@ -1,0 +1,95 @@
+	------
+	MESA Conf file
+	------
+
+MESA Policy's Configuration File
+
+Overview:
+
+	The conf_x.xml file provides a method of applying selective processing to a rule. It allows the user to create a filter which can be applied to the data thus if a rules intended target
+	is for example a group of 5 cells which have recently been commissioned it is possible to filter the data based on there cellId and only evaluate a rule for these 5 cells of interest. The conf files
+	can also apply a filter which will allow all data to pass through to be evaluated or it can operate in a blacklist mode.   
+
+Field overview:
+
+	A brief overview of the fields which appear in the conf.xml file, some of the more obvious fields have been left out and can be seen in the example.
+	
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+|| Field                                                         	   || Description                                       || Comments            				|
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| general                                                              | provides the general information about the policy  | This should be the same information which is given to the core.xml to which this configuration should be applied	|
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| general -> name                                                      | The name of the policy  							|      |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+	
+| general -> namespace                                                 | The namespace for the policy or group of policies  |      |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+	
+| general -> version                                                   | The version of the policy  						|      |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+|configurations                                                        | All configurations which should be applied to the target core.xml   |      |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+|configuration -> ID                                                   | 												    |  should be unique     |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+	
+|configuration -> tenant                                          	   | The area responsible for this rule   				|    |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+	
+|property ->  target.rule.group                                        | The rule group this configuration is intended for  |      |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+|property ->  ontology.field                                           | The field which filter criteria will be applied to	| It is possible to use any valid field from an event or the keyword ALL can be used to allow all events to be passed on for evaluation  |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+	
+|property ->  resources.spec                                           | A comma separated list of the filter criteria to be used on the filed supplied	|      |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+	
+|property ->  resources.allowed                                        | The filter can be set to be a whitelist or a blacklist using this parameter |      |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+	
+|property ->  resources.mode           								   |       |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+		
+
+Sample conf:
+
+	The sample conf below is configured to allow resourceId with a value of 2 to be passed to a rule for evaluation. It further states that this configuration should be applied to the rule
+	group with the ID 1.
+
++-------------------------------+
+
+<?xml version="1.0" encoding="UTF-8"?>
+<policy-configuration id="1">
+	<general>
+		<name>policy_1</name>
+		<namespace>com.ericsson.oss.wcdma</namespace>
+		<version>1.0</version>
+	</general>
+	<configurations>
+		<configuration>
+			<id>1</id>
+			<tenant>assure</tenant>
+			<properties>
+				<property>
+					<key>target.rule.group</key>
+					<value>1</value>
+				</property>
+				<property>
+					<key>ontology.field</key>
+					<value>resourceId</value>
+				</property>
+				<property>
+					<key>resources.spec</key>
+					<value>2</value>
+				</property>
+				<property>
+					<key>resources.allowed</key>
+					<value>true</value>
+				</property>
+				<property>
+					<key>resources.mode</key>
+					<value>set</value>
+				</property>
+			</properties>
+		</configuration>
+	</configurations>
+</policy-configuration>
+    
++-------------------------------+
+
+	
+
+
+	

@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- ****************************************************************************************************************** 
+
+                                             COPYRIGHT Ericsson 2014
+
+The copyright to the computer program(s) herein is the property of Ericsson Inc. The programs may be used and/or copied
+only with written permission from Ericsson Inc. or in accordance with the terms and conditions stipulated in the
+agreement/contract under which the program(s) have been supplied.
+	
+	
+******************************** Important note on backwards-compatibility ********************************************
+
+This XSD must *always* evolve in a backwards-compatible fashion. Backwards-compatibility is defined as the possibility
+to correctly parse any XML file, adhering to a previous version of this XSD, with the updated version of the XSD. This
+implies that existing elements and attributes of this XSD must not be removed; and likewise that any new elements and
+attributes are made optional.
+
+Any change to this XSD must be *explicitly* signed off and reviewed by the appropriate OSS approval body. Under no
+circumstances must this XSD be modified without having undergone a defined review-process.
+-->
+
+<!-- 
+
+*****************************************************************************************************
+*****************************************************************************************************
+*****************************************************************************************************
+*****************************************************************************************************
+
+                             EXPERIMENTAL, EXAMPLE ONLY
+
+*****************************************************************************************************
+*****************************************************************************************************
+*****************************************************************************************************
+*****************************************************************************************************
+
+
+ -->
+
+<schema elementFormDefault="qualified" 
+	xmlns="http://www.w3.org/2001/XMLSchema" 
+	xmlns:jxb="http://java.sun.com/xml/ns/jaxb"	
+	xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+	xmlns:oss_common="urn:com:ericsson:schema:xml:oss:oss_common"
+	xmlns:asr_monitoring="urn:com:ericsson:schema:xml:oss:asr_monitoring"
+	targetNamespace="urn:com:ericsson:schema:xml:oss:asr_monitoring" 
+	version="0.5"
+	jxb:version="2.0"
+	jxb:extensionBindingPrefixes="xjc">
+
+	<annotation>
+		<documentation>
+		</documentation>
+	</annotation>
+
+	<annotation>
+		<documentation>This is the JAXB binding information for code-generation by the xjc tool.
+		</documentation>
+		<appinfo>
+			<jxb:schemaBindings xmlns:oss_common="urn:com:ericsson:schema:xml:oss:oss_common"
+					xmlns:asr_monitoring="urn:com:ericsson:schema:xml:oss:asr_monitoring">
+				<jxb:package name="com.ericsson.component.aia.assure.modeling.schema.gen.asr_monitoring" />
+			</jxb:schemaBindings>
+		</appinfo>
+	</annotation>
+	
+	<import schemaLocation="oss_common.xsd" namespace="urn:com:ericsson:schema:xml:oss:oss_common" />
+
+	<element name="MonitoringPolicyDefinition">
+		<complexType>
+			<complexContent>
+				<extension base="oss_common:eModelDefinition">
+					<sequence>
+						<element name="rule" type="asr_monitoring:ruleType" minOccurs="0" maxOccurs="unbounded">
+						</element>
+						<element name="ruleGroup" type="asr_monitoring:ruleGroupType" minOccurs="0" maxOccurs="unbounded">
+						</element>
+					</sequence>
+				</extension>
+			</complexContent>
+		</complexType>
+	</element>
+
+	<complexType name="ruleType">
+		<sequence>
+			<element name="scriptUrl" type="string" minOccurs="1" maxOccurs="1">
+			</element>
+			<element name="ruleAttr" type="asr_monitoring:ruleAttrType" minOccurs="0" maxOccurs="unbounded">
+			</element>
+			<element name="input" type="asr_monitoring:inputType" minOccurs="0" maxOccurs="unbounded">
+			</element>
+		</sequence>
+		<attribute name="id" type="int" use="required">
+		</attribute>		
+		<attribute name="name" type="string" use="required">
+		</attribute>		
+		<attribute name="type" type="asr_monitoring:ruleTypeType" use="required">
+		</attribute>
+	</complexType>
+
+	<complexType name="ruleGroupType">
+		<sequence>
+			<element name="rule" type="asr_monitoring:ruleType" minOccurs="1" maxOccurs="unbounded">
+			</element>
+			<element name="input" type="asr_monitoring:inputType" minOccurs="1" maxOccurs="unbounded">
+			</element>
+		</sequence>
+		<attribute name="id" type="int" use="required">
+		</attribute>		
+		<attribute name="matchMode" type="asr_monitoring:matchModeType" use="required">
+		</attribute>		
+	</complexType>
+
+	<complexType name="ruleAttrType">
+		<complexContent>
+			<extension base="oss_common:eModelAttributeDefinition">
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="inputType">
+		<attribute name="eventUrn" type="oss_common:anyVersionImpliedUrnType" use="required">
+		</attribute>
+	</complexType>
+
+
+<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                                                   Helper types
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-->
+
+	<simpleType name="ruleTypeType">
+		<restriction base="string">
+			<enumeration value="SIMPLE">
+			</enumeration>
+			<enumeration value="GENERAL">
+			</enumeration>
+			<enumeration value="OCCURRENCES">
+			</enumeration>
+			<enumeration value="CONTINUOUS_OCCURRENCES">
+			</enumeration>
+		</restriction>
+	</simpleType>
+
+	<simpleType name="matchModeType">
+		<restriction base="string">
+			<enumeration value="ALL">
+			</enumeration>
+			<enumeration value="ANY">
+			</enumeration>
+			<enumeration value="FIRST">
+			</enumeration>
+		</restriction>
+	</simpleType>
+
+</schema> 

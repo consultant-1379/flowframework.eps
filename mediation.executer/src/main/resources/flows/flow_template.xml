@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+	xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	oc:ns="com.ericsson.component.aia.services" oc:name="AIAFlowTemplate" oc:version="1.0.0">
+
+	<!-- Application builder should replace -->
+	<!-- APPLICATION_NAME with application name -->
+	<!-- _INPUT_ADAPTER with InputAdapter -->
+	<!-- _OUTPUT_ADAPTER with OutputAdapter -->
+
+
+	<oc:modelCreationInfo author="author"
+		creationDate="today">
+		<oc:designedModel componentId="someComponentId" />
+	</oc:modelCreationInfo>
+
+	<oc:desc>Flow of APPLICATION_NAME</oc:desc>
+
+	<!-- Definition for input adapter -->
+	<input name="APPLICATION_NAME_INPUT_ADAPTER">
+		<attribute name="uri"  value="INPUT_ADAPTER_URI://" />  <!-- The uri which INPUT_ADAPTER understands -->
+		<!--<attribute name="exampleInputIntAttribute" value="10" />-->
+	</input>
+
+	<!-- Definition for output adapter -->
+	<output name="APPLICATION_NAME_OUPUT_ADAPTER">
+		<attribute name="uri" value="OUTPUT_ADAPTER_URI://" /> <!-- The uri which OUTPUT_ADAPTER understands -->
+		<!--<attribute name="exampleOutputStringAttribute" value="Test" />-->
+	</output>
+
+	<!-- Definition for parser -->
+	<step name="APPLICATION_NAME_PARSER">
+		<handler>           <!-- should be removed, needs update to core-emodel-schemata-xsd-jar-9.2.4.jar!/schemata/fbp_flow.xsd -->
+			<className>x</className>
+		</handler>
+		<attribute name="uri" value="PARSER_URI" /> <!-- Update to uri which PARSER understands -->
+		<!--<attribute name="exampleParserStringAttribute1" value="test"->" value="PARSER_URI" />--> <!-- Example on passing attr/value to MEDIATION_TEMPLATE.java -->
+	</step>
+
+	<!-- Define all Paths here -->
+	<path>
+		<from uri="APPLICATION_NAME_INPUT_ADAPTER" />
+		<to uri="APPLICATION_NAME_PARSER" />
+		<to uri="APPLICATION_NAME_ADAPTER" />
+	</path>
+	<!-- End -->
+
+</FlowDefinition>

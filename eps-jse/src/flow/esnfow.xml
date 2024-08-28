@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+	xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	oc:ns="com.ericsson.oss.services" oc:name="CSLSolutionSet" oc:version="1.0.0">
+
+	<oc:modelCreationInfo author="author"
+		creationDate="today">
+		<oc:designedModel componentId="someComponentId" />
+	</oc:modelCreationInfo>
+
+	<oc:desc>ExtEps Test for an extension Simple Stream</oc:desc>
+
+	<input name="Kafka_CTR_Raw_Consumer">
+		<attribute name="uri" value="kafka:/" />
+		<attribute name="eps.kafka.topicName" value="ctum" />
+		<attribute name="threadPoolSize" value="1" />
+		<attribute name="decodedEventType" value="byte" />
+		<attribute name="group.id" value="raw_consumer_group" />
+		<attribute name="rebalance.max.retries" value="3000" />
+		<attribute name="eps.format.data" value="tcp" />
+		  <attribute name="eps.input.thread.pool.size" value="1" />
+		
+		<attribute name="zookeeper.connect" value="10.45.16.201:12188" />
+		<attribute name="key.deserializer"	value="org.apache.kafka.common.serialization.StringDeserializer" />
+		<attribute name="value.deserializer" 	value="org.apache.kafka.common.serialization.ByteArrayDeserializer" />
+		<!-- attribute name="bootstrap.servers" value="10.45.16.201:19099" /-->
+<attribute name="bootstrap.servers" value="10.45.16.201:19099" />
+
+	</input>
+
+	<output name="Kafka_CTR_Parsed_Producer">
+		<attribute name="uri" value="kafka:/" />
+		<attribute name="topicName" value="ctumparsed" />
+		<attribute name="recordCreatorClassName"
+			value="com.ericsson.oss.services.exteps.ioadapter.kafka.KafkaAvroRecordCreator" />
+		<attribute name="key.serializer"
+			value="org.apache.kafka.common.serialization.ByteArraySerializer" />
+		<attribute name="value.serializer"
+			value="com.ericsson.component.aia.common.avro.kafka.encoder.KafkaGenericRecordEncoder" />
+		<attribute name="eps.output.kafka.partition.key" value="HOME_ENODB_ID" />
+		<attribute name="bootstrap.servers" value="localhost:9092" />
+		<attribute name="eps.output.kafka.partition.key.type" value="int" />
+		<attribute name="eps.format.data" value="avro" />
+		<attribute name="eps.output.thread.pool.size" value="1" />
+
+
+	</output>
+
+
+	<!-- Define all Steps here -->
+	<step name="byteToSR">
+		<handler>
+			<className>com.ericsson.component.aia.services.exteps.io.adapter.util.RawBytesConverter</className>
+		</handler>
+	</step>
+
+	<step name="parserBuffer">
+		<handler>
+			<className>com.ericsson.oss.services.csl.epscomponents.SingleThreadQueueHandler</className>
+		</handler>
+		<attribute name="threadname" value="parser1" />
+		<attribute name="threadqueuesize" value="1000000" />
+	</step>
+
+	<step name="Deserialize">
+		<handler>
+			<className>com.ericsson.oss.services.exteps.eh.parser.PmDeserializeParser</className>
+		</handler>
+		<attribute name="outputToFile" value="false" />
+		<attribute name="outputDirectory" value="/ericsson/northbound" />
+	</step>
+
+	<step name="countEvents">
+		<handler>
+			<className>com.ericsson.oss.services.exteps.ioadapter.kafka.KafkaMetricsOutput</className>
+		</handler>
+	</step>
+
+	<step name="PMStreamParser">
+		<handler>
+			<className>com.ericsson.component.aia.services.exteps.eh.parser.PmRecordStreamParser</className>
+		</handler>
+
+		<attribute name="schematype" value="celltrace" />
+		<attribute name="subnetwork" value="Dublin" />
+		<attribute name="utcoffset" value="+00.00" />
+		<attribute name="decodedEventType" value="generic_record" />
+		<attribute name="schemaProviderType" value="FILE_BASED" />
+	</step>
+
+	<!-- Define all Paths here -->
+	<path>
+		<from uri="Kafka_CTR_Raw_Consumer" />
+		<to uri="byteToSR" />
+		<to uri="PMStreamParser" />
+		<to uri="Kafka_CTR_Parsed_Producer" />
+	</path>
+
+	<!-- End -->
+
+</FlowDefinition>

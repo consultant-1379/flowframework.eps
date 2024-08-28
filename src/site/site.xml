@@ -1,0 +1,89 @@
+<project xmlns="http://maven.apache.org/DECORATION/1.3.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/DECORATION/1.3.0 http://maven.apache.org/xsd/decoration-1.3.0.xsd">
+    <bannerLeft>
+    	<name>Event Processing Service</name>
+    	<href>http://www.ericsson.com/</href>
+    </bannerLeft>
+
+    <publishDate position="right"/>
+    
+    <bannerRight>
+    	<src>images/logo.png</src>
+    	<href>http://www.ericsson.com/</href>
+    </bannerRight>
+    
+    <poweredBy>
+    	<logo name="Ericsson" href="http://www.ericsson.com/" img="images/logo.png" />
+    </poweredBy>
+    
+    <body>
+    	<links>
+            <item name="CDS Portal" href="https://cds.ericsson.se/#portal"/>
+            <item name="Report bugs" href="${jira.url}"/>
+    	    <item name="Latest releases" href="${releases.url}"/>
+    	    <item name="Nexus" href="${nexusUrl}"/>
+    	</links>
+    	<menu name="Event Processing Service">
+    		<item name="Home" href="/index.html"/>
+    		<item name="Getting started" href="/getting-started.html"/>
+    		<item name="Required dependencies" href="/required_dependencies.html"/>
+    		<item name="FAQs" href="/faq.html"/>
+    		<item name="Troubleshooting" href="/troubleshooting.html"/>
+    		<item name="JavaDocs" href="/apidocs/index.html"/>
+    		<item name="Glossary" href="/glossary.html"/>
+    		<item name="Useful reading" href="/useful-reading.html"/>
+    	</menu>
+        <menu name="Overview">
+            <item name="Architecture" href="/architecture.html"/>
+            <item name="Concepts" href="/concepts.html"/>
+            <item name="About Flows" href="/flow-descriptor.html"/>
+            <item name="Scalability Recipies" href="/scalability-recipies.html"/>
+        </menu>
+        <menu name="Using EPS">
+            <item name="How to use" href="/using-eps.html"/>
+            <item name="Configure EPS" href="/configuration-options.html"/>
+            <item name="Statistics" href="/statistics.html"/>
+            <item name="Resources" href="/referencing-resources.html"/>
+    		<item name="Writing tests with EPS" href="/writing-tests.html"/>
+    		<item name="Examples" href="/corr-set-examples.html"/>
+    	</menu>
+        <menu name="Installing EPS">
+    		<item name="EPS JBoss deploy" href="/eps-jboss-deploy.html"/>
+    		<item name="EPS standalone install" href="/eps-standalone-install.html"/>
+    		<item name="Eps LITP plugin" href="/eps-litp-plugin.html"/>
+    	</menu>
+    	<menu name="EPS extensions">
+            <item name="EPS extensions" href="/eps-extensions.html"/>
+            <item name="Available IO Adapters" href="/ext-io-adapters.html"/>
+            <item name="Creating new IO adapters" href="/ext-io-adapters-creating.html"/>
+            <item name="Available Event Handlers" href="/ext-event-handlers.html"/>
+            <item name="Creating new event handlers" href="/ext-event-handlers-creating.html"/>
+        </menu>
+        <menu name="Archetypes">
+            <item name="EPS Archetypes" href="/eps-archetypes.html" />
+            <item name="Create an eps extension set" href="/create-an-extension-set.html" />
+        </menu>
+    	<menu name="Maven Reports">
+            <item name="Project Information" href="/project-info.html"/>
+            <item name="Project Reports" href="/project-reports.html"/>
+    	</menu>
+    </body>
+  
+    <skin>
+        <groupId>com.ericsson.cds</groupId>
+        <artifactId>ericsson-skin-stats</artifactId>
+        <version>1.0.1</version>
+    </skin>
+    <custom>
+        <uiStats>
+            <serverUrl>https://cds.ericsson.se/analytics/</serverUrl>
+            <siteId>21</siteId>
+        </uiStats>
+        <fluidoSkin>
+            <sourceLineNumbersEnabled>false</sourceLineNumbersEnabled>
+        </fluidoSkin>
+    </custom>
+	
+</project>
+

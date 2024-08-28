@@ -1,0 +1,43 @@
+	------
+	Hazelcast I/O Adapters
+	------
+	
+Hazelcast I/O Adapters
+
+	Hazelcast I/O adapter allows EPS to use {{{http://hazelcast.com/}hazelcast eventbus}} for event sending and receiving.
+
+	URI protocol <<hazelcast:/>>
+	
+	Configuration properties:
+	
+*-------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+|| Configuration parameter name                               || Description                                       || Default value (acceptable range)  |
+*-------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| channelName                                                 | The name of Hazelcast topic                        | None                              |
+*-------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| hazelcastConfigFileUrl                                      | The path to hazelcast configuration resource       | None (will use default Hazelcast configuration) |
+*-------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| hazelcastListenerThreadpoolSize                             | Number of threads to use to receive messages       | 5                                 |
+*-------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| hazelcastListenerThreadpoolThreadPriority                   | Thread priority of threads receiving messages      | 8                                 |
+*-------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+	
+	<<NOTE:>> Resources can be any {{{./referencing-resources.html}acceptable resource path}}.
+
+	Example: declaring Hazelcast I/O adapters in flow descriptor
+	
++-------------------------------+
+<!-- Hazelcast input adapter -->
+<input name="hcInput">
+	<attribute name="uri" value="hazelcast:/" />
+	<attribute name="channelName" value="testTopic" />
+	<attribute name="hazelcastConfigFileUrl" value="classpath:/config-tests/test-hazelcast.xml" />
+</input>
+
+<!-- Hazelcast output adapter -->
+<output name="hcOutput">
+	<attribute name="uri" value="hazelcast:/" />
+	<attribute name="channelName" value="testTopic" />
+	<attribute name="hazelcastConfigFileUrl" value="classpath:/config-tests/test-hazelcast.xml" />
+</output>
++-------------------------------+

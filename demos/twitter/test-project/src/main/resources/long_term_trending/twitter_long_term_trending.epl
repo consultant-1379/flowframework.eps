@@ -1,0 +1,13 @@
+module twitterLongTermTrending;
+
+create schema trendingUsers as (username string, event string);
+
+insert into trendingUpUsers select * from trendingUsers where event = "UP";
+
+insert into trendingDownUsers select * from trendingUsers where event = "DOWN";            
+	
+insert into tweetLongTermTrends select "cool" as event, a.username as username
+	from pattern [every a=trendingUpUsers -> (timer:interval(10 sec) and not b=trendingDownUsers(username = a.username))].win:time(5 min);  
+                                
+@Name("twitterLongTermTrendsEsperOut")
+select * from tweetLongTermTrends;

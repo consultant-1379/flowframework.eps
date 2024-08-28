@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+	xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	oc:ns="com.ericsson.test" oc:name="test_one_to_many" oc:version="1.1.0">
+
+	<oc:modelCreationInfo author="author"
+		creationDate="today">
+		<oc:designedModel componentId="someComponentId" />
+	</oc:modelCreationInfo>
+
+	<oc:desc>example flows</oc:desc>
+
+	<step name="choose">
+		<handler>
+			<named>EsperHandler</named>
+			<rule name="rule1">
+				<inputPort name="in" />
+				<outputPort name="out" />
+				<ruleInline>some rule</ruleInline>
+			</rule>
+		</handler>
+	</step>
+
+	<step name="firstA">
+		<handler>
+			<className>com.ericsson.component.aia.examples.Foo</className>
+		</handler>
+		<attribute name="prop1" value="val1" />
+	</step>
+
+	<step name="secondA">
+		<handler>
+			<named>EsperHandler</named>
+		</handler>
+		<attribute name="prop1" value="val1" />
+		<attribute name="prop2" value="val2" />
+		<attribute name="prop3" value="val3" />
+
+		<rule name="externalRule3">
+			<ruleResource uri="classpath:/rule3.epl" />
+		</rule>
+	</step>
+
+	<step name="firstB">
+		<handler>
+			<className>com.ericsson.component.aia.examples.Foo</className>
+		</handler>
+		<attribute name="prop1" value="val1" />
+	</step>
+
+	<step name="secondB">
+		<handler>
+			<named>EsperHandler</named>
+		</handler>
+		<attribute name="prop1" value="val1" />
+		<attribute name="prop2" value="val2" />
+		<attribute name="prop3" value="val3" />
+
+		<rule name="externalRule3">
+			<ruleResource uri="classpath:/rule3.epl" />
+		</rule>
+	</step>
+
+	<step name="thirdB">
+		<handler>
+			<className>com.ericsson.component.aia.examples.Foo1</className>
+		</handler>
+		<attribute name="prop1" value="val1" />
+	</step>
+
+	<step name="fourthB">
+		<handler>
+			<className>com.ericsson.component.aia.examples.Foo2</className>
+		</handler>
+		<attribute name="prop1" value="val1" />
+	</step>
+	
+	<step name="firstC">
+		<handler>
+			<className>com.ericsson.component.aia.examples.Foo</className>
+		</handler>
+		<attribute name="prop1" value="val1" />
+	</step>
+
+	<path>
+		<from uri="file://tmp/file1" />
+		<to uri="choose" />
+		<toMany>
+			<to uri="firstA" />
+			<to uri="firstB" />
+			<to uri="firstC" />
+		</toMany>
+	</path>
+
+	<path>
+		<from uri="firstA" />
+		<to uri="secondA" />
+		<to uri="file://tmp/fileA" />
+	</path>
+
+	<path>
+		<from uri="firstB" />
+		<to uri="secondB" />
+		<to uri="thirdB" />
+		<to uri="fourthB" />
+		<to uri="file://tmp/fileB" />
+	</path>
+
+</FlowDefinition>

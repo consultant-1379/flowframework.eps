@@ -1,0 +1,38 @@
+	------
+	Event Processing Service
+	------
+
+What is the Event Processing Service (EPS)?
+
+ The Event Processing Service is a configurable event-driven rule service,
+ used for event processing (event correlation, aggregation, transformation,
+ enrichment etc).
+
+ It is configured to take data from one or more input sources, analyze this data
+ against a configurable set of rules and produce more events which can be
+ consumed by other services or further processed in the Event Processing Service
+ again.
+
+ EPS can use multiple input adapters to consume incoming events from different
+ sources, likewise multiple output adapters to produce processed events for
+ other services to consume  (e.g. JMS, Hazelcast, file, cache).
+ Event Handlers, which perform the processing steps, can use a varierty of rule
+ logic engine technologies: such as esper (for complex event processing), java,
+ jvm scripting.
+
+[./images/eps-high-level.png]
+
+ Multiple instances of EPS can be deployed to handle different sets of events
+ with associated IO Adapters and event processing handlers.
+ This allows for load balancing and for different levels of robustness for
+ different features.
+
+ The Event Processing Service relies heavily on the IT Platform to provide the
+ infrastructure to allow for both scalable and high available services.
+
+
+[./images/flows.png]
+
+ EPS provides SDK for users to extend its functionality and create customized
+ Adapters and Event Handlers for manipulating events, which will be delivered
+ as {{{./corr-sets.html}Solution Sets}}.

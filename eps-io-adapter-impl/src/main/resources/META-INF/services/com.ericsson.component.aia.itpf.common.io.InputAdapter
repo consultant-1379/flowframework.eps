@@ -1,0 +1,4 @@
+com.ericsson.component.aia.services.eps.io.adapter.hc.HazelcastInputAdapter
+com.ericsson.component.aia.services.eps.io.adapter.hornetq.HornetQInputAdapter
+com.ericsson.component.aia.services.eps.io.adapter.jms.JmsInputAdapter
+com.ericsson.component.aia.services.eps.io.adapter.modev.ModeledEventBusInputAdapter

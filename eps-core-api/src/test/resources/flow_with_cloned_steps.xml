@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+	xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	oc:ns="com.ericsson.test" oc:name="cloned_steps_flow" oc:version="1.1.0">
+
+	<oc:modelCreationInfo author="author"
+		creationDate="today">
+		<oc:designedModel componentId="someComponentId" />
+	</oc:modelCreationInfo>
+
+	<oc:desc>Eps Test - One Input Adapter which feeds multiple Paths</oc:desc>
+
+	<input name="hcInput">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-topic-in" />
+	</input>
+
+	<step name="handlerA">
+		<handler>
+			<className>com.ericsson.component.aia.examples.Foo</className>
+		</handler>
+		<attribute name="prop" value="val" />
+		<rule name="rule1">
+			<inputPort name="in" />
+			<outputPort name="out" />
+			<ruleInline>some rule</ruleInline>
+		</rule>
+	</step>
+
+	<clonedStep name="handlerB" clonedStepRef="handlerA" />
+	<clonedStep name="handlerC" clonedStepRef="handlerA" />
+	
+	<step name="doRuleA">
+		<handler>
+			<className>com.ericsson.component.aia.examples.foo.DoRule</className>
+		</handler>
+		<attribute name="prop1" value="val1" />
+	</step>
+	
+	<clonedStep name="doRuleB" clonedStepRef="doRuleA" />
+	
+	<path>
+		<from uri="hcInput" />
+		<toMany>
+			<to uri="handlerA" />
+			<to uri="handlerB" />
+			<to uri="handlerC" />
+		</toMany>
+	</path>
+	
+	<path>
+		<from uri="handlerA" />
+		<to uri="doRuleA" />
+	</path>
+	
+	<path>
+		<from uri="handlerB" />
+		<to uri="doRuleB" />
+	</path>
+	
+</FlowDefinition>

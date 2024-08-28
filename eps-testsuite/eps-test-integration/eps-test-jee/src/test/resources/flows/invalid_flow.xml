@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+	xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	oc:ns="com.test" oc:name="multiPathsInParallel" oc:version="1.0.0">
+
+	<oc:modelCreationInfo author="author"
+		creationDate="today">
+		<oc:designedModel componentId="multiPathsInParallel" />
+	</oc:modelCreationInfo>
+
+	<oc:desc>Eps Test - Multiple paths and multiple IOs</oc:desc>
+	
+	<attributeGroup name="threadConfig">
+		<attribute name="threadPoolSize" value="10" />
+		<attribute name="threadPriority" value="9" />
+	</attributeGroup>
+
+	<input name="hcInputMultiPathPar1">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-topic1-in" />
+	</input>
+	
+	<input name="hcInputMultiPathPar2">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-topic2-in" />
+	</input>
+
+	<output name="hcOutputMultiPathPar1">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-topic1-out" />
+	</output>
+	
+	<output name="hcOutputMultiPathPar2">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-topic2-out" />
+	</output>
+	
+	<step name="threading1">
+		<handler>
+			<className>com.ericsson.component.aia.services.eps.builtin.components.ThreadManagementComponent</className>
+		</handler>
+		<attributeGroupRef groupName="threadConfig" />
+	</step>
+
+	<step name="duplicator1">
+		<handler>
+			<className>com.ericsson.component.aia.services.eps.core.integration.jee.flow.components.JeeTestEventDuplicatorComponent</className>
+		</handler>
+		<attribute name="duplicationCount" value="3" />
+	</step>
+
+	<step name="duplicator1">
+		<handler>
+			<className>com.ericsson.component.aia.services.eps.core.integration.jee.flow.components.JeeTestEventDuplicatorComponent</className>
+		</handler>
+		<attribute name="duplicationCount" value="5" />
+	</step>
+	
+	<clonedStep name="threading2" clonedStepRef="threading1" />
+
+	<path>
+		<from uri="hcInputMultiPathPar1" />
+		<to uri="threading1" />
+		<to uri="duplicator1" />
+		<to uri="hcOutputMultiPathPar1" />
+	</path>
+	
+	<path>
+		<from uri="hcInputMultiPathPar2" />
+		<to uri="threading2" />
+		<to uri="duplicator2" />
+		<to uri="hcOutputMultiPathPar2" />
+	</path>
+
+</FlowDefinition>

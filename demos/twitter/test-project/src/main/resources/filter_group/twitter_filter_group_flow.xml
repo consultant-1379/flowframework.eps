@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+                xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                oc:ns="test" oc:name="TwitterFiltering" oc:version="1.0.0">
+
+    <oc:modelCreationInfo author="author" creationDate="today">
+        <oc:designedModel componentId="someComponentId" />
+    </oc:modelCreationInfo>
+    <oc:desc>Twitter Filtering</oc:desc>
+
+
+    <input name="twitterStream">
+        <attribute name="uri" value="hazelcast:/"/>
+        <attribute name="channelName" value="tweets" />
+    </input>
+
+    <output name="tweetStatsOut">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="tweet_statistics" />
+	</output>
+
+    <step name="tweetFilter">
+        <handler>
+            <className>com.ericsson.eps.demo.tweeter.handlers.FilterHandler</className>
+        </handler>
+        <attribute name="threshold" value="100" />
+    </step>
+    
+    <step name="esperGroupBy">
+		<handler>
+			<named>EsperHandler</named>
+		</handler>
+		<rule name="group_tweets">
+			<outputPort name="tweetStatsEsperOut" />
+			<ruleResource uri="file:/var/ericsson/eps/flows/group_tweets.epl" />
+		</rule>
+	</step>
+
+    <path>
+        <from uri="twitterStream" />
+        <to uri="tweetFilter" />
+        <to uri="esperGroupBy" />
+        <to uri="tweetStatsOut" />
+    </path>
+
+</FlowDefinition>

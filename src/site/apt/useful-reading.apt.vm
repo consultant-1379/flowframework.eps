@@ -1,0 +1,36 @@
+	------
+	Event Processing Service - Useful reading
+	------
+	
+Event Processing Service - Useful reading
+
+
+	[[1]] {{{http://esper.codehaus.org/}Esper documentation}}
+	
+	[[2]] {{{http://docs.oracle.com/javase/7/docs/api/java/util/ServiceLoader.html}Java SPI}}
+	
+	[[3]] {{{http://confluence-oss.lmera.ericsson.se/display/OSSARCH/Event+Processing+Service%2C+Module+View}EPS Architecture - Module View}}
+	
+	[[4]] {{{http://confluence-oss.lmera.ericsson.se/display/OSSARCH/Flow+Framework%2C+Module+View}Flow Framework - Module View}}
+
+	[[5]] {{{${documentation_FlowFramework}}Flow Framework documentation}}
+
+	[[6]] {{{http://lmax-exchange.github.io/disruptor/}Disruptor documentation}}
+
+	[]
+	
+* Other useful reading
+
+	[[1]] {{{http://docs.jboss.org/weld/reference/1.0.0/en-US/html/index.html}Weld reference}}
+	
+	[[2]] {{{http://docs.oracle.com/javaee/6/tutorial/doc/}Oracle JEE tutorial}}
+	
+	[[3]] {{{http://erilink.ericsson.se/eridoc/erl/objectId/09004cff86cfbaaa?docno=LMI-11:1951Uen}Reference Architecture}}
+	
+	[[4]] {{{http://erilink.ericsson.se/eridoc/erl/objectId/09004cff86d5d683?docno=LMI-11:2242Uen}Common Architecture}}
+	
+	[[5]] {{{http://confluence-oss.lmera.ericsson.se/display/OSSARCH/OSS+Architecture}OSS Architecture}}
+	
+	[]
+
+~~

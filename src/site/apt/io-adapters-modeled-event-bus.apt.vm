@@ -1,0 +1,45 @@
+	------
+	Modeled Event Bus I/O Adapters
+	------
+	
+Modeled Event Bus I/O Adapters
+
+	Modeled Event Bus I/O adapter allows EPS to use modeled event bus for generic modeled event sending and receiving.
+
+	URI protocol <<modeled-eb:/>>
+	
+	Configuration properties:
+	
+*-------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+|| Configuration parameter   || Description                                      									 || Mandatory  |
+*-------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| modeledEventClassName      | The ModeledEvent full canonical name. The class should be available in the classpath. | Yes                              |
+*-------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| filter                     | Filter expression to apply for received ModeledEvent. Optional     					 | No  |
+*-------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| acceptSubclass             | Should the InputAdapter accept subClasses. If "false", subclasses will not be accepted, | No, default value is true.    
+| 			       		     |  otherwise subclasses will be accepted and an instance of the configured ModeledEvent will be sent downstream to flow subscribers. |     
+| 				             | To be used only for Input Adapter  													|              |
+*-------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| channelId                  | The channel to use when sending event, overriding default specified in model channel URI.      | No                                 |
+*-------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+		
+	Example: declaring Modeled Event Bus I/O adapters in flow descriptor
+	
++-------------------------------+
+<!-- Modeled Event Bus input adapter -->
+<input name="modeledInput">
+     <attribute name="uri" value="modeled-eb:/"/>
+     <attribute name=" modeledEventClassName " value=" FQN of modeled event to be sent " />
+     <attribute name="acceptSubclasses" value="true/false" />
+     <attribute name="filter" value="some filter expression" />
+</input>
+
+<!-- Modeled Event Bus output adapter -->
+<output name="modeledOutput">
+    <attribute name="uri" value="modeled-eb:/"/>
+    <attribute name="modeledEventClassName" value="FQN of modeled event to be sent" /> 
+    <attribute name="channelId" value="OverridingChannel" />
+</output>
+
++-------------------------------+

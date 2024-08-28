@@ -1,0 +1,91 @@
+	------
+	Event Processing Service - Eps LITP plugin
+	------
+
+Introduction
+
+	the {{{${documentation_LITP2}}Linux IT Platform Layer }} (LITP) does not provide functionality to start EPS instances but LITP can be extended to provide this functionality by using the {{{${documentation_LITP2}/plugins/epsjse_plugin/index.html}EPS JVM Runtime plugin}}.		 
+	
+	In LITP the {{{${documentation_LITP2}/plugins/epsjse_plugin/index.html}EPS Runtime plugin}} permit to define the EPS instances, with related parameters, to be started on the cluster at start-up.
+	
+EPS JVM Runtime plugin
+
+	The EPS LITP plugin is responsible for creating the configuration required to start EPS in a cluster. 
+	
+	It use customized items and properties that are defined in the EPS LITP extension.
+	
+EPS LITP model extension
+
+	{{{${documentation_LITP2}/extensions/epsjseapi_extension_extension/index.html}EPS LITP model extension}} is responsible to create or introduce some item-types and properties in the LITP model
+
+* Defined Property Types
+
+	 ** jvm-heap-size
+	 
+	 ** service-enable
+	 
+	 ** service-state
+	 
+	 []
+	
+* Defined Item Types
+
+	* classpath-entry
+
+	Element of collection of additional classpath entries
+	
+	Contained Properties: 
+
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+|| Property name                                        || Description                                       || Default value (acceptable values) |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| entry                                                   | A classpath entry (file|dir|jar)                        | none (file path string)       |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+
+	* eps-group
+
+	Collection of EPS instances running on a node.
+
+	Contained Properties: 
+	
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+|| Property name                                        || Description                                       || Default value (acceptable values) |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| home                                                   | EPS Home directory                         | /opt/ericsson/assure_eps/eps (file path string)       |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+
+	* eps_instance
+
+	EPS Runtime instance configuration	
+
+	Contained Properties: 
+	
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+|| Property name                                        || Description                                       || Default value (acceptable values) |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| remote_jmx_port                                        | Remote JMX port to be used for statistics.                          | If not set JMX values will not be exposed remotely (positive integer)       |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| deploy_folder                                          | Where EPS instance should poll for new flow descriptor files                         | /var/opt/ericsson/eps/flows/${service_name}/ (path string)       |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| output_log_dir                                         | EPS instance log file.                     | /var/ericsson/log/assure_eps/${service_name}/ (path string)       |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| instr_option                                           | EPS instance log file                         | (any string)       |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| instr_output                                           | EPS instrumentation output                         | (any string)       |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| max_heap_size                                          | EPS instance max JVM heap size (-Xmx)                 | 6G (jvm-heap-size)       |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| initial_heap_size                                      | EPS instance inital JVM heap size                         | 6G (jvm-heap-size)       |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| additional_java_tuning                                 | Additional EPS instance JVM parameters                         | none (any string)       |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| env_file                                               | EPS instance environment file                         | none (path string)       |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| mode                                                   | The desired permissions mode for the LSB file                         | ug+x (any string)      |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| logback_file_location                                  | EPS logback file.                         | /opt/ericsson/csl/conf/logback.xml (path string)       |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| zooconfig_path                                         | Zookeper configuration file.                         | /etc/opt/ericsson/zookeeper/conf/ (path string)       |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| system_properties                                      | JVM system properties                         | (any string)       |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+	xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	oc:ns="com.ericsson.test1" oc:name="test_name1" oc:version="1.2.0">
+
+	<oc:modelCreationInfo author="author"
+		creationDate="today">
+		<oc:designedModel componentId="someComponentId" />
+	</oc:modelCreationInfo>
+
+	<oc:desc>example flows</oc:desc>
+
+	<input name="mInput1">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-input-topic-${sys.abc_prop}" />
+	</input>
+
+	<input name="mInput2">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-input-topic-${sys.abc_prop}" />
+	</input>
+
+	<step name="s1">
+		<handler>
+			<className>com.ericsson.component.aia.examples.Foo</className>
+		</handler>
+		<attribute name="prop1" value="val1" />
+	</step>
+
+	<step name="s2">
+		<handler>
+			<className>com.ericsson.component.aia.examples.Bar</className>
+		</handler>
+		<attribute name="prop1" value="val1" />
+	</step>
+
+	<step name="s3">
+		<handler>
+			<className>com.ericsson.component.aia.examples.FooBar</className>
+		</handler>
+		<attribute name="prop1" value="val1" />
+	</step>
+
+	<path>
+		<from uri="mInput1" />
+		<to uri="s1" />
+	</path>
+
+	<path>
+		<from uri="mInput2" />
+		<to uri="s1" />
+	</path>
+
+	<path>
+		<from uri="s1" />
+		<to uri="s2" />
+	</path>
+
+	<path>
+		<from uri="s2" />
+		<to uri="s3" />
+	</path>
+	
+	<path>
+		<from uri="s1" />
+		<to uri="s3" />
+	</path>
+</FlowDefinition>

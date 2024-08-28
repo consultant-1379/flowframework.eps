@@ -1,0 +1,40 @@
+	------
+	Event Deserialization Event Handler
+	------
+	
+Event Deserialization Event Handler
+
+	This Event Handler deserializes a event from a byte array to a object, and sends it downstream. This event handler expects byte array as input
+	and will ignore events of other type.
+	
+	Serialization and deserialization algorithms must match in order for process to be successful (for example, you can not serialize using Kryo and deserialize
+	using default Java serialization). In case when received event is not of type byte array, 
+	deserialization will not even be attempted and raw event will be sent downstream.
+	
+	Deserialization mode can be configured as compatibility mode or kryo mode. The <<compatibility>> mode uses default Java serialization. 
+	The <<kryo>> mode uses the {{{https://code.google.com/p/kryo/}KRYO serialization framework}} which is faster and more space-efficient. Thus, it is recommended to use kryo
+	mode instead of compatibility mode whenever possible. However, use compatibility mode if there are compatibility issues with the KRYO 
+	deserialization.	
+	
+	Event Handler configuration:
+	
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+|| Configuration parameter name                                        || Description                                       || Default value (acceptable values) |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| serializationMode                                                    | The mode of serialization                          | kryo (compatibility, kryo)        |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+
+	Event Handler declaration:
+
+	This is a {{{./java-event-handlers.html}Java Event Handler}}, should be declared using the <className> element, as in the example below. 
+	
+	Event Handler class name <<com.ericsson.oss.services.eps.builtin.components.io.EventDeserializer>>
+	
++-------------------------------+
+<step name="deserializer">
+	<handler>
+		<className>com.ericsson.oss.services.eps.builtin.components.io.EventDeserializer</className>
+	</handler>
+	<attribute name="serializationMode" value="compatibility" />
+</step>
++-------------------------------+

@@ -1,0 +1,97 @@
+	------
+	Event Processing Service - Packaging and deploying EPS in JBoss
+	------
+
+Packaging and deploying EPS in JBoss
+
+	First Bundle EPS in your service:
+	
+	* Bundle eps-jee.war as module inside your service EAR package
+	
+	* All extensions (handlers and IO Adapters) must be built as 
+
+	<<jar>> files and deployed inside the EAR/lib folder, along with their dependencies.
+
+		** CDI handlers annotated with @Named must be packaged in a jar file and put in the EAR/lib folder,
+		   and that jar must include beans.xml to allow injection.
+
+		** All extension dependencies used in flows must be packaged inside one of jars in EAR/lib folder
+	
+		** There must be no dependency on internal EPS jars, the only dependency allowed is on eps-api which is 
+		   available in eps-jboss-module
+
+	[]
+
+	Then deploy EPS module first and then your EAR in JBoss. 
+
+	Multiple EAR deployment in the same JBoss instance, each with its own EPS instance, is supported.
+
+* To package EPS follow these steps:
+	
+	<<Step 1>> {{{${nexusSearchUrl};gav~com.ericsson.oss.services.eps~eps-jee-war~~~} Download}} the latest <<eps-jee-war>> file and bundle it inside your service EAR package as a module.
+
++-------------------------------+
+<dependency>
+	<groupId>com.ericsson.oss.services</groupId>
+	<artifactId>eps-jee-war</artifactId>
+	<version>${project.version}</version>
+	<type>war</type>
+</dependency>
++-------------------------------+
+
+	Add <<com.ericsson.oss.services.eps:3.x services export>> dependency to your MANIFEST.MF file
+		
+	In your EAR META-INF/application.xml file specify a unique root context for EPS, like:
+
++-------------------------------+	
+  <web> 
+    <web-uri>eps-jee-war-${project.version}.war</web-uri> 
+    <context-root>/eps-your-service-name</context-root> 
+  </web>
++-------------------------------+	
+	
+	Check {{{./required_dependencies.html}required dependencies}} are met. 
+
+	<<Step 2>> Define the {{{./corr-sets.html} Solution Sets}} including EPS extensions and Flow Descriptors. 
+	
+		You need to choose the appropriate {{{./ext-io-adapters.html} IO Adapters}} and {{{./ext-event-handlers.html} Event Handlers}}, 
+		and define the {{{./flow-descriptor.html} Flow Descriptors}} which references those EPS extensions and describe the event flow.
+		Write your own EPS extensions if necessary.
+
+		All extensions (handlers and IO Adapters) must be built as <<jar>> files along with their dependencies, and deployed inside your service EAR in the /lib folder.
+		
+		CDI handlers annotated with @Named must be packaged in a jar file and put in the EAR/lib folder, and that jar must include beans.xml to allow injection.
+
+		There must be no dependency on internal EPS jars, the only dependency allowed is on eps-api which is available in eps-jboss-module
+		
+		See {{{./referencing-resources.html}Resources}} page for deployment instruction of all required resource. 
+
+	<<Step 3>> Configure the EPS instance, as described in {{{./configuration-options.html}configuration options}} page
+	
+		Create the EpsConfiguration.properties file, it should include at least the property: com.ericsson.oss.services.eps.module.deployment.folder.path
+
+		The EpsConfiguration.properties file should be packaged in a jar deployed in the EAR/lib folder, or deployed directly as module in EAR root.   
+
+* Deploy EPS module in Jboss:
+
+	Deploy the {{{${nexusSearchUrl};gav~com.ericsson.oss.services.eps~eps-jboss-module~~~} EPS JBoss module}} into <<$JBOSS_HOME/modules/system/layers/base/>> directory.
+	
+	Get the EPS Module with the same version as the EPS you are using, and extract the zip or install the RPM. 
+
+	* For development environment fetch the {{{${nexusSearchUrl};gav~com.ericsson.oss.services.eps~eps-jboss-module~~~} EPS JBoss module}} archivie from nexus and include in dependencies for Arquillian test.
+
+	* For production environment use the {{{${nexusSearchUrl};gav~com.ericsson.oss.services.eps~ERICepsmodule_CXP9031864} EPS JBoss module RPM}} for deployment.
+
+	[]
+
+	Then you should see the path <<$JBOSS_HOME/modules/system/layers/base/com/ericsson/oss/services/eps/3.x>>
+	
++-------------------------------+
+<groupId>com.ericsson.oss.services</groupId>
+<artifactId>eps-jboss-module</artifactId>
+<version>${project.version}</version>
+<classifier>${eps_jee_cxp_number}</classifier>
+<type>zip</type>
++-------------------------------+
+
+	

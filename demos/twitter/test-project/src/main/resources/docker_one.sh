@@ -1,0 +1,1 @@
+sudo docker run -t -i -w "/opt/ericsson/eps/bin" ericsson/eps-twitter-group-filter /bin/bash

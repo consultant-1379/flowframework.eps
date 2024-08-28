@@ -1,0 +1,25 @@
+	------
+	Individual Event Tracker Handler
+	------
+
+Individual Event Tracker Handler
+
+	This Event Handler tracks and exposes received events, providing the total count for every distinct event type received.
+
+        <<Note>> <This should be used for debugging purposes only>.
+	
+	This Event Handler can not be configured.
+
+	Event Handler declaration:
+
+	This is a {{{./java-event-handlers.html}Java Event Handler}}, should be declared using the <className> element, as in the example below. 
+	
+	Event Handler class name <<com.ericsson.oss.services.eps.builtin.components.IndividualEventTracker>>
+	
++-------------------------------+
+<step name="tracking">
+	<handler>
+		<className>com.ericsson.oss.services.eps.builtin.components.IndividualEventTracker</className>
+	</handler>
+</step>
++-------------------------------+

@@ -1,0 +1,9 @@
+<jboss-deployment-structure>
+  <ear-subdeployments-isolated>false</ear-subdeployments-isolated>
+    <deployment>
+        <dependencies>
+            <module name="deployment.EarCdiTest2.ear.eps-jee-war-${project.version}.war" export="true"/>
+        </dependencies>
+    </deployment>
+</jboss-deployment-structure>
+

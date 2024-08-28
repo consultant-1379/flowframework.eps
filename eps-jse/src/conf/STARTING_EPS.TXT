@@ -1,0 +1,6 @@
+EPS can be started by invoking eps.sh script in EPS_HOME/bin/ folder
+
+eps.sh script accepts parameters (see eps.sh for more details) and every EPS instance can be customized separately.
+
+It is recommended to create separate Linux service (separate start script),
+customize EPS instance there and then invoke EPS_HOME/bin/eps.sh from there.

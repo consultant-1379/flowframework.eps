@@ -1,0 +1,10 @@
+MODULE sliding_window_KPI;
+
+CREATE VARIABLE INTEGER var_window_length_KPI = 4;
+
+@Name('sliding_window_KPI')
+SELECT
+	* 
+FROM
+	KPI.std:groupwin(resourceId).ext:sort(var_window_length_KPI, ropId desc)
+OUTPUT SNAPSHOT EVERY 1 EVENTS;

@@ -1,0 +1,10 @@
+MODULE sliding_window_LTE_CELL_EVENT_CNT_1MIN;
+
+CREATE VARIABLE INTEGER var_window_length_LTE_CELL_EVENT_CNT_1MIN = 4;
+
+@Name('sliding_window_LTE_CELL_EVENT_CNT_1MIN')
+SELECT
+	* 
+FROM
+	LTE_CELL_EVENT_CNT_1MIN.std:groupwin(resourceId).ext:sort(var_window_length_LTE_CELL_EVENT_CNT_1MIN, ropId desc)
+OUTPUT SNAPSHOT EVERY 1 EVENTS;

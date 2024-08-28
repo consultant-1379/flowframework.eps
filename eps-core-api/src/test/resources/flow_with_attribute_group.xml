@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+	xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	oc:ns="com.ericsson.test" oc:name="attribute_group_flow" oc:version="1.1.0">
+
+	<oc:modelCreationInfo author="author"
+		creationDate="today">
+		<oc:designedModel componentId="someComponentId" />
+	</oc:modelCreationInfo>
+
+	<oc:desc>example flows</oc:desc>
+
+	<attributeGroup name="useHcWithByteArray">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="hazelcast.manage.events.as.byte.arrays" value="true" />
+	</attributeGroup>
+	
+	<attributeGroup name="batchAttributes">
+		<attribute name="maxBatchSize" value="-1" />
+		<attribute name="flushBatchPeriodMillis" value="300" />
+		<attribute name="commonProp" value="common" />
+	</attributeGroup>
+
+	<input name="hcInput">
+		<attributeGroupRef groupName="useHcWithByteArray" />
+		<attribute name="channelName" value="eps-topic-in" />
+	</input>
+	
+	<output name="hcOutputA">
+		<attributeGroupRef groupName="useHcWithByteArray" />
+		<attribute name="channelName" value="eps-topic-out-A" />
+	</output>
+	
+	<output name="hcOutputB">
+		<attribute name="channelName" value="eps-topic-out-B" />
+		<attributeGroupRef groupName="useHcWithByteArray" />
+	</output>
+	
+	<step name="choose">
+		<handler>
+			<className>com.ericsson.component.aia.examples.Foo</className>
+		</handler>
+		<attribute name="prop1" value="val1" />
+	</step>
+
+	<step name="batchA">
+		<handler>
+			<className>com.ericsson.component.aia.examples.foo.Batch</className>
+		</handler>
+		<attributeGroupRef groupName="batchAttributes" />
+		<attribute name="batchPropA1" value="valA1" />
+	</step>
+	
+	<step name="batchB">
+		<handler>
+			<className>com.ericsson.component.aia.examples.foo.Batch</className>
+		</handler>
+		<attribute name="batchPropB1" value="valB1" />
+		<attributeGroupRef groupName="batchAttributes" />
+		<attribute name="batchPropB2" value="valB2" />
+	</step>
+
+	<path>
+		<from uri="hcInput" />
+		<to uri="choose" />
+		<toMany>
+			<to uri="batchA" />
+			<to uri="batchB" />
+		</toMany>
+	</path>
+
+	<path>
+		<from uri="batchA" />
+		<to uri="hcOutputA" />
+	</path>
+
+	<path>
+		<from uri="batchB" />
+		<to uri="hcOutputB" />
+	</path>
+
+</FlowDefinition>

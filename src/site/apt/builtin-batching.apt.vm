@@ -1,0 +1,43 @@
+	------
+	Event Batching Event Handler
+	------
+	
+Event Batching Event Handler
+
+	Batching of event is useful to avoid network acknowledgments for every event. In some cases batching of events will speed up sending events to remote processes. 
+
+	This Event Handler batches individual events using Java Blocking Queue and sends them downstream batched in {{{http://docs.oracle.com/javase/7/docs/api/java/util/Collection.html}Collection}}.
+	
+	Batching of events is configurable. Batch size limit and periodic flushing of batched events can be configured.
+	
+	Events are sent downstream whenever the batch reach the <<maxBatchSize>> limit, else the batch is flushed every <<flushBatchPeriodMillis>> milliseconds.
+
+	Set <<maxBatchSize>> to 0 to have an infinite batch size, or you can set <<flushBatchPeriodMillis>> to 0 or a negative integer to disable periodic flushing, but the handler throws an exception while loading the flow if either batch size limit and periodic flushing of batched events are disabled at the same time.  
+	
+	Null events are discarded by this Event Handler. This Event Handler never sends empty collections downstream.
+	
+	Event Handler configuration:
+	
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+|| Configuration parameter name                                        || Description                                       || Default value (acceptable range)  |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| maxBatchSize                    | batch size limit, maximum number of events in the queue before it will be flushed                    | 1000 (any valid positive integer value, 0 disables the limit)            |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| flushBatchPeriodMillis          | periodic flushing time in milliseconds           | 100 (any valid integer, 0 or non-positive integer turns off flushing)  |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+
+	Event Handler declaration:
+	
+	This is a {{{./java-event-handlers.html}Java Event Handler}}, should be declared using the <className> element, as in the example below. 
+	
+	Event Handler class name <<com.ericsson.oss.services.eps.builtin.components.BatchComponent>>
+	
++-------------------------------+
+<step name="batch">
+	<handler>
+		<className>com.ericsson.oss.services.eps.builtin.components.BatchComponent</className>
+	</handler>
+	<attribute name="maxBatchSize" value="3000" />
+	<attribute name="flushBatchPeriodMillis" value="1000" />
+</step>
++-------------------------------+

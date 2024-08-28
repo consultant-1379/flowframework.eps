@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<policy-configuration id="10">
+	<general>
+		<name>policy-300</name>
+		<namespace>com.ericsson.component.aia.wcdma</namespace>
+		<version>1.0</version>
+	</general>
+	<configurations>
+		<configuration>
+			<id>1</id>
+			<tenant>assure</tenant>
+			<properties>
+				<property>
+					<key>target.rule.group</key>
+					<value>1</value>
+				</property>
+				<property>
+					<key>ontology.field</key>
+					<value>resourceId</value>
+				</property>
+				<property>
+					<key>resources.spec</key>
+					<value>2</value>
+				</property>
+				<property>
+					<key>resources.allowed</key>
+					<value>true</value>
+				</property>
+				<property>
+					<key>resources.mode</key>
+					<value>set</value>
+				</property>
+			</properties>
+		</configuration>
+	</configurations>
+</policy-configuration>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+	xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	oc:ns="com.test" oc:name="test" oc:version="1.0.0">
+
+	<oc:modelCreationInfo author="author"
+		creationDate="today">
+		<oc:designedModel componentId="someComponentId" />
+	</oc:modelCreationInfo>
+
+	<oc:desc>Eps Test - Single path</oc:desc>
+
+	<input name="modInputSingleFlowNoSubClass">
+		<attribute name="uri" value="modeled-eb:/" />
+		<attribute name="modeledEventClassName" value="com.ericsson.component.aia.services.eps.core.integration.jee.modeledevent.TestInputModeledEvent" />
+		<attribute name="acceptSubClass" value="false" />
+	</input>
+	
+	<output name="modOutputSingleFlowNoSubClass">
+		<attribute name="uri" value="modeled-eb:/" />
+		<attribute name="modeledEventClassName" value="com.ericsson.component.aia.services.eps.core.integration.jee.modeledevent.TestOutputModeledEvent" />
+	</output>
+	
+	<step name="swapperNoSubClass">
+		<handler>
+			<className>com.ericsson.component.aia.services.eps.core.integration.jee.modeledevent.TestModeledEventSwapperComponent</className>
+		</handler>
+	</step>
+
+	<path>
+		<from uri="modInputSingleFlowNoSubClass" />
+		<to uri="swapperNoSubClass" />
+		<to uri="modOutputSingleFlowNoSubClass" />
+	</path>
+
+</FlowDefinition>

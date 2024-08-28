@@ -1,0 +1,10 @@
+MODULE sliding_window_isu60_consumed_credits_threshold;
+
+CREATE VARIABLE INTEGER var_window_length_INTERNAL_SYSTEM_UTILIZATION_60MIN = 4;
+
+@Name('sliding_window_isu60_consumed_credits_threshold')
+SELECT
+	* 
+FROM
+	INTERNAL_SYSTEM_UTILIZATION_60MIN.std:groupwin(resourceId).ext:sort(var_window_length_INTERNAL_SYSTEM_UTILIZATION_60MIN, ropId desc)
+OUTPUT SNAPSHOT EVERY 1 EVENTS;

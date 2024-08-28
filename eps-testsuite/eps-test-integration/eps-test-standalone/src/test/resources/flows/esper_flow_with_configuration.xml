@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+	xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	oc:ns="com.ericsson.test" oc:name="EsperTestWithConfiguration"
+	oc:version="1.0.0">
+
+	<oc:modelCreationInfo author="author" creationDate="today">
+		<oc:designedModel componentId="someComponentId" />
+	</oc:modelCreationInfo>
+
+	<oc:desc>example flows</oc:desc>
+
+	<input name="hcInput">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-input-topic" />
+	</input>
+
+	<output name="hcOutput">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="eps-output-topic" />
+	</output>
+
+	<step name="filter">
+		<handler>
+			<named>EsperHandler</named>
+		</handler>
+		<attribute name="configurationFilePath" value="classpath:/config/esper-test-config.xml" />
+
+		<rule name="epl02-rule">
+			<inputPort name="inputStream1" />
+			<outputPort name="outputStream1" />
+			<ruleResource uri="classpath:/epl/rules_02.epl" />
+		</rule>
+	</step>
+
+	<path>
+		<from uri="hcInput" />
+		<to uri="filter" />
+		<to uri="hcOutput" />
+	</path>
+
+</FlowDefinition>

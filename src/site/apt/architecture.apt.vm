@@ -1,0 +1,29 @@
+ -----
+ Event Processing Service - Overview: Architecture
+ -----
+ -----
+
+Overview: Architecture
+
+* Architectural Layers and Modeling
+
+ The figure below shows the layers of the YMER architecture. EPS is part of the
+  {{{http://confluence-oss.lmera.ericsson.se/display/OSSARCH/Introduction+to+Service+Layer}Services Layer}}.
+
+[./images/over_arch_layers.png] over_arch_layers
+
+ EPS implements the
+ {{{${documentation_eventFlowApi} } Flow Framework Specification}}
+ in the
+ {{{http://confluence-oss.lmera.ericsson.se/display/OSSARCH/Introduction+to+Service+Layer}Services Layer}}.
+ Mediation Service implements the Flow Framework Specification in the
+ {{{http://confluence-oss.lmera.ericsson.se/display/OSSARCH/Introduction+to+Mediation+Layer}Mediation Layer}}.
+
+[./images/evt-processing-layers.png] evt-processing-layers
+
+
+ See the Architecture documentation for more information:
+ {{{http://confluence-oss.lmera.ericsson.se/display/OSSARCH/Event+Processing+Service%2C+Module+View}Module View}},
+ {{{http://confluence-oss.lmera.ericsson.se/display/OSSARCH/Event+Processing+Service+-+Packaging+View}Packaging View}}
+ and
+ {{{http://confluence-oss.lmera.ericsson.se/display/OSSARCH/Event+Processing+Service%2C+Deployment+View}Deployment View}}

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	elementFormDefault="qualified">
+	<xs:element name="policy-specification">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="general" />
+				<xs:element ref="rules" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="general">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="name" />
+				<xs:element ref="namespace" />
+				<xs:element ref="version" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="rules">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element maxOccurs="unbounded" ref="rule-group" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="rule-group">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element maxOccurs="unbounded" ref="rule" />
+				<xs:element ref="input" />
+			</xs:sequence>
+			<xs:attribute name="match-mode" use="required" type="xs:string" />
+			<xs:attribute name="id" use="required" type="xs:integer" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="rule">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="name" />
+				<xs:element ref="type" />
+				<xs:element ref="output" />
+				<xs:element ref="flexiable-jython-name-binding" />
+				<xs:element ref="params" />
+				<xs:element ref="reference" />
+			</xs:sequence>
+			<xs:attribute name="id" use="required" type="xs:integer" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="params">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element maxOccurs="unbounded" ref="param" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="param">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="name" />
+				<xs:element ref="type" />
+				<xs:element ref="default" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="default" type="xs:string" />
+	<xs:element name="reference" type="xs:string" />
+	<xs:element name="input">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="events" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="events">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element maxOccurs="unbounded" ref="event" />
+			</xs:sequence>
+			<xs:attribute name="view" use="required" type="xs:string" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="event">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="name" />
+				<xs:element ref="namespace" />
+				<xs:element ref="version" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="name" type="xs:string" />
+	<xs:element name="namespace" type="xs:string" />
+	<xs:element name="version" type="xs:string" />
+	<xs:element name="type" type="xs:string" />
+	<xs:element name="output" type="xs:string" />
+	<xs:element name="flexiable-jython-name-binding" type="xs:boolean" />
+</xs:schema>

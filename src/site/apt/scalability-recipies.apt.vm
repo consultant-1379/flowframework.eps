@@ -1,0 +1,11 @@
+	------
+	Event Processing Service - Scalability Recipies
+	------
+
+Scalability Recipies
+
+
+        [[1]] {{{./fm-ha-with-eps.html} HA for FM, (a low throughput solution)}}
+
+	[]
+

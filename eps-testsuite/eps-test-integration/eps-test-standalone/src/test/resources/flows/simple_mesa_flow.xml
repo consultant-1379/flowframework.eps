@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+	xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	oc:ns="com.ericsson.test" oc:name="MesaSimpleTest" oc:version="1.0.0">
+	
+
+	<oc:modelCreationInfo author="author" creationDate="today">
+		<oc:designedModel componentId="someComponentId" />
+	</oc:modelCreationInfo>
+
+	<oc:desc>example flows</oc:desc>
+
+	<input name="hcInput">
+		<attribute name="hazelcastConfigFileUrl" value="file:src/test/resources/config/hazelcast.xml" />
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="mesa-input-topic" />
+	</input>
+	
+	<output name="hcOutput">
+		<attribute name="hazelcastConfigFileUrl" value="file:src/test/resources/config/hazelcast.xml" />
+		<attribute name="uri" value="hazelcast:/" />
+		<!--  <attribute name="channelName" value="eps-output-topic" />  -->
+		<attribute name="channelName" value="mesa-incident_topic" />
+	</output>
+
+	<step name="mesa">
+		<handler>
+			<className>com.ericsson.component.aia.services.eps.builtin.components.MesaEventHandler</className>
+		</handler>
+		<attribute name="configurationFilePath" value="src/test/resources/config/esper-test-config.xml" />
+		<attribute name="policies.root.directory" value="src/test/resources/deployer/main/" />
+		<attribute name="jython.event.short.names" value="src/test/resources/mesa-variable-bindings.properties" />
+		<attribute name="epl.template.directory" value="src/test/resources/template/" />
+	</step>
+
+	<path>
+		<from uri="hcInput" />
+		<to uri="mesa" />
+		<to uri="hcOutput" />
+	</path>
+</FlowDefinition>

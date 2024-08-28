@@ -1,0 +1,4 @@
+com.ericsson.component.aia.services.eps.builtin.components.mesa.locator.TestAdsLocator
+#com.ericsson.component.aia.services.eps.builtin.components.mesa.locator.TestHBaseLocator
+#com.ericsson.component.aia.services.eps.builtin.components.mesa.locator.TestHiveLocator
+#com.ericsson.component.aia.services.eps.builtin.components.mesa.locator.TestImkvsLocator

@@ -1,0 +1,59 @@
+	------
+	Thread Management Event Handler
+	------
+	
+Thread Management Event Handler
+
+	This Event Handler parallelizes processing of input events and sends them downstream by using multiple threads.
+	
+	A BlockingQueue is used to hold  submitted Runnable tasks before they are executed.
+	
+	The rejectedExecutionPolicy is a {{{https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/RejectedExecutionHandler.html}RejectedExecutionHandler}}}.
+	
+	LoggedDiscardPolicy is a custom RejectedExecutionHandler implementation which is like ThreadPoolExecutor.DiscardPolicy but also logs and counts the discarded tasks.
+	
+	Event Handler configuration:
+	
+*-----------------------------------+----------------------------------------+----------------------------------------------------------------------------------------+
+|| Configuration parameter name     || Description                    		 || Default value (acceptable range)  							   						  |
+*-----------------------------------+----------------------------------------+----------------------------------------------------------------------------------------+
+| threadPoolSize                    | The size of thread pool          		 | 10 (any valid non-negative integer value)  		             						  |
+*-----------------------------------+----------------------------------------+----------------------------------------------------------------------------------------+
+| threadPriority         			| Priority of threads			   		 | 8 (any valid thread priority number in range [1-10])	      							  |
+*-----------------------------------+----------------------------------------+----------------------------------------------------------------------------------------+
+| queueSize                    		| The size of BlockingQueue		   		 | Integer.MAX_VALUE(any valid non-negative integer value) 								  |
+|									| This is an Optional parameter	   		 |												 										  |
+*-----------------------------------+----------------------------------------+----------------------------------------------------------------------------------------+
+| rejectedExecutionPolicy         	| Rejection Policy if task is rejected   | CallerRunsPolicy																		  | 
+|								   	| This is an Optional parameter	   		 |(Accepted values: 																	  |
+|								   	| 										 | {{{https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ThreadPoolExecutor.AbortPolicy.html}AbortPolicy}}/{{{https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ThreadPoolExecutor.DiscardPolicy.html}DiscardPolicy}} / {{{https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ThreadPoolExecutor.DiscardOldestPolicy.html}DiscardOldestPolicy}} / {{{https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ThreadPoolExecutor.CallerRunsPolicy.html}CallerRunsPolicy}} / LoggedDiscardPolicy)	  |
+*-----------------------------------+----------------------------------------+----------------------------------------------------------------------------------------+
+| rejectedEventsCounterNamePrefix   | Prefix to use for the counter that contains the number of rejected tasks.  | "com.ericsson.oss.services.eps.builtin.components.ThreadManagementComponent$LoggedDiscardPolicy" (String value) | 
+|								   	| Only applicable if LoggedDiscardPolicy is used.   |                                                                             |
+|                                   | This is an Optional parameter          |                                                                                        |
+*-----------------------------------+----------------------------------------+----------------------------------------------------------------------------------------+
+| rejectedEventsCounterName      	| Name of the counter that contains the number of rejected tasks.  | "rejectedEvents" (String value)                              | 
+|								   	| Only applicable if LoggedDiscardPolicy is used.   |                                                                             |
+|                                   | This is an Optional parameter          |                                                                                        |
+*-----------------------------------+----------------------------------------+----------------------------------------------------------------------------------------+
+
+
+	Event Handler declaration:
+
+	This is a {{{./java-event-handlers.html}Java Event Handler}}, should be declared using the <className> element, as in the example below. 
+	
+	Event Handler class name <<com.ericsson.oss.services.eps.builtin.components.ThreadManagementComponent>>
+	
++-------------------------------+
+<step name="threading">
+	<handler>
+		<className>com.ericsson.oss.services.eps.builtin.components.ThreadManagementComponent</className>
+	</handler>
+	<attribute name="threadPoolSize" value="3" />
+	<attribute name="threadPriority" value="5" />
+	<attribute name="queueSize" value="1000" />
+	<attribute name="rejectedExecutionPolicy" value="LoggedDiscardPolicy" />
+	<attribute name="rejectedEventsCounterNamePrefix" value="eps.flow1.threadpool1" />
+	<attribute name="rejectedEventsCounterName" value="numRejectedEvents" />
+</step>
++-------------------------------+

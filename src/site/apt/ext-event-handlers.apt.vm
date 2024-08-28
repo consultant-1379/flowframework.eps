@@ -1,0 +1,96 @@
+	------
+	Event Processing Service - Event Handlers
+	------
+	
+Purpose of Event Handlers
+
+	Event Handlers are described {{{${documentation_FlowFramework}/eventflow-api/flow-event-handlers.html}here}}.
+
+	A set of useful event handlers are provided with the EPS distribution, which can be reused. 
+	It is recommended to use them whenever possible, instead of creating event handlers performing the same function. 
+	
+	We encourage teams to contribute to these handlers either by improving existing ones or adding new reusable event handlers.
+
+Currently supported Event Handlers 
+
+	Event Handlers can be developed using different languages, using them is possible to {{{./ext-event-handlers-creating.html}Create New Event Handlers}}.   
+
+	Depending on languages the interfaces with EPS, declaration in flows and deployment details change, for detailed information check the links below.	
+
+	* {{{./java-event-handlers.html}Native Java event handlers}}
+
+	* {{{./cdi-event-handlers.html}CDI event handlers}}
+	
+	* {{{./jvm-scripting-event-handlers.html}JVM Scripting event handlers}}
+
+Built-in Event Handlers
+
+	Built-in Event Handlers are implementations of {{{${documentation_eventFlowApi}}event-flow API}}
+	that can be reused in different solution sets and are packaged and distributed with EPS.
+	
+* Generic Built-in Event Handlers
+
+	These are generic and tested Event Handlers that are considered to be useful to different products.
+
+	** {{{./builtin-collection-splitter.html} Collection splitter Event Handler}}
+
+	** {{{./builtin-thread-mgmt.html} Thread management Event Handler}}
+
+	** {{{./builtin-batching.html} Event batching Event Handler}}
+
+	** {{{./builtin-non-blocking-batching.html} Non-blocking event batching Event Handler}}
+	
+	** {{{./builtin-serialization.html} Event serialization Event Handler}}
+
+	** {{{./builtin-deserialization.html} Event deserialization Event Handler}}
+
+	** {{{./builtin-individual-tracker.html} Individual Event Tracker Event Handler}}
+	
+	** {{{./builtin-load-balancer.html} Load balancing handler}}
+
+	** {{{./builtin-cardinality-estimator.html} Cardinality Estimator event handler for probabilistic counting of distinctive objects}}
+
+	[]
+	
+* Built-in Event Handlers for external processing engines
+
+	There is a need for two complementing approaches to process data: streaming approach and imperative approach. By streaming we are referring
+	to processing such as building 5 minute aggregates out of raw events (i.e. SQL GROUP BY clause), while with imperative we are referring
+	to programming language constructs which are generally present in imperative programming language, such as Java (i.e. IF/THEN/ELSE statements
+	with arbitrary nesting, explicit and shared state/variables etc).
+	
+	General data processing pattern within our features is to collect raw events, build aggregates and besides storing all data into some kind
+	of a database, check if, for example, KPIs which are represented by aggregates have valid value (i.e. is call drop rate is less than threshold).
+	
+	Hence, EPS, by having support for Esper (streaming mode) and MESA (imperative mode) offers capability to deliver end to end features.  
+
+	** {{{./builtin-mesa.html}MESA event handler for imperative monitoring and analysis of streams}}
+
+	** {{{./esper-event-handlers.html}Esper event handlers}}	
+
+	[]
+	
+External Event Handlers
+
+	There is also a set of {{{${documentation_Extensions}/index.html}external event handlers}}, distributed in their how project, that need to be installed separately.
+
+How to use Event Handlers
+
+	To use the built-in Event Handlers follow the steps in {{{./ext-use-builtin-event-handlers.html}Use Built-in Event Handlers}}
+	
+Deploying Event Handlers
+
+	Event handlers are deployed as extensions of EPS. Details of EPS extensions deployment are described for {{{./flow-descriptor.html}flow descriptors deployment}}.
+
+
+
+
+
+
+
+
+
+
+
+
+

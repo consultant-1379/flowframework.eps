@@ -1,0 +1,58 @@
+	------
+	Event Processing Service - Flow Descriptor
+	------
+	
+What is Flow Descriptor
+	
+	A Flow descriptor is the central interface for using EPS. It references EPS components (provided either by EPS core or by some of EPS extensions)
+	and describes how event flow looks like. Flow descriptor is described {{{${documentation_FlowFramework}/eventflow-api/flow-descriptor.html}here}} and is used by EPS
+	to determine:
+	
+	[[1]] Which components should perform event processing (what rules, what {{{./ext-event-handlers.html}event handlers}}, and their configuration etc)
+
+	[[2]] How event processing components are connected to each other (who sends event to whom)
+
+	[[3]] Where input events are coming from and where output events are going to (what {{{./ext-io-adapters.html}IO adapters}} should be used)
+	
+	
+	Flow descriptor allows you to choose different event handlers to be used by different processing steps. For example
+	it is possible to pre-process events in Java, then do correlation inside Esper, then enrich output in Java again and send results to remote
+	process using output adapters.
+	
+	Also, take a look at {{{./corr-set-examples.html}flow descriptor examples}}.
+
+Flow descriptors deployment
+	
+	Solution Set deployment includes the deployments of EPS extensions, Flow descriptors and relevant Resources.
+	If Solution Set provides any EPS extensions those should be deployed appropriately before deploying Flow descriptors using those extensions
+	Step-by-step guide available for {{{./eps-jboss-deploy.html}JBoss}} and {{{./eps-standalone-install.html}standalone}} installation. 
+
+	Flow descriptors can be loaded from model service or directly from file system, they are optionally at startup of EPS, and are always loaded automatically at runtime when deployed. 
+	
+* Load flows from model service
+	
+	To load flows from the model service a valid urn must be configured. EPS constantly watches for new models deployments, and whenever a new relevant flow model is added EPS will try to deploy it as flow descriptor.
+	
+	The urn is configured via JVM system parameter as described {{{./configuration-options.html} here}}, 
+	the given value should be in the form <<//namespace/filename/version>>, where all part of the urn can be a wildcard.
+	
+	For details about deploy models in ModelService see {{{${documentation_modelingsdk}}OSS Modeling SDK}}
+	
+	When EPS use ModelService all properties related to file system are ignored.
+	
+	Urn parameter has no default value, if absent EPS will load flows from file system (as configured by {{{./configuration-options.html} folder path}} system parameter).
+	
+* Load flows from file system
+
+	To load flows from file system flows xml files should be deployed in an configured directory.
+	
+	EPS instance constantly watches directory on the file system and whenever new <.xml> file is detected EPS will try to deploy it as flow descriptor. 
+
+	Custom flow deployment folder should be indicated in EpsConfiguration.properties file as described {{{./configuration-options.html}here}}
+
+	It is the user's responsibility to create the appropriate deployment directory (including the default directory) on file system with appropriate permissions and ownership. 
+
+	The default directory watched by EPS is <</var/ericsson/eps/flows>> (or <<C:/var/ericsson/eps/flows>> in Windows environment).
+
+	EPS will only detect newly created xml flow descriptions - modified files will not be detected.
+	It is possible to deploy new flow descriptors without the need to restart EPS instance.

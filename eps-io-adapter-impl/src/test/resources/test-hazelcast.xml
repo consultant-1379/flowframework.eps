@@ -1,0 +1,20 @@
+<hazelcast>
+	<group>
+		<name>test</name>
+		<password>test</password>
+	</group>
+
+	    <network>
+		<port auto-increment="true">5701</port>
+		<join>
+		    <multicast enabled="false">
+		        <multicast-group>159.107.164.172</multicast-group>
+		        <multicast-port>54327</multicast-port>
+		    </multicast>
+		    <tcp-ip enabled="true">
+		        <hostname>localhost</hostname>
+		        <interface>127.0.0.1</interface> 
+		    </tcp-ip>
+		</join>
+	    </network>
+</hazelcast>

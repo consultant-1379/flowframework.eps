@@ -1,0 +1,195 @@
+	------
+	MESA event handler for imperative monitoring and analysis of streams
+	------
+
+MESA event handler
+
+	MESA stands for Monitoring Engine for Smart Analytics. It is an EPS extension which provides capability to write imperative rules
+	within EPS. 
+	
+	Input to MESA are events, and output of MESA are also events, which are treated differently, depending on business context. Events
+	created by MESA are generally considered alerts/alarms/incidents/notifications i.e. high business value event.
+
+	Event Handler configuration:
+
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+|| Configuration parameter name                                        || Description                                       || Default value (acceptable values) |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| configuration.file.path                                                    | full path to the Epser configuration to be used  | none       |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| policies.root.directory                                                    | The root directory in which the polices to be deployed and evaluated are to be stored, new polices placed in this directory will be automatically deployed during runtime                         | none        |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| jython.event.short.names                                                   | The full path to the file containing the bindings between full event names and a short (more convenient) name for use in the supplied Jython scripts                       | none      |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| epl.template.directory                                                   | The location of the template EPL file, this file should not be modified                         |none      |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| evaluation.time.limit                                                    |  A time limit, in miliseconds, for evaluating a rule. If the rule exceeds this threshold a warning is produced in the logs. This is an optional configuration parameter                        |10ms        |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+
+	Event Handler declaration:
+
+	This is a {{{./java-event-handlers.html}Java Event Handler}}, should be declared using the <className> element, as in the example below. 
+	
+	Event Handler class name <<com.ericsson.oss.services.eps.builtin.components.MesaEventInputHandler>>
+	
++-------------------------------+
+<step name="mesa">
+		<handler>
+			<className>com.ericsson.oss.services.eps.builtin.components.MesaEventInputHandler</className>
+		</handler>
+		<attribute name="configuration.file.path" value="src/test/resources/config/esper-test-config.xml" />
+		<attribute name="policies.root.directory" value="src/test/resources/deployer/main/" />
+		<attribute name="jython.event.short.names" value="src/test/resources/mesa-variable-bindings.properties" />
+		<attribute name="epl.template.directory" value="src/test/resources/template/" />
+</step>
++-------------------------------+
+	
+* MESA views
+
+	<< NOTE: >> 1) Dependency Resource Identity service. (hyper link to description)
+	
+	<< NOTE: >> 2) Dependency on QS and DPS for the locator, vocabulary and contextualization optional functionality. (hyper link to descriptions) 
+
+	This Event Handler provides data views on streams which allows for imperative analysis of a stream.
+	
+	Currently the following views are supported:
+	
+	* Singleton - the view will contain the latest event for a single event type per resource ID
+	
+	* Sequence - the view will contain the latest n events for a single event type per resource ID
+	
+	* Matrix - the view will contain the latest n events for n event types per resource ID
+	
+	Not yet supported views are as follows:
+	
+	* Cube - the view will contain the latest n events for n event types for n resource IDs
+	
+	* Bag - the view will contain all events for a resource ID for a time period
+
+* Core Modules
+
+	* Vocabulary
+	
+		Extensible list of business verbs that are directly visible and usable within rules. Example of verbs would be 'isTodayPublicHoliday()'
+		'isCellInManualDownTime(cellId)', or 'areCellsNeighbours(cell1Id, cell2Id)' etc. List of verbs will be extensible, and will evolve
+		as new features are developed.  
+		
+		Vocabulary object is by default visible within Jython rules under variables called 'v' and 'vocabulary'.
+	
+	* Locator
+	
+		Facility to query for any analytical record regardless in which database it is stored. Some rules compare current KPI values with
+		historical (i.e. last weeks daily aggregates) ones in order to raise an alarm or incident. Locator serves as proxy for other
+		YMER services, such as KPI Service and Query Service.  
+	
+		Locator object is by default visible within Jython rules under variables called 'l' and 'locator'.
+	
+	* Contextualizer
+	
+		Facility to enrich events generated by MESA (i.e. alerts/alarms/incidents/notifications) by extra information in order
+		to make generated event more context aware. For example, generated cell-level alert might be enriched with number of
+		subscribers that were connected to the cell at the time of generation in order to help alert consumer with prioritization
+		of handling of the alert.
+		
+		Locator object is currently not visible within Jython rules.
+	
+* Policy Structure
+	
+	Policy is a set of rules written in Jython scripting language, and set of XML files which add semantic meaning to the policy. There are two types
+	of XML files each policy will have:
+	
+	* Single core XML file
+	
+	* One or more configuration XML files
+	
+	Core XML file, together with Jython rules, is generally static and it contains core business logic. Configuration file allows same core policy to 
+	be customized by different tenants. For example, each tenant might have different set of thresholds it wishes to apply to rule, and hence each
+	tenant will have different configuration. 
+
+* MESA policy configuration
+
+	The MESA engine has 3 files which comprise a policy:
+	
+	1. {{{./mesa-jython-file-layout.html} Jython file}} - contains the business level logic to be applied to the Event(s).
+	
+	2. {{{./mesa-core-file-layout.html} core.xml}} - describes the rule, what output the rule will have either an alarm or alert, what view type it will be evaluating, what events the rule will operate on etc.
+	
+	3. {{{./mesa-conf-file-layout.html} conf.xml}} - describes the configuration to apply to a core file, a single core can have multiple conf files. Configurations also allow for the selective application of a rule by allowing the user to set a filter, such as, only evaluate events when the resource ID is 4
+	
+* MESA expected policy folder structure
+
+	When a policy is supplied to MESA the following structure is assumed to be present
+	
++-------------------------------+
+<policy.root.dir>
+	|-<com.ericsson.oss.*_policy-*_<version>>
+	|	|-core.xml
+	|	|-conf_*.xml
+	|-<com.ericsson.oss.*_policy-*_<version>>
+		|-core.xml
+		|-conf_*.xml
++-------------------------------+
+
+	<< NOTE: >> The folder naming convention com.ericsson.oss.*_policy-*_<version> is the expected format of all directories to be placed in the policy.root.dir 
+
+	examples:
+		
+	<policy.root.dir>/com.ericsson.oss.wcdma_policy-1_1.0/core.xml
+	
+	<policy.root.dir>/com.ericsson.oss.wcdma_policy-1_1.0/conf_1.xml
+	
+	<policy.root.dir>/com.ericsson.oss.wcdma_policy-1_1.0/conf_2.xml
+	
+	<policy.root.dir>/com.ericsson.oss.wcdma_policy-2_1.0/core.xml
+	
+	<policy.root.dir>/com.ericsson.oss.wcdma_policy-2_1.0/conf_1.xml
+	
+	<policy.root.dir>/com.ericsson.oss.wcdma_policy-2_1.0/conf_2.xml
+	
+* MESA Output
+
+	Output of MESA could be events aligned with X733 standard and Ericsson's SNMP Alarm MIB. Same structure is used for both alerts and alarms.
+	
+	Additionally, custom events could be emitted as well, where structure does not match any standard definition. 
+	
+	Following fields are present in standard aligned event:
+		
+	* ManagedObject
+
+	* AdditionalText
+
+	* MonitoredAttributes
+	
+	* SpecificProblems
+
+	* ThresholdInformation
+
+	* BackedUpStatus
+	
+	* BackupObject
+	
+	* TrendIndication
+
+	* CorrelatedNotifications
+
+	* StateChangeDefinition
+
+	* ProposedRepairActions
+
+	* PerceivedSeverity
+
+	* ProbableCause
+
+	* CurrentDate
+
+	* EventType
+
+	* EventDate
+
+	* InvokeIdentifier
+
+	* ModeId
+
+	* NotificationIdentifier
+	
+	

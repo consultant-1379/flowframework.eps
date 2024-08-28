@@ -1,0 +1,173 @@
+	------
+	MESA Core file
+	------
+
+MESA Policy's Core File
+
+Overview:
+
+	The core file provides the core configuration and options for a rule it identifies the location and type of rule along with the events it needs and the view it will process.
+	A single core.xml file is expected to be present in a policy. 
+	<< NOTE: >>Currently the core file is in the process of getting added to the Model service as part of ENM alignment once this has been completed this page will be
+	updated with the syntax changes however the functionality and overall structure will remain the same. 
+	
+Field overview:
+
+	A brief overview of the fields which appear in the core.xml file, some of the more obvious fields have been left out and can be seen in the example.
+	
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+|| Field                                                         	   || Description                                       || Comments            				|
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| general                                                              | provides the general information about the policy  |        					|
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| rules		                                                           | all rules for this policy                    		|   						|
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| rule group                                                           | common set of rules which expect the same kind of input    | requires a unique ID within the policy	|
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| rule                                                         	   	   | provides all of the details about a rule           | requires a unique ID within the policy        						|
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| input			                                                       | definition of all event types to be collected and used in the rule  |      |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| general -> name                                                      | The name of the policy  							| should be unique      |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+	
+| general -> namespace                                                 | The namespace for the policy or group of policies  |      |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+	
+| general -> version                                                   | The version of the policy  						|      |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+
+| rule -> name                                                         | The name of the rule should be unique 				|      |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+	
+| rule -> type                                                         | The type of rule either stateless or stateful 		|      |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+	
+| rule -> output                                                       | The type of output you would like to have either an alert or an alarm |      |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+	
+| rule -> flexiable-jython-name-binding                                | This allows you to suppress Jython errors to a warning if accessing a variable with no bound object | In startup a sequence view may not be fully populated until a number of ROPs have passed if the rule requires an event to be present but its not yet available it may be suitable to simple create a warning over an error       |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+	
+| rule -> params                                                       | Any parameters defined by a user in the Jython script | The intention here is for a script to be reusable with different limits/thresholds, thus to reduce copy paste and hard coded limits/thresholds they can be defined here and applied programatically|
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+	
+| rule -> reference                                                    | The full path to the script to be used             |      |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+	
+| input -> events view                                                 | The view this rule expects							|      |
+*----------------------------------------------------------------------+----------------------------------------------------+-----------------------------------+	
+		
+
+Sample core:
+
+	In this sample core file we provide configuration for 3 rules. Rule 1 will output an alert when the conditions in the Jython file src/test/resources/rules/stateless_matrix.py are met for the requested events 
+	INTERNAL_SYSTEM_UTILIZATION_60MIN and INTERNAL_SYSTEM_UTILIZATION. Rule 2 and 3 will out put an alert and an alarm respectfully when there conditions again defined in the Jython files are met. Whilst Rule 2 and 3 both take the event
+	INTERNAL_SYSTEM_UTILIZATION_60MIN as an input they have been split into separate rule groups, this is because they require different views of the data for Rule 2 it expects a view which is a singleton. Rule 3 however expects a sequence
+	this requires them to be defined in separate rule groups. Rules should only be grouped together when they expect the same view of the data and the same event type.  
+	
++-------------------------------+
+
+<?xml version="1.0" encoding="UTF-8"?>
+<policy-specification>
+	<general>
+		<name>policy-1</name>
+		<namespace>com.ericsson.oss.wcdma</namespace>
+		<version>1.0</version>
+	</general>
+	<rules>
+		<rule-group match-mode="ALL" id="1">
+			<rule id="1">
+				<name>isu60_consumed_credits_threshold_matrix</name>
+				<type>STATELESS</type>
+				<output>alert</output>
+				<flexiable-jython-name-binding>false</flexiable-jython-name-binding>
+				<params>
+					<param>
+						<name>var_cc_ul</name>
+						<type>INT</type>
+						<default>300</default>
+					</param>
+					<param>
+						<name>var_cc_dl</name>
+						<type>INT</type>
+						<default>40</default>
+					</param>
+				</params>
+				<reference>src/test/resources/rules/stateless_matrix.py</reference>
+			</rule>
+			<input>
+				<events view="matrix">
+					<event>
+						<name>INTERNAL_SYSTEM_UTILIZATION_60MIN</name>
+						<namespace>com.ericsson.oss.services.eps.builtin.components.mesa.event.sample</namespace>
+						<version>ANY</version>
+					</event>
+					<event>
+						<name>INTERNAL_SYSTEM_UTILIZATION</name>
+						<namespace>com.ericsson.oss.services.eps.builtin.components.mesa.event.sample</namespace>
+						<version>ANY</version>
+					</event>
+				</events>
+			</input>
+		</rule-group>
+		<rule-group match-mode="ALL" id="2">
+			<rule id="2">
+				<name>isu60_consumed_credits_threshold_sequence</name>
+				<type>STATELESS</type>
+				<output>alert</output>
+				<flexiable-jython-name-binding>true</flexiable-jython-name-binding>
+				<params>
+					<param>
+						<name>var_cc_ul</name>
+						<type>INT</type>
+						<default>300</default>
+					</param>
+					<param>
+						<name>var_cc_dl</name>
+						<type>INT</type>
+						<default>40</default>
+					</param>
+				</params>
+				<reference>src/test/resources/rules/stateless_sequence.py</reference>
+			</rule>
+			<input>
+				<events view="sequence">
+					<event>
+						<name>INTERNAL_SYSTEM_UTILIZATION_60MIN</name>
+						<namespace>com.ericsson.oss.services.eps.builtin.components.mesa.event.sample</namespace>
+						<version>ANY</version>
+					</event>
+				</events>
+			</input>
+		</rule-group>
+		<rule-group match-mode="ALL" id="3">
+			<rule id="3">
+				<name>isu60_consumed_credits_threshold_singleton</name>
+				<type>STATEFUL</type>
+				<output>alarm</output>
+				<flexiable-jython-name-binding>true</flexiable-jython-name-binding>
+				<params>
+					<param>
+						<name>var_cc_ul</name>
+						<type>INT</type>
+						<default>300</default>
+					</param>
+					<param>
+						<name>var_cc_dl</name>
+						<type>INT</type>
+						<default>40</default>
+					</param>
+				</params>
+				<reference>src/test/resources/rules/stateful_singleton.py</reference>
+			</rule>
+			<input>
+				<events view="singleton">
+					<event>
+						<name>INTERNAL_SYSTEM_UTILIZATION_60MIN</name>
+						<namespace>com.ericsson.oss.services.eps.builtin.components.mesa.event.sample</namespace>
+						<version>ANY</version>
+					</event>
+				</events>
+			</input>
+		</rule-group>
+	</rules>
+</policy-specification>
+    
++-------------------------------+
+
+	
+
+
+	

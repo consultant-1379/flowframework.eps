@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	elementFormDefault="qualified">
+	<xs:element name="policy-configuration">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="general" />
+				<xs:element ref="configurations" />
+			</xs:sequence>
+			<xs:attribute name="id" use="required" type="xs:integer" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="general">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="name" />
+				<xs:element ref="namespace" />
+				<xs:element ref="version" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="name" type="xs:string" />
+	<xs:element name="namespace" type="xs:string" />
+	<xs:element name="version" type="xs:string" />
+	<xs:element name="configurations">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element maxOccurs="unbounded" ref="configuration" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="configuration">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="id" />
+				<xs:element ref="tenant" />
+				<xs:element ref="properties" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="id" type="xs:integer" />
+	<xs:element name="tenant" type="xs:string" />
+	<xs:element name="properties">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element maxOccurs="unbounded" ref="property" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="property">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="key" />
+				<xs:element ref="value" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="key" type="xs:string" />
+	<xs:element name="value" type="xs:string" />
+</xs:schema>

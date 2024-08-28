@@ -1,0 +1,60 @@
+	------
+	Event Processing Service - Creating new Event Handlers
+	------
+
+Creating new Event Handlers
+
+	It is possible for developers to add new Event Handlers, in addition to the ones are already supported by EPS.
+
+	To create a new Event Handler from scratch the following steps should be followed:
+
+    [[1]] Include EPS in your project (see {{{./using-eps.html} here}} for details).
+
+    [[2]] Add to your project POM file the dependencies from EPS-API and Flow Framework API
+
++-------------------------------+
+	<dependency>
+		<groupId>com.ericsson.oss.services</groupId>
+		<artifactId>eps-api</artifactId>
+		<version>${project.version}</version>
+		<scope>provided</scope>
+	</dependency>
+	<dependency>
+		<groupId>com.ericsson.oss.services</groupId>
+		<artifactId>event-flow-api</artifactId>
+		<version>${version_flow_framework}</version>
+		<scope>provided</scope>
+	</dependency>
++-------------------------------+
+
+    [[3]] Create Event Handler implementation, as described {{{${documentation_FlowFramework}/eventflow-api/howto-create-eventhandler.html}here}}.
+
+    [[4]] EPS will measure (as a Meter) the number of events received by each component in a flow, if statistics enabled.
+          The Event Hanlder implementation may provide additional custom measurements (as Meter, Counter or Guage).
+          See {{{./ext-io-adapters-creating.html} Create New IO Adapters description}} for an example.
+
+    [[5]] Add to the flow descriptor a section related to your new Event Handler (see {{{${documentation_FlowFramework}/eventflow-api/flow-descriptor-handler-definition.html}here}} for details
+     or {{{${documentation_FlowFramework}/eventflow-api/howto-create-flow.html}here}} to create a new flow descriptor from scratch).
+
+    [[6]] Deploy the Event Handler, as described as described in {{{./eps-standalone-install.html}Standalone Install}} and {{{./eps-jboss-deploy.html}Packaging and deploying EPS in JBoss}}.
+
+    [[7]] In case the new Event Handler is considered to be useful even for different solution sets, it could be made publicly available by adding it to {{{${documentation_Extensions}/index.html}EpsExtensions}} external repository.
+
+
+	<<NOTE:>> The name of handler must not contain dot character.
+
+	<<NOTE:>> If you need to provide customized configuration attributes for your own Event Handlers, it is recommended to use camelCase when giving
+	attribute names (e.g. maxBatchSize). However, it is allowed to used dots inside the attribute names if you really have to, but not recommended.
+
+
+
+
+
+
+
+
+
+
+
+
+

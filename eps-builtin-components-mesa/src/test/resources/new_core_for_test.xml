@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MonitoringPolicyDefinition
+	oss_common:ns="WCDMA"
+	oss_common:name="Policy_1"
+	oss_common:version="1.0.0"
+	xmlns:asr_monitoring="urn:com:ericsson:schema:xml:oss:asr_monitoring"
+	xmlns="urn:com:ericsson:schema:xml:oss:asr_monitoring"
+	xmlns:oss_common="urn:com:ericsson:schema:xml:oss:oss_common"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	
+	<oss_common:modelCreationInfo author="Mark" creationDate="Today">
+		<oss_common:designedModel componentId="Some Component" />
+	</oss_common:modelCreationInfo>
+
+	<oss_common:desc>xml for schema testing of the core</oss_common:desc>
+
+	<!-- Example for a RuleGroup - note: I didn't know what mode="trace" meant in the original -->
+	
+	<ruleGroup id="1" matchMode="ALL">
+		<rule id="1" name="isu60_consumed_credits_threshold" type="THRESHOLD">
+			<scriptUrl>file://src/test/resources/jython_rules/isu60_threshold_rule.py</scriptUrl>
+			<ruleAttr oss_common:name="var_cc_ul">
+				<oss_common:desc>The description</oss_common:desc>
+				<oss_common:type xsi:type="oss_common:integerType" />
+				<oss_common:default xsi:type="oss_common:integerValue" value="100" />
+			</ruleAttr>
+			<ruleAttr oss_common:name="var_cc_dl">
+				<oss_common:desc>The description</oss_common:desc>
+				<oss_common:type xsi:type="oss_common:integerType" />
+				<oss_common:default xsi:type="oss_common:integerValue" value="100" />
+			</ruleAttr>
+		</rule>
+		<input eventUrn="//com.ericsson.component.aia.opdashboard.incident.model/INTERNAL_SYSTEM_RELEASE/*" />
+		<input eventUrn="//com.ericsson.component.aia.services.eps.builtin.components.mesa.event.sample" />
+	</ruleGroup>
+	
+</MonitoringPolicyDefinition>

@@ -1,0 +1,4 @@
+module defineEsperStreams;
+
+create schema inputStream1 as (str string);
+create schema intermediaryStream as (str string, charNum int);

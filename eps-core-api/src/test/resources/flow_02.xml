@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+	xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	oc:ns="com.ericsson.test" oc:name="test_name" oc:version="1.1.0">
+	<path>
+		<from uri="file://tmp/file1" />
+		<to uri="file://tmp/file2" />
+	</path>
+</FlowDefinition>
